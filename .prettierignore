@@ -1,0 +1,32 @@
+# Node & package manager
+node_modules
+.pnp
+.pnp.js
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Next.js build outputs
+.next
+out
+build
+dist
+
+# Logs
+*.log
+
+# Environment
+.env
+.env*.local
+
+# Misc
+coverage
+*.cache
+*.tmp
+.DS_Store
+.vscode
+.agent
+.codex
+.cursor
+
+
