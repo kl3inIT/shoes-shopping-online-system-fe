@@ -4,7 +4,7 @@ import { router } from './routes/router';
 
 export default function App() {
   return (
-    <Suspense fallback={<div>Loading translations...</div>}>
+    <Suspense fallback={<div>Loading...</div>}>
       <RouterProvider router={router} />
     </Suspense>
   );

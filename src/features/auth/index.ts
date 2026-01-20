@@ -1,0 +1,1 @@
+export { oidcConfig } from './oidcConfig';

@@ -4,8 +4,13 @@ import { ProductsPage } from '@/pages/products/ProductsPage';
 import Page404 from '@/pages/error/Page404';
 import { createBrowserRouter } from 'react-router';
 import { StaticPage } from '@/pages/static/StaticPage';
+import AuthCallback from '@/pages/auth/AuthCallBack';
 
 export const router = createBrowserRouter([
+  {
+    path: '/auth/callback',
+    element: <AuthCallback />,
+  },
   {
     path: '/',
     element: <MainLayout />,
