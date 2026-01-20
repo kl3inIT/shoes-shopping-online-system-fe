@@ -1,9 +1,11 @@
 import { createRoot } from 'react-dom/client';
+import App from './App';
 import './index.css';
-import { RouterProvider } from 'react-router/dom';
-import { router } from './routes/router';
+import './i18n/i18n';
+import { AppProviders } from './providers/AppProviders';
+
 createRoot(document.getElementById('root')!).render(
-  // <StrictMode>
-  <RouterProvider router={router} />
-  // </StrictMode>
+  <AppProviders>
+    <App />
+  </AppProviders>
 );

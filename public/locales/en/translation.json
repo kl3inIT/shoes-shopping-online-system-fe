@@ -1,0 +1,11 @@
+{
+  "appName": "Relivator",
+  "nav": {
+    "home": "Home",
+    "products": "Products"
+  },
+  "home": {
+    "title": "Welcome to Relivator",
+    "subtitle": "Starter layout with routing, theming, React Query, and i18n."
+  }
+}

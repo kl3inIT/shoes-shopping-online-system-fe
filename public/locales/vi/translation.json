@@ -1,0 +1,11 @@
+{
+  "appName": "Relivator",
+  "nav": {
+    "home": "Trang chủ",
+    "products": "Sản phẩm"
+  },
+  "home": {
+    "title": "Chào mừng đến Relivator",
+    "subtitle": "Khởi đầu với bố cục, định tuyến, theme, React Query và i18n."
+  }
+}
