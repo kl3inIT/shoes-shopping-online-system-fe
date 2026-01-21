@@ -1,5 +1,5 @@
 import { Menu, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -15,11 +15,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    if (!isMobile && mobileMenuOpen) {
-      setMobileMenuOpen(false);
-    }
-  }, [isMobile, mobileMenuOpen]);
+  const isMenuOpen = isMobile && mobileMenuOpen;
 
   const mainNavigation = [
     { to: '/', label: t('nav.home') },
@@ -27,11 +23,7 @@ export function Header() {
   ];
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
-      )}
-    >
+    <header className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
       <div className='mx-auto max-w-6xl px-4'>
         <div className='flex h-16 items-center justify-between'>
           <div className='flex items-center gap-6'>
@@ -78,7 +70,7 @@ export function Header() {
                 variant='ghost'
                 aria-label='Toggle menu'
               >
-                {mobileMenuOpen ? (
+                {isMenuOpen ? (
                   <X className='h-5 w-5' />
                 ) : (
                   <Menu className='h-5 w-5' />
@@ -89,7 +81,7 @@ export function Header() {
         </div>
       </div>
 
-      {isMobile && mobileMenuOpen && (
+      {isMenuOpen && (
         <div className='md:hidden'>
           <div className='space-y-1 border-b px-4 py-3'>
             {mainNavigation.map((item) => (
