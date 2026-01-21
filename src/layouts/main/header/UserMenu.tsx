@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oidc-context';
 
 import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/useMobile';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,11 +27,9 @@ function getDisplayName(auth: ReturnType<typeof useAuth>) {
   );
 }
 
-export function UserMenu({ mobile, onAfterAction }: UserMenuProps) {
+export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   const auth = useAuth();
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
-  const isMobileView = mobile ?? isMobile;
 
   const handleLogin = () => {
     void auth.signinRedirect();
@@ -45,7 +42,7 @@ export function UserMenu({ mobile, onAfterAction }: UserMenuProps) {
   };
 
   if (auth.isLoading) {
-    return isMobileView ? (
+    return mobile ? (
       <div className='flex items-center justify-center px-3 py-2'>
         <div className='h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent' />
       </div>
@@ -55,7 +52,7 @@ export function UserMenu({ mobile, onAfterAction }: UserMenuProps) {
   }
 
   if (!auth.isAuthenticated || !auth.user) {
-    return isMobileView ? (
+    return mobile ? (
       <Button onClick={handleLogin} className='w-full justify-start' size='sm'>
         <LogIn className='mr-2 h-4 w-4' />
         {t('auth.login', { defaultValue: 'Đăng nhập' })}
@@ -72,7 +69,7 @@ export function UserMenu({ mobile, onAfterAction }: UserMenuProps) {
 
   const displayName = getDisplayName(auth);
 
-  return isMobileView ? (
+  return mobile ? (
     <>
       <div className='px-3 py-2 text-sm'>
         <p className='font-medium'>{displayName}</p>
