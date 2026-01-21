@@ -10,26 +10,36 @@ import { Link } from 'react-router';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/useMobile';
 
 export function Footer({ className }: { className?: string }) {
   const { t } = useTranslation();
   const appName = t('appName');
+  const isMobile = useIsMobile();
 
   return (
     <footer className={cn('border-t bg-background', className)}>
       <div className='mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8'>
         <div className='grid grid-cols-1 gap-8 md:grid-cols-4'>
-          <div className='space-y-4'>
-            <Link className='flex items-center gap-2' to='/'>
+          <div className={cn('space-y-4', isMobile && 'text-center')}>
+            <Link
+              className={cn(
+                'flex items-center gap-2',
+                isMobile && 'justify-center'
+              )}
+              to='/'
+            >
               <span className='bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-xl font-bold tracking-tight text-transparent'>
                 {appName}
               </span>
             </Link>
             <p className='text-sm text-muted-foreground'>
-              Your one-stop shop for shoes. Premium products at competitive
-              prices.
+              {t('footer.tagline', {
+                defaultValue:
+                  'Your one-stop shop for shoes. Premium products at competitive prices.',
+              })}
             </p>
-            <div className='flex space-x-2'>
+            <div className={cn('flex space-x-2', isMobile && 'justify-center')}>
               <Button
                 asChild
                 className='h-8 w-8 rounded-full'
@@ -109,14 +119,18 @@ export function Footer({ className }: { className?: string }) {
           </div>
 
           <div>
-            <h3 className='mb-4 text-sm font-semibold'>Shop</h3>
+            <h3 className='mb-4 text-sm font-semibold'>
+              {t('footer.shop.title', { defaultValue: 'Shop' })}
+            </h3>
             <ul className='space-y-2 text-sm'>
               <li>
                 <Link
                   className='text-muted-foreground hover:text-foreground'
                   to='/products'
                 >
-                  All Products
+                  {t('footer.shop.allProducts', {
+                    defaultValue: 'All Products',
+                  })}
                 </Link>
               </li>
               <li>
@@ -124,7 +138,7 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/products?category=audio'
                 >
-                  Audio
+                  {t('footer.shop.audio', { defaultValue: 'Audio' })}
                 </Link>
               </li>
               <li>
@@ -132,7 +146,7 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/products?category=wearables'
                 >
-                  Wearables
+                  {t('footer.shop.wearables', { defaultValue: 'Wearables' })}
                 </Link>
               </li>
               <li>
@@ -140,7 +154,9 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/products?category=smartphones'
                 >
-                  Smartphones
+                  {t('footer.shop.smartphones', {
+                    defaultValue: 'Smartphones',
+                  })}
                 </Link>
               </li>
               <li>
@@ -148,21 +164,23 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/products?category=laptops'
                 >
-                  Laptops
+                  {t('footer.shop.laptops', { defaultValue: 'Laptops' })}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className='mb-4 text-sm font-semibold'>Company</h3>
+            <h3 className='mb-4 text-sm font-semibold'>
+              {t('footer.company.title', { defaultValue: 'Company' })}
+            </h3>
             <ul className='space-y-2 text-sm'>
               <li>
                 <Link
                   className='text-muted-foreground hover:text-foreground'
                   to='/about'
                 >
-                  About Us
+                  {t('footer.company.about', { defaultValue: 'About Us' })}
                 </Link>
               </li>
               <li>
@@ -170,7 +188,7 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/careers'
                 >
-                  Careers
+                  {t('footer.company.careers', { defaultValue: 'Careers' })}
                 </Link>
               </li>
               <li>
@@ -178,7 +196,7 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/blog'
                 >
-                  Blog
+                  {t('footer.company.blog', { defaultValue: 'Blog' })}
                 </Link>
               </li>
               <li>
@@ -186,7 +204,7 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/press'
                 >
-                  Press
+                  {t('footer.company.press', { defaultValue: 'Press' })}
                 </Link>
               </li>
               <li>
@@ -194,21 +212,23 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/contact'
                 >
-                  Contact
+                  {t('footer.company.contact', { defaultValue: 'Contact' })}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className='mb-4 text-sm font-semibold'>Support</h3>
+            <h3 className='mb-4 text-sm font-semibold'>
+              {t('footer.support.title', { defaultValue: 'Support' })}
+            </h3>
             <ul className='space-y-2 text-sm'>
               <li>
                 <Link
                   className='text-muted-foreground hover:text-foreground'
                   to='/help'
                 >
-                  Help Center
+                  {t('footer.support.help', { defaultValue: 'Help Center' })}
                 </Link>
               </li>
               <li>
@@ -216,7 +236,9 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/shipping'
                 >
-                  Shipping & Returns
+                  {t('footer.support.shipping', {
+                    defaultValue: 'Shipping & Returns',
+                  })}
                 </Link>
               </li>
               <li>
@@ -224,7 +246,7 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/warranty'
                 >
-                  Warranty
+                  {t('footer.support.warranty', { defaultValue: 'Warranty' })}
                 </Link>
               </li>
               <li>
@@ -232,7 +254,9 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/privacy'
                 >
-                  Privacy Policy
+                  {t('footer.support.privacy', {
+                    defaultValue: 'Privacy Policy',
+                  })}
                 </Link>
               </li>
               <li>
@@ -240,7 +264,9 @@ export function Footer({ className }: { className?: string }) {
                   className='text-muted-foreground hover:text-foreground'
                   to='/terms'
                 >
-                  Terms of Service
+                  {t('footer.support.terms', {
+                    defaultValue: 'Terms of Service',
+                  })}
                 </Link>
               </li>
             </ul>
@@ -250,20 +276,24 @@ export function Footer({ className }: { className?: string }) {
         <div className='mt-12 border-t pt-8'>
           <div className='flex flex-col items-center justify-between gap-4 md:flex-row'>
             <p className='text-sm text-muted-foreground'>
-              © {new Date().getFullYear()} {appName}. All rights reserved.
+              {t('footer.copyright', {
+                defaultValue: '© {{year}} {{appName}}. All rights reserved.',
+                year: new Date().getFullYear(),
+                appName,
+              })}
             </p>
             <div className='flex items-center gap-4 text-sm text-muted-foreground'>
               <Link className='hover:text-foreground' to='/privacy'>
-                Privacy
+                {t('footer.links.privacy', { defaultValue: 'Privacy' })}
               </Link>
               <Link className='hover:text-foreground' to='/terms'>
-                Terms
+                {t('footer.links.terms', { defaultValue: 'Terms' })}
               </Link>
               <Link className='hover:text-foreground' to='/cookies'>
-                Cookies
+                {t('footer.links.cookies', { defaultValue: 'Cookies' })}
               </Link>
               <Link className='hover:text-foreground' to='/sitemap'>
-                Sitemap
+                {t('footer.links.sitemap', { defaultValue: 'Sitemap' })}
               </Link>
             </div>
           </div>

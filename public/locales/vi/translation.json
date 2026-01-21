@@ -4,8 +4,46 @@
     "home": "Trang chủ",
     "products": "Sản phẩm"
   },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất"
+  },
   "home": {
     "title": "Chào mừng đến Relivator",
     "subtitle": "Khởi đầu với bố cục, định tuyến, theme, React Query và i18n."
+  },
+  "footer": {
+    "tagline": "Cửa hàng giày một điểm đến. Sản phẩm chất lượng với giá cạnh tranh.",
+    "shop": {
+      "title": "Mua sắm",
+      "allProducts": "Tất cả sản phẩm",
+      "audio": "Âm thanh",
+      "wearables": "Thiết bị đeo",
+      "smartphones": "Điện thoại",
+      "laptops": "Laptop"
+    },
+    "company": {
+      "title": "Công ty",
+      "about": "Về chúng tôi",
+      "careers": "Tuyển dụng",
+      "blog": "Blog",
+      "press": "Báo chí",
+      "contact": "Liên hệ"
+    },
+    "support": {
+      "title": "Hỗ trợ",
+      "help": "Trung tâm trợ giúp",
+      "shipping": "Giao hàng & đổi trả",
+      "warranty": "Bảo hành",
+      "privacy": "Chính sách bảo mật",
+      "terms": "Điều khoản dịch vụ"
+    },
+    "links": {
+      "privacy": "Bảo mật",
+      "terms": "Điều khoản",
+      "cookies": "Cookies",
+      "sitemap": "Sơ đồ trang"
+    },
+    "copyright": "© {{year}} {{appName}}. Bảo lưu mọi quyền."
   }
 }

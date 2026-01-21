@@ -4,8 +4,46 @@
     "home": "Home",
     "products": "Products"
   },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out"
+  },
   "home": {
     "title": "Welcome to Relivator",
     "subtitle": "Starter layout with routing, theming, React Query, and i18n."
+  },
+  "footer": {
+    "tagline": "Your one-stop shop for shoes. Premium products at competitive prices.",
+    "shop": {
+      "title": "Shop",
+      "allProducts": "All Products",
+      "audio": "Audio",
+      "wearables": "Wearables",
+      "smartphones": "Smartphones",
+      "laptops": "Laptops"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "careers": "Careers",
+      "blog": "Blog",
+      "press": "Press",
+      "contact": "Contact"
+    },
+    "support": {
+      "title": "Support",
+      "help": "Help Center",
+      "shipping": "Shipping & Returns",
+      "warranty": "Warranty",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "links": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "cookies": "Cookies",
+      "sitemap": "Sitemap"
+    },
+    "copyright": "© {{year}} {{appName}}. All rights reserved."
   }
 }

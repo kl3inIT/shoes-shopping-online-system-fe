@@ -1,4 +1,4 @@
-import { MainLayout } from '@/layouts/MainLayout';
+import { MainLayout } from '@/layouts/main/MainLayout';
 import { HomePage } from '@/pages/home/HomePage';
 import { ProductsPage } from '@/pages/products/ProductsPage';
 import Page404 from '@/pages/error/Page404';
