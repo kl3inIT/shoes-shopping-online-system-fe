@@ -5,6 +5,8 @@ import Page404 from '@/pages/error/Page404';
 import { createBrowserRouter } from 'react-router';
 import { StaticPage } from '@/pages/static/StaticPage';
 import AuthCallback from '@/pages/auth/AuthCallBack';
+import { ProfilePage } from '@/pages/profile/ProfilePage';
+import { ProtectedRoute } from './ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +25,20 @@ export const router = createBrowserRouter([
       {
         path: 'products',
         element: <ProductsPage />,
+      },
+
+      // Protected routes - Yêu cầu đăng nhập
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: 'profile',
+            element: <ProfilePage />,
+          },
+          // Thêm các protected routes khác ở đây
+          // { path: 'orders', element: <OrdersPage /> },
+          // { path: 'settings', element: <SettingsPage /> },
+        ],
       },
 
       // Footer links (placeholders)

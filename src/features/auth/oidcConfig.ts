@@ -18,9 +18,11 @@ export const oidcConfig: AuthProviderProps = {
     searchParams.delete('state');
     searchParams.delete('code');
     searchParams.delete('session_state');
+
     const newUrl = searchParams.toString().length
       ? `${globalThis.location.pathname}?${searchParams.toString()}`
       : globalThis.location.pathname;
+
     globalThis.history.replaceState({}, document.title, newUrl);
   },
   userStore: new WebStorageStateStore({ store: globalThis.localStorage }),

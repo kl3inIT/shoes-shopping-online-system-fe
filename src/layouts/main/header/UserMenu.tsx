@@ -1,6 +1,7 @@
-import { LogIn, LogOut, User } from 'lucide-react';
+import { LogIn, LogOut, User, UserCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oidc-context';
+import { Link } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -80,6 +81,18 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         )}
       </div>
       <Button
+        asChild
+        variant='ghost'
+        className='w-full justify-start'
+        size='sm'
+        onClick={onAfterAction}
+      >
+        <Link to='/profile'>
+          <UserCircle className='mr-2 h-4 w-4' />
+          {t('auth.profile', { defaultValue: 'Hồ sơ' })}
+        </Link>
+      </Button>
+      <Button
         onClick={handleLogout}
         variant='outline'
         className='w-full justify-start'
@@ -111,6 +124,12 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/profile'>
+            <UserCircle className='mr-2 h-4 w-4' />
+            <span>{t('auth.profile', { defaultValue: 'Hồ sơ' })}</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>
           <LogOut className='mr-2 h-4 w-4' />
           <span>{t('auth.logout', { defaultValue: 'Đăng xuất' })}</span>
