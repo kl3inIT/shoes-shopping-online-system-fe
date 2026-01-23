@@ -1,5 +1,6 @@
-import { useAuth } from 'react-oidc-context';
-import { User, Mail, AtSign, KeyRound, Clock, Shield } from 'lucide-react';
+import { useLoaderData } from 'react-router';
+import { User, Mail, Phone, Calendar, Image, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Card,
@@ -8,10 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useUserDetailQuery } from '@/features/user/hooks';
 
-export function ProfilePage() {
-  const auth = useAuth();
-  const user = auth.user;
+export default function ProfilePage() {
+  const { keycloakId } = useLoaderData() as Awaited<
+    ReturnType<ReturnType<typeof import('./profileLoader').profileLoader>>
+  >;
+  const { data: user } = useUserDetailQuery(keycloakId);
+  const { t } = useTranslation();
 
   const InfoRow = ({
     icon: Icon,
@@ -20,23 +25,32 @@ export function ProfilePage() {
   }: {
     icon: React.ElementType;
     label: string;
-    value: string | undefined;
+    value: string | null | undefined;
   }) => (
     <div className='flex items-start gap-3 py-2'>
       <Icon className='mt-0.5 h-4 w-4 text-muted-foreground' />
       <div className='flex-1'>
         <p className='text-sm font-medium text-muted-foreground'>{label}</p>
-        <p className='mt-0.5 font-mono text-sm'>{value || 'N/A'}</p>
+        <p className='mt-0.5 font-mono text-sm'>
+          {value || t('profile.common.notAvailable', 'N/A')}
+        </p>
       </div>
     </div>
   );
 
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleString('vi-VN');
+  };
+
   return (
     <div className='mx-auto max-w-4xl px-4 py-8'>
       <div className='mb-6'>
-        <h1 className='text-3xl font-bold'>Hồ sơ của bạn</h1>
+        <h1 className='text-3xl font-bold'>
+          {t('profile.title', 'Hồ sơ của bạn')}
+        </h1>
         <p className='mt-2 text-muted-foreground'>
-          Thông tin tài khoản và xác thực
+          {t('profile.subtitle', 'Thông tin tài khoản từ hệ thống')}
         </p>
       </div>
 
@@ -44,76 +58,68 @@ export function ProfilePage() {
         {/* User Info Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Thông tin cá nhân</CardTitle>
+            <CardTitle>
+              {t('profile.personalInfo.title', 'Thông tin cá nhân')}
+            </CardTitle>
             <CardDescription>
-              Thông tin cơ bản từ nhà cung cấp xác thực
+              {t(
+                'profile.personalInfo.description',
+                'Thông tin cơ bản từ hệ thống'
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-2'>
-            <InfoRow icon={User} label='Tên' value={user?.profile.name} />
-            <InfoRow icon={Mail} label='Email' value={user?.profile.email} />
             <InfoRow
-              icon={AtSign}
-              label='Username'
-              value={user?.profile.preferred_username}
+              icon={User}
+              label={t('profile.personalInfo.username', 'Tên người dùng')}
+              value={user.username}
             />
             <InfoRow
-              icon={KeyRound}
-              label='User ID'
-              value={user?.profile.sub}
+              icon={Mail}
+              label={t('profile.personalInfo.email', 'Email')}
+              value={user.email}
             />
-          </CardContent>
-        </Card>
-
-        {/* Token Info Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Thông tin Token</CardTitle>
-            <CardDescription>
-              Chi tiết về phiên đăng nhập hiện tại
-            </CardDescription>
-          </CardHeader>
-          <CardContent className='space-y-2'>
+            <InfoRow
+              icon={Phone}
+              label={t('profile.personalInfo.phone', 'Số điện thoại')}
+              value={user.phoneNumber}
+            />
+            <InfoRow
+              icon={Calendar}
+              label={t('profile.personalInfo.dateOfBirth', 'Ngày sinh')}
+              value={user.dateOfBirth}
+            />
+            <InfoRow
+              icon={Image}
+              label={t('profile.personalInfo.avatar', 'Ảnh đại diện')}
+              value={user.avatarUrl}
+            />
             <InfoRow
               icon={Clock}
-              label='Hết hạn lúc'
-              value={
-                user?.expires_at
-                  ? new Date(user.expires_at * 1000).toLocaleString('vi-VN')
-                  : undefined
-              }
+              label={t('profile.personalInfo.lastSeen', 'Lần cuối truy cập')}
+              value={formatDate(user.lastSeenAt)}
             />
-            <InfoRow
-              icon={Shield}
-              label='Token type'
-              value={user?.token_type}
-            />
-            <div className='flex items-start gap-3 py-2'>
-              <Shield className='mt-0.5 h-4 w-4 text-muted-foreground' />
-              <div className='flex-1'>
-                <p className='text-sm font-medium text-muted-foreground'>
-                  Scopes
-                </p>
-                <p className='mt-0.5 text-sm'>{user?.scope || 'N/A'}</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
-        {/* Debug Info (only in dev) */}
-        {import.meta.env.DEV && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Debug: Full User Object</CardTitle>
-              <CardDescription>Chỉ hiển thị ở môi trường dev</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <pre className='overflow-auto rounded-lg bg-muted p-4 text-xs'>
-                {JSON.stringify(user, null, 2)}
-              </pre>
-            </CardContent>
-          </Card>
-        )}
+        {/* Keycloak ID Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {t('profile.accountInfo.title', 'Thông tin tài khoản')}
+            </CardTitle>
+            <CardDescription>
+              {t('profile.accountInfo.description', 'ID định danh từ Keycloak')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <InfoRow
+              icon={User}
+              label={t('profile.accountInfo.keycloakId', 'Keycloak ID')}
+              value={user.keycloakId}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

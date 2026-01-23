@@ -69,6 +69,8 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   }
 
   const displayName = getDisplayName(auth);
+  const keycloakId = auth.user.profile.sub as string | undefined;
+  const profilePath = keycloakId ? `/profile/${keycloakId}` : '/';
 
   return mobile ? (
     <>
@@ -87,7 +89,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         size='sm'
         onClick={onAfterAction}
       >
-        <Link to='/profile'>
+        <Link to={profilePath}>
           <UserCircle className='mr-2 h-4 w-4' />
           {t('auth.profile', { defaultValue: 'Hồ sơ' })}
         </Link>
@@ -125,7 +127,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className='cursor-pointer'>
-          <Link to='/profile'>
+          <Link to={profilePath}>
             <UserCircle className='mr-2 h-4 w-4' />
             <span>{t('auth.profile', { defaultValue: 'Hồ sơ' })}</span>
           </Link>

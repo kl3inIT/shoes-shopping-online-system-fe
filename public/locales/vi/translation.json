@@ -6,7 +6,14 @@
   },
   "auth": {
     "login": "Đăng nhập",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "protected": {
+      "loadingTitle": "Đang tải...",
+      "loadingSubtitle": "Đang kiểm tra quyền truy cập",
+      "errorTitle": "Lỗi xác thực",
+      "redirectTitle": "Đang chuyển đến trang đăng nhập...",
+      "redirectSubtitle": "Bạn sẽ quay lại trang này sau khi đăng nhập"
+    }
   },
   "home": {
     "title": "Chào mừng đến Relivator",
@@ -45,5 +52,68 @@
       "sitemap": "Sơ đồ trang"
     },
     "copyright": "© {{year}} {{appName}}. Bảo lưu mọi quyền."
+  },
+  "error": {
+    "page": {
+      "403": {
+        "code": "403",
+        "description": "Bạn không có quyền truy cập trang này.",
+        "hint": "Hãy đăng nhập với tài khoản có đủ quyền hoặc quay lại trang chủ.",
+        "backHome": "Về trang chủ",
+        "viewProfile": "Xem hồ sơ của tôi"
+      },
+      "404": {
+        "code": "404",
+        "description": "Trang bạn tìm kiếm không tồn tại hoặc đã bị di chuyển.",
+        "hint": "Hãy kiểm tra lại đường dẫn hoặc quay về trang chủ để tiếp tục mua sắm.",
+        "backHome": "Về trang chủ"
+      },
+      "500": {
+        "title": "Đã xảy ra lỗi",
+        "description": "Có lỗi không mong muốn xảy ra khi xử lý yêu cầu của bạn.",
+        "hint": "Vui lòng thử tải lại trang hoặc quay lại trang chủ. Nếu lỗi vẫn tiếp diễn, hãy liên hệ bộ phận hỗ trợ.",
+        "reload": "Tải lại trang",
+        "backHome": "Về trang chủ"
+      }
+    }
+  },
+  "http": {
+    "error": {
+      "network": "Không thể kết nối tới máy chủ",
+      "unknown": "Đã xảy ra lỗi, vui lòng thử lại",
+      "400": "Dữ liệu không hợp lệ",
+      "401": "Phiên đăng nhập đã hết hạn",
+      "403": "Bạn không có quyền truy cập",
+      "404": "Không tìm thấy dữ liệu",
+      "409": "Dữ liệu đã tồn tại hoặc xung đột",
+      "422": "Dữ liệu không thể xử lý",
+      "429": "Quá nhiều yêu cầu, vui lòng thử lại sau",
+      "500": "Lỗi máy chủ, vui lòng thử lại sau",
+      "502": "Dịch vụ tạm thời không khả dụng",
+      "503": "Dịch vụ tạm thời không khả dụng",
+      "504": "Dịch vụ tạm thời không khả dụng"
+    }
+  },
+  "profile": {
+    "title": "Hồ sơ của bạn",
+    "subtitle": "Thông tin tài khoản từ hệ thống",
+    "common": {
+      "notAvailable": "N/A"
+    },
+    "personalInfo": {
+      "title": "Thông tin cá nhân",
+      "description": "Thông tin cơ bản từ hệ thống",
+      "username": "Tên người dùng",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "dateOfBirth": "Ngày sinh",
+      "avatar": "Ảnh đại diện",
+      "lastSeen": "Lần cuối truy cập"
+    },
+    "accountInfo": {
+      "title": "Thông tin tài khoản",
+      "description": "ID định danh từ Keycloak",
+      "keycloakId": "Keycloak ID"
+    }
   }
 }
