@@ -11,22 +11,19 @@ import {
 } from '@/components/ui/card';
 import { useUserDetailQuery } from '@/features/user/hooks';
 
-export default function ProfilePage() {
-  const { keycloakId } = useLoaderData() as Awaited<
-    ReturnType<ReturnType<typeof import('./profileLoader').profileLoader>>
-  >;
-  const { data: user } = useUserDetailQuery(keycloakId);
-  const { t } = useTranslation();
+type ProfileLoaderData = Awaited<
+  ReturnType<ReturnType<typeof import('./profileLoader').profileLoader>>
+>;
 
-  const InfoRow = ({
-    icon: Icon,
-    label,
-    value,
-  }: {
-    icon: React.ElementType;
-    label: string;
-    value: string | null | undefined;
-  }) => (
+interface InfoRowProps {
+  icon: React.ElementType;
+  label: string;
+  value: string | null | undefined;
+}
+
+function InfoRow({ icon: Icon, label, value }: InfoRowProps) {
+  const { t } = useTranslation();
+  return (
     <div className='flex items-start gap-3 py-2'>
       <Icon className='mt-0.5 h-4 w-4 text-muted-foreground' />
       <div className='flex-1'>
@@ -37,6 +34,14 @@ export default function ProfilePage() {
       </div>
     </div>
   );
+}
+
+export default function ProfilePage() {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const loaderData = useLoaderData() as ProfileLoaderData;
+  const { keycloakId } = loaderData;
+  const { data: user } = useUserDetailQuery(keycloakId);
+  const { t } = useTranslation();
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null;

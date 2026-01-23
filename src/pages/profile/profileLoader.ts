@@ -9,6 +9,8 @@ export const profileLoader =
     const keycloakId = params.keycloakId;
 
     if (!keycloakId) {
+      // React Router requires Response object, not Error
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw new Response('Keycloak ID is required', {
         status: 400,
         statusText: 'Bad Request',
@@ -19,6 +21,8 @@ export const profileLoader =
       await queryClient.ensureQueryData(getUserDetailQueryOptions(keycloakId));
     } catch (error) {
       if (isHttpError(error)) {
+        // React Router requires Response object, not Error
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw new Response(error.userMessage(), {
           status: error.status,
           statusText: error.status === 401 ? 'Unauthorized' : 'Forbidden',

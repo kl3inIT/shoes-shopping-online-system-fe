@@ -61,8 +61,8 @@ apiClient.interceptors.request.use(
 
     console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
       baseURL: config.baseURL,
-      params: config.params,
-      data: config.data,
+      params: config.params as unknown,
+      data: config.data as unknown,
     });
 
     return config;
@@ -87,7 +87,7 @@ apiClient.interceptors.response.use(
       {
         status: response.status,
         duration: duration ? `${duration}ms` : undefined,
-        data: response.data,
+        data: response.data as unknown,
       }
     );
 
@@ -111,6 +111,7 @@ apiClient.interceptors.response.use(
     }
 
     const { status = 0, data } = error.response;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const problemDetail = (data ?? {}) as ProblemDetailPayload;
 
     switch (status) {

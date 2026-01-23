@@ -13,7 +13,10 @@ import { useTranslation } from 'react-i18next';
 const Page403 = () => {
   const auth = useAuth();
   const { t } = useTranslation();
-  const keycloakId = auth.user?.profile.sub as string | undefined;
+  const keycloakId =
+    typeof auth.user?.profile.sub === 'string'
+      ? auth.user.profile.sub
+      : undefined;
   const profilePath = keycloakId ? `/profile/${keycloakId}` : '/';
 
   return (
