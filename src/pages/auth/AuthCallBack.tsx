@@ -15,7 +15,7 @@ export default function AuthCallback() {
     if (auth.isAuthenticated) {
       const returnTo =
         (auth.user?.state as { returnTo?: string })?.returnTo || '/';
-      navigate(returnTo, { replace: true });
+      void navigate(returnTo, { replace: true });
     }
   }, [auth.isAuthenticated, auth.user?.state, navigate]);
 
@@ -63,7 +63,9 @@ export default function AuthCallback() {
                 Thử lại
               </Button>
               <Button
-                onClick={() => navigate('/', { replace: true })}
+                onClick={() => {
+                  void navigate('/', { replace: true });
+                }}
                 variant='outline'
                 className='flex-1'
               >
