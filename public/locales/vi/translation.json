@@ -12,6 +12,19 @@
     "title": "Chào mừng đến Relivator",
     "subtitle": "Khởi đầu với bố cục, định tuyến, theme, React Query và i18n."
   },
+  "qr": {
+    "title": "Sepay QR",
+    "subtitle": "Quét mã QR để thanh toán.",
+    "pageTitle": "Thanh toán QR",
+    "previewAlt": "Mã QR Sepay",
+    "demoDescription": "Đơn hàng #12345",
+    "labels": {
+      "account": "Tài khoản",
+      "bank": "Ngân hàng",
+      "amount": "Số tiền",
+      "description": "Nội dung"
+    }
+  },
   "footer": {
     "tagline": "Cửa hàng giày một điểm đến. Sản phẩm chất lượng với giá cạnh tranh.",
     "shop": {

@@ -12,6 +12,19 @@
     "title": "Welcome to Relivator",
     "subtitle": "Starter layout with routing, theming, React Query, and i18n."
   },
+  "qr": {
+    "title": "Sepay QR",
+    "subtitle": "Scan the QR code to pay.",
+    "pageTitle": "QR Payment",
+    "previewAlt": "Sepay QR code",
+    "demoDescription": "Order #12345",
+    "labels": {
+      "account": "Account",
+      "bank": "Bank",
+      "amount": "Amount",
+      "description": "Description"
+    }
+  },
   "footer": {
     "tagline": "Your one-stop shop for shoes. Premium products at competitive prices.",
     "shop": {

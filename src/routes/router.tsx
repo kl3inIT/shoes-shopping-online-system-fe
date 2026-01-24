@@ -6,6 +6,7 @@ import { createBrowserRouter } from 'react-router';
 import { StaticPage } from '@/pages/static/StaticPage';
 import AuthCallback from '@/pages/auth/AuthCallBack';
 import { ProfilePage } from '@/pages/profile/ProfilePage';
+import { SePayQrPage } from '@/pages/qr/SePayQrPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: 'products',
         element: <ProductsPage />,
+      },
+      {
+        path: 'qr',
+        element: <SePayQrPage />,
       },
 
       // Protected routes - Yêu cầu đăng nhập
