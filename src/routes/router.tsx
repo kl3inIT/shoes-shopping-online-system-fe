@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import { MainLayout } from '@/layouts/main/MainLayout';
+import { DashboardLayout } from '@/layouts/admin/AdminLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RootErrorBoundary } from '@/routes/RootErrorBoundary';
 import { queryClient } from '@/features/queryClient';
@@ -21,7 +22,8 @@ export const router = createBrowserRouter([
       {
         index: true,
         lazy: async () => {
-          const { default: Component } = await import('@/pages/home/HomePage');
+          const { default: Component } =
+            await import('@/pages/main/home/HomePage');
           return { Component };
         },
       },
@@ -29,7 +31,7 @@ export const router = createBrowserRouter([
         path: 'products',
         lazy: async () => {
           const { default: Component } =
-            await import('@/pages/products/ProductsPage');
+            await import('@/pages/main/products/ProductsPage');
           return { Component };
         },
       },
@@ -41,8 +43,8 @@ export const router = createBrowserRouter([
             lazy: async () => {
               const [{ default: Component }, { profileLoader }] =
                 await Promise.all([
-                  import('@/pages/profile/ProfilePage'),
-                  import('@/pages/profile/profileLoader'),
+                  import('@/pages/main/profile/ProfilePage'),
+                  import('@/pages/main/profile/profileLoader'),
                 ]);
               return {
                 Component,
@@ -57,6 +59,21 @@ export const router = createBrowserRouter([
         path: '*',
         lazy: async () => {
           const { default: Component } = await import('@/pages/error/Page404');
+          return { Component };
+        },
+      },
+    ],
+  },
+  {
+    path: '/dashboard',
+    element: <DashboardLayout />,
+    errorElement: <RootErrorBoundary />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/dashboard/Dashboard');
           return { Component };
         },
       },
