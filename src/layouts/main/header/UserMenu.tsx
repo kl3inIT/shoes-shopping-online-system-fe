@@ -1,4 +1,4 @@
-import { LogIn, LogOut, User, UserCircle } from 'lucide-react';
+import { LogIn, LogOut, User, UserCircle, UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oidc-context';
 import { Link } from 'react-router';
@@ -37,6 +37,16 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
     onAfterAction?.();
   };
 
+  const handleRegister = () => {
+    // Keycloak supports `kc_action=register` to open the registration screen.
+    // `extraQueryParams` is supported by oidc-client-ts via react-oidc-context.
+    void auth.signinRedirect({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      extraQueryParams: { kc_action: 'register' } as any,
+    });
+    onAfterAction?.();
+  };
+
   const handleLogout = () => {
     void auth.signoutRedirect();
     onAfterAction?.();
@@ -54,17 +64,45 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
 
   if (!auth.isAuthenticated || !auth.user) {
     return mobile ? (
-      <Button onClick={handleLogin} className='w-full justify-start' size='sm'>
-        <LogIn className='mr-2 h-4 w-4' />
-        {t('auth.login', { defaultValue: 'Đăng nhập' })}
-      </Button>
-    ) : (
-      <Button onClick={handleLogin} size='sm' className='gap-2'>
-        <LogIn className='h-4 w-4' />
-        <span className='hidden sm:inline-block'>
+      <div className='flex flex-col gap-2'>
+        <Button
+          onClick={handleLogin}
+          className='w-full justify-start'
+          size='sm'
+        >
+          <LogIn className='mr-2 h-4 w-4' />
           {t('auth.login', { defaultValue: 'Đăng nhập' })}
-        </span>
-      </Button>
+        </Button>
+        <Button
+          onClick={handleRegister}
+          variant='outline'
+          className='w-full justify-start'
+          size='sm'
+        >
+          <UserPlus className='mr-2 h-4 w-4' />
+          {t('auth.register', { defaultValue: 'Đăng ký' })}
+        </Button>
+      </div>
+    ) : (
+      <div className='flex items-center gap-2'>
+        <Button onClick={handleLogin} size='sm' className='gap-2'>
+          <LogIn className='h-4 w-4' />
+          <span className='hidden sm:inline-block'>
+            {t('auth.login', { defaultValue: 'Đăng nhập' })}
+          </span>
+        </Button>
+        <Button
+          onClick={handleRegister}
+          size='sm'
+          variant='outline'
+          className='gap-2'
+        >
+          <UserPlus className='h-4 w-4' />
+          <span className='hidden sm:inline-block'>
+            {t('auth.register', { defaultValue: 'Đăng ký' })}
+          </span>
+        </Button>
+      </div>
     );
   }
 
