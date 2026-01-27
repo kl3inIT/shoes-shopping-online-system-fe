@@ -2,11 +2,17 @@
   "appName": "SSOS",
   "nav": {
     "home": "Trang chủ",
-    "products": "Sản phẩm"
+    "products": "Sản phẩm",
+    "about": "Giới thiệu",
+    "cart": "Giỏ hàng",
+    "wishlist": "Yêu thích",
+    "orders": "Đơn hàng"
   },
   "auth": {
     "login": "Đăng nhập",
+    "register": "Đăng ký",
     "logout": "Đăng xuất",
+    "profile": "Hồ sơ",
     "protected": {
       "loadingTitle": "Đang tải...",
       "loadingSubtitle": "Đang kiểm tra quyền truy cập",
@@ -16,18 +22,345 @@
     }
   },
   "home": {
-    "title": "Chào mừng đến Relivator",
-    "subtitle": "Khởi đầu với bố cục, định tuyến, theme, React Query và i18n."
+    "hero": {
+      "badge": "Bộ sưu tập mới 2024",
+      "title": "Bước Vào Phong Cách",
+      "description": "Từ giày chạy bộ đến sneaker thời trang, tìm đôi giày hoàn hảo phù hợp với phong cách và nhu cầu của bạn.",
+      "shopNow": "Mua Ngay",
+      "learnMore": "Tìm Hiểu Thêm"
+    },
+    "features": {
+      "freeShipping": {
+        "title": "Miễn Phí Vận Chuyển",
+        "description": "Miễn phí ship cho đơn hàng trên 2.000.000đ"
+      },
+      "authentic": {
+        "title": "100% Chính Hãng",
+        "description": "Tất cả sản phẩm đều chính hãng"
+      },
+      "easyReturns": {
+        "title": "Đổi Trả Dễ Dàng",
+        "description": "Đổi trả trong 30 ngày"
+      },
+      "support": {
+        "title": "Hỗ Trợ 24/7",
+        "description": "Liên hệ bất cứ lúc nào"
+      }
+    },
+    "categories": {
+      "title": "Mua Theo Danh Mục",
+      "subtitle": "Tìm đôi giày hoàn hảo cho mọi dịp"
+    },
+    "featured": {
+      "title": "Sản Phẩm Nổi Bật",
+      "subtitle": "Những lựa chọn phổ biến nhất mùa này",
+      "viewAll": "Xem Tất Cả"
+    },
+    "newsletter": {
+      "badge": "Ưu Đãi Có Hạn",
+      "title": "Giảm 20% Cho Đơn Hàng Đầu Tiên",
+      "description": "Đăng ký nhận bản tin để nhận ưu đãi độc quyền, truy cập sớm các sản phẩm mới, và nhiều hơn nữa.",
+      "placeholder": "Nhập email của bạn",
+      "subscribe": "Đăng Ký"
+    },
+    "newArrivals": {
+      "title": "Hàng Mới Về",
+      "subtitle": "Những mẫu mới nhất vừa cập bến",
+      "viewAll": "Xem Tất Cả"
+    },
+    "brands": {
+      "title": "Mua Theo Thương Hiệu",
+      "subtitle": "Khám phá các thương hiệu yêu thích"
+    }
+  },
+  "products": {
+    "title": "Tất Cả Sản Phẩm",
+    "showing": "Hiển thị {{count}} trong {{total}} sản phẩm",
+    "filters": "Bộ lọc",
+    "filtersActive": "Đang lọc",
+    "clearFilters": "Xóa bộ lọc",
+    "search": "Tìm kiếm giày...",
+    "sortBy": "Sắp xếp:",
+    "sort": {
+      "newest": "Mới nhất",
+      "priceAsc": "Giá: Thấp đến Cao",
+      "priceDesc": "Giá: Cao đến Thấp",
+      "rating": "Đánh giá cao",
+      "popular": "Phổ biến nhất"
+    },
+    "filter": {
+      "brands": "Thương hiệu",
+      "sizes": "Kích cỡ",
+      "categories": "Danh mục",
+      "priceRange": "Khoảng giá"
+    },
+    "noProducts": "Không tìm thấy sản phẩm.",
+    "addToCart": "Thêm vào giỏ",
+    "addToWishlist": "Thêm vào yêu thích"
+  },
+  "productDetail": {
+    "backToProducts": "Quay lại danh sách",
+    "selectSize": "Chọn Size",
+    "pleaseSelectSize": "Vui lòng chọn size",
+    "quantity": "Số lượng",
+    "addToCart": "Thêm Vào Giỏ",
+    "wishlist": "Yêu Thích",
+    "description": "Mô tả",
+    "specifications": "Thông số",
+    "noSpecifications": "Không có thông số.",
+    "reviews": {
+      "title": "Đánh Giá Của Khách Hàng",
+      "basedOn": "Dựa trên {{count}} đánh giá",
+      "writeReview": "Viết Đánh Giá",
+      "overallRating": "Đánh giá tổng thể",
+      "clickToRate": "Nhấn để đánh giá sản phẩm này",
+      "reviewTitle": "Tiêu đề đánh giá",
+      "reviewTitlePlaceholder": "Tóm tắt đánh giá của bạn",
+      "yourReview": "Đánh giá của bạn",
+      "yourReviewPlaceholder": "Chia sẻ trải nghiệm của bạn với sản phẩm này...",
+      "addPhotos": "Thêm ảnh (tùy chọn)",
+      "maxImages": "Tối đa 5 ảnh",
+      "submitReview": "Gửi Đánh Giá",
+      "submitting": "Đang gửi...",
+      "cancel": "Hủy",
+      "helpful": "Hữu ích",
+      "verifiedPurchase": "Đã mua hàng"
+    },
+    "new": "Mới",
+    "inStock": "Còn hàng",
+    "outOfStock": "Hết hàng"
+  },
+  "cart": {
+    "title": "Giỏ Hàng",
+    "itemCount": "{{count}} sản phẩm trong giỏ hàng",
+    "empty": {
+      "title": "Giỏ hàng trống",
+      "description": "Có vẻ như bạn chưa thêm sản phẩm nào vào giỏ hàng."
+    },
+    "continueShopping": "Tiếp Tục Mua Sắm",
+    "clearCart": "Xóa Giỏ Hàng",
+    "clearCartConfirm": {
+      "title": "Xóa Giỏ Hàng?",
+      "description": "Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng? Thao tác này không thể hoàn tác."
+    },
+    "summary": {
+      "title": "Tóm Tắt Đơn Hàng",
+      "subtotal": "Tạm tính",
+      "items": "sản phẩm",
+      "shipping": "Phí vận chuyển",
+      "free": "Miễn phí",
+      "discount": "Giảm giá",
+      "tax": "Thuế",
+      "total": "Tổng cộng",
+      "couponPlaceholder": "Mã giảm giá",
+      "applyCoupon": "Áp dụng",
+      "checkout": "Tiến Hành Thanh Toán"
+    },
+    "item": {
+      "size": "Size",
+      "remove": "Xóa"
+    }
+  },
+  "wishlist": {
+    "title": "Danh Sách Yêu Thích",
+    "subtitle": "Lưu những sản phẩm bạn yêu thích để quay lại sau",
+    "itemCount": "{{count}} sản phẩm trong danh sách yêu thích",
+    "empty": {
+      "title": "Danh sách yêu thích trống",
+      "description": "Lưu sản phẩm yêu thích bằng cách nhấn vào biểu tượng trái tim"
+    },
+    "continueShopping": "Tiếp Tục Mua Sắm",
+    "addToCart": "Thêm Vào Giỏ",
+    "viewDetails": "Xem Chi Tiết",
+    "addedOn": "Đã thêm vào {{date}}"
+  },
+  "checkout": {
+    "title": "Thanh Toán",
+    "backToCart": "Quay Lại Giỏ Hàng",
+    "shippingAddress": {
+      "title": "Địa Chỉ Giao Hàng",
+      "fullName": "Họ và tên",
+      "fullNamePlaceholder": "Nhập họ và tên",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "Nhập số điện thoại",
+      "email": "Email",
+      "emailPlaceholder": "Nhập email",
+      "city": "Tỉnh/Thành phố",
+      "cityPlaceholder": "Chọn tỉnh/thành phố",
+      "district": "Quận/Huyện",
+      "districtPlaceholder": "Chọn quận/huyện",
+      "ward": "Phường/Xã",
+      "wardPlaceholder": "Chọn phường/xã",
+      "address": "Địa chỉ chi tiết",
+      "addressPlaceholder": "Số nhà, tên đường",
+      "note": "Ghi chú (tùy chọn)",
+      "notePlaceholder": "Thêm hướng dẫn giao hàng..."
+    },
+    "paymentMethod": {
+      "title": "Phương Thức Thanh Toán",
+      "sePay": {
+        "name": "SE Pay",
+        "description": "Thanh toán an toàn với ví SE Pay"
+      },
+      "creditCard": {
+        "name": "Thẻ Tín Dụng/Ghi Nợ",
+        "description": "Visa, MasterCard, American Express"
+      },
+      "cod": {
+        "name": "Thanh Toán Khi Nhận Hàng",
+        "description": "Thanh toán khi nhận được đơn hàng"
+      }
+    },
+    "orderSummary": "Tóm Tắt Đơn Hàng",
+    "placeOrder": "Đặt Hàng",
+    "termsNotice": "Bằng việc đặt hàng, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi",
+    "confirmOrder": {
+      "title": "Xác Nhận Đơn Hàng",
+      "description": "Bạn sắp đặt đơn hàng trị giá ${{total}}. Thanh toán sẽ được xử lý qua {{method}}."
+    },
+    "confirmAndPay": "Xác Nhận & Thanh Toán",
+    "validation": {
+      "fullNameRequired": "Vui lòng nhập họ tên",
+      "phoneRequired": "Vui lòng nhập số điện thoại",
+      "phoneInvalid": "Số điện thoại không hợp lệ",
+      "emailRequired": "Vui lòng nhập email",
+      "emailInvalid": "Email không hợp lệ",
+      "cityRequired": "Vui lòng chọn tỉnh/thành phố",
+      "districtRequired": "Vui lòng chọn quận/huyện",
+      "addressRequired": "Vui lòng nhập địa chỉ chi tiết"
+    }
+  },
+  "paymentResult": {
+    "success": {
+      "title": "Thanh Toán Thành Công!",
+      "description": "Cảm ơn bạn đã mua hàng! Đơn hàng của bạn đã được đặt thành công.",
+      "orderNumber": "Mã Đơn Hàng",
+      "emailSent": "Email xác nhận đã được gửi đến địa chỉ email của bạn. Bạn có thể theo dõi đơn hàng trong phần Lịch sử đơn hàng.",
+      "viewOrders": "Xem Đơn Hàng",
+      "continueShopping": "Tiếp Tục Mua Sắm"
+    },
+    "failed": {
+      "title": "Thanh Toán Thất Bại",
+      "description": "Rất tiếc, thanh toán của bạn không thể xử lý được. Vui lòng thử lại hoặc sử dụng phương thức thanh toán khác.",
+      "contactSupport": "Nếu vấn đề vẫn tiếp diễn, vui lòng liên hệ bộ phận hỗ trợ.",
+      "tryAgain": "Thử Lại",
+      "backToCart": "Quay Lại Giỏ Hàng"
+    }
+  },
+  "orders": {
+    "title": "Lịch Sử Đơn Hàng",
+    "subtitle": "Xem và theo dõi tất cả đơn hàng của bạn",
+    "empty": {
+      "title": "Không tìm thấy đơn hàng",
+      "allEmpty": "Bạn chưa đặt đơn hàng nào",
+      "filteredEmpty": "Không có đơn hàng {{status}}"
+    },
+    "startShopping": "Bắt Đầu Mua Sắm",
+    "filter": {
+      "all": "Tất cả",
+      "pending": "Chờ xử lý",
+      "processing": "Đang xử lý",
+      "shipped": "Đang giao",
+      "delivered": "Đã giao",
+      "cancelled": "Đã hủy"
+    },
+    "status": {
+      "pending": "Chờ xử lý",
+      "processing": "Đang xử lý",
+      "shipped": "Đang giao",
+      "delivered": "Đã giao",
+      "cancelled": "Đã hủy"
+    },
+    "orderNumber": "Đơn hàng #{{number}}",
+    "placedOn": "Đặt ngày {{date}}",
+    "total": "Tổng cộng",
+    "moreItems": "+{{count}} sản phẩm khác",
+    "viewDetails": "Xem Chi Tiết",
+    "trackOrder": "Theo Dõi",
+    "reorder": "Đặt Lại",
+    "timeline": {
+      "title": "Theo dõi đơn hàng #{{number}}",
+      "orderPlaced": "Đã Đặt Hàng",
+      "orderPlacedDesc": "Đơn hàng của bạn đã được đặt thành công",
+      "processing": "Đang Xử Lý",
+      "processingDesc": "Chúng tôi đang chuẩn bị đơn hàng của bạn",
+      "shipped": "Đang Giao Hàng",
+      "shippedDesc": "Đơn hàng đang trên đường đến bạn",
+      "outForDelivery": "Sắp Giao",
+      "outForDeliveryDesc": "Đơn hàng sẽ được giao trong hôm nay",
+      "delivered": "Đã Giao",
+      "deliveredDesc": "Giao hàng thành công"
+    }
+  },
+  "about": {
+    "hero": {
+      "subtitle": "Câu Chuyện Của Chúng Tôi",
+      "title": "Về Shoes Shopping Online",
+      "description": "Được thành lập năm 2024, Shoes Shopping Online đã trở thành điểm đến hàng đầu cho những người yêu giày. Chúng tôi tuyển chọn những đôi giày tốt nhất từ các thương hiệu hàng đầu, đảm bảo chất lượng, phong cách và sự thoải mái cho mọi khách hàng."
+    },
+    "mission": {
+      "title": "Sứ Mệnh",
+      "description": "Mang đến cho khách hàng trải nghiệm mua sắm tuyệt vời với các sản phẩm giày chất lượng cao, dịch vụ khách hàng xuất sắc, và nền tảng trực tuyến liền mạch giúp việc tìm kiếm đôi giày hoàn hảo trở nên dễ dàng."
+    },
+    "vision": {
+      "title": "Tầm Nhìn",
+      "description": "Trở thành nhà bán lẻ giày trực tuyến được tin tưởng và yêu thích nhất, nổi tiếng với cam kết về sự chính hãng, sự hài lòng của khách hàng, và đổi mới trong ngành giày dép."
+    },
+    "features": {
+      "freeShipping": {
+        "title": "Miễn Phí Vận Chuyển",
+        "description": "Miễn phí vận chuyển cho tất cả đơn hàng trên 2.000.000đ. Giao hàng nhanh trong 3-5 ngày làm việc."
+      },
+      "authentic": {
+        "title": "100% Chính Hãng",
+        "description": "Tất cả sản phẩm đều 100% chính hãng và được nhập trực tiếp từ các thương hiệu."
+      },
+      "easyReturns": {
+        "title": "Đổi Trả Dễ Dàng",
+        "description": "Chính sách đổi trả 30 ngày không rắc rối. Không hỏi lý do."
+      },
+      "support": {
+        "title": "Hỗ Trợ 24/7",
+        "description": "Đội ngũ hỗ trợ khách hàng luôn sẵn sàng 24/7 để giúp bạn."
+      }
+    },
+    "faq": {
+      "title": "Câu Hỏi Thường Gặp",
+      "trackOrder": {
+        "question": "Làm thế nào để theo dõi đơn hàng?",
+        "answer": "Sau khi đơn hàng được gửi đi, bạn sẽ nhận được email chứa mã vận đơn. Bạn có thể sử dụng mã này để theo dõi gói hàng trên website của chúng tôi hoặc website của đơn vị vận chuyển. Bạn cũng có thể xem trạng thái đơn hàng trong tài khoản ở phần \"Lịch sử đơn hàng\"."
+      },
+      "returnPolicy": {
+        "question": "Chính sách đổi trả như thế nào?",
+        "answer": "Chúng tôi áp dụng chính sách đổi trả 30 ngày cho tất cả sản phẩm chưa sử dụng còn nguyên bao bì. Chỉ cần khởi tạo yêu cầu đổi trả qua tài khoản, in nhãn vận chuyển miễn phí và gửi gói hàng tại bất kỳ điểm gửi được ủy quyền. Hoàn tiền sẽ được xử lý trong 5-7 ngày làm việc sau khi chúng tôi nhận được hàng."
+      },
+      "findSize": {
+        "question": "Làm thế nào để tìm size giày phù hợp?",
+        "answer": "Chúng tôi cung cấp bảng size chi tiết trên mỗi trang sản phẩm. Bạn cũng có thể sử dụng công cụ thử giày ảo để tìm size hoàn hảo. Nếu bạn ở giữa hai size, chúng tôi khuyên bạn nên chọn size lớn hơn nửa số để thoải mái hơn."
+      },
+      "authentic": {
+        "question": "Tất cả sản phẩm có chính hãng không?",
+        "answer": "Có, chúng tôi cam kết 100% chính hãng cho tất cả sản phẩm. Chúng tôi nhập hàng trực tiếp từ các thương hiệu và nhà phân phối ủy quyền. Mỗi sản phẩm đều đi kèm bao bì gốc, tag và giấy chứng nhận chính hãng khi có."
+      },
+      "paymentMethods": {
+        "question": "Những phương thức thanh toán nào được chấp nhận?",
+        "answer": "Chúng tôi chấp nhận tất cả các thẻ tín dụng chính (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay và SE Pay. Tất cả giao dịch được bảo mật bằng mã hóa SSL."
+      },
+      "shippingTime": {
+        "question": "Thời gian giao hàng bao lâu?",
+        "answer": "Giao hàng tiêu chuẩn mất 3-5 ngày làm việc. Giao hàng nhanh (1-2 ngày làm việc) có sẵn với phí bổ sung. Thời gian giao hàng quốc tế thay đổi tùy theo địa điểm, thường là 7-14 ngày làm việc."
+      }
+    }
   },
   "footer": {
     "tagline": "Cửa hàng giày một điểm đến. Sản phẩm chất lượng với giá cạnh tranh.",
     "shop": {
       "title": "Mua sắm",
       "allProducts": "Tất cả sản phẩm",
-      "audio": "Âm thanh",
-      "wearables": "Thiết bị đeo",
-      "smartphones": "Điện thoại",
-      "laptops": "Laptop"
+      "running": "Chạy bộ",
+      "casual": "Thường ngày",
+      "basketball": "Bóng rổ",
+      "training": "Tập luyện"
     },
     "company": {
       "title": "Công ty",
@@ -52,6 +385,17 @@
       "sitemap": "Sơ đồ trang"
     },
     "copyright": "© {{year}} {{appName}}. Bảo lưu mọi quyền."
+  },
+  "common": {
+    "back": "Quay lại",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công"
   },
   "error": {
     "page": {

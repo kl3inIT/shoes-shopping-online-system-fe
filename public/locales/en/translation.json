@@ -2,11 +2,17 @@
   "appName": "SSOS",
   "nav": {
     "home": "Home",
-    "products": "Products"
+    "products": "Products",
+    "about": "About",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "orders": "Orders"
   },
   "auth": {
     "login": "Log in",
+    "register": "Sign up",
     "logout": "Log out",
+    "profile": "Profile",
     "protected": {
       "loadingTitle": "Loading...",
       "loadingSubtitle": "Checking your access permissions",
@@ -16,18 +22,345 @@
     }
   },
   "home": {
-    "title": "Welcome to Relivator",
-    "subtitle": "Starter layout with routing, theming, React Query, and i18n."
+    "hero": {
+      "badge": "New Collection 2024",
+      "title": "Step Into Style",
+      "description": "From running shoes to lifestyle sneakers, find the perfect pair that matches your style and performance needs.",
+      "shopNow": "Shop Now",
+      "learnMore": "Learn More"
+    },
+    "features": {
+      "freeShipping": {
+        "title": "Free Shipping",
+        "description": "Free shipping on orders over $100"
+      },
+      "authentic": {
+        "title": "100% Authentic",
+        "description": "All products are 100% genuine"
+      },
+      "easyReturns": {
+        "title": "Easy Returns",
+        "description": "30-day hassle-free returns"
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "Contact us anytime"
+      }
+    },
+    "categories": {
+      "title": "Shop by Category",
+      "subtitle": "Find the perfect shoes for every occasion"
+    },
+    "featured": {
+      "title": "Featured Products",
+      "subtitle": "Our most popular picks this season",
+      "viewAll": "View All"
+    },
+    "newsletter": {
+      "badge": "Limited Time Offer",
+      "title": "Get 20% Off Your First Order",
+      "description": "Sign up for our newsletter and receive exclusive discounts, early access to new arrivals, and more.",
+      "placeholder": "Enter your email",
+      "subscribe": "Subscribe"
+    },
+    "newArrivals": {
+      "title": "New Arrivals",
+      "subtitle": "Fresh styles just landed",
+      "viewAll": "View All"
+    },
+    "brands": {
+      "title": "Shop by Brand",
+      "subtitle": "Explore your favorite brands"
+    }
+  },
+  "products": {
+    "title": "All Products",
+    "showing": "Showing {{count}} of {{total}} products",
+    "filters": "Filters",
+    "filtersActive": "Filters active",
+    "clearFilters": "Clear all filters",
+    "search": "Search shoes...",
+    "sortBy": "Sort by:",
+    "sort": {
+      "newest": "Newest",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "rating": "Top Rated",
+      "popular": "Most Popular"
+    },
+    "filter": {
+      "brands": "Brands",
+      "sizes": "Sizes",
+      "categories": "Categories",
+      "priceRange": "Price Range"
+    },
+    "noProducts": "No products found.",
+    "addToCart": "Add to Cart",
+    "addToWishlist": "Add to Wishlist"
+  },
+  "productDetail": {
+    "backToProducts": "Back to Products",
+    "selectSize": "Select Size",
+    "pleaseSelectSize": "Please select a size",
+    "quantity": "Quantity",
+    "addToCart": "Add to Cart",
+    "wishlist": "Wishlist",
+    "description": "Description",
+    "specifications": "Specifications",
+    "noSpecifications": "No specifications available.",
+    "reviews": {
+      "title": "Customer Reviews",
+      "basedOn": "Based on {{count}} reviews",
+      "writeReview": "Write a Review",
+      "overallRating": "Overall Rating",
+      "clickToRate": "Click to rate this product",
+      "reviewTitle": "Review Title",
+      "reviewTitlePlaceholder": "Summarize your review",
+      "yourReview": "Your Review",
+      "yourReviewPlaceholder": "Share your experience with this product...",
+      "addPhotos": "Add Photos (optional)",
+      "maxImages": "Up to 5 images allowed",
+      "submitReview": "Submit Review",
+      "submitting": "Submitting...",
+      "cancel": "Cancel",
+      "helpful": "Helpful",
+      "verifiedPurchase": "Verified Purchase"
+    },
+    "new": "New",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "itemCount": "{{count}} item(s) in your cart",
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "Looks like you haven't added anything to your cart yet."
+    },
+    "continueShopping": "Continue Shopping",
+    "clearCart": "Clear Cart",
+    "clearCartConfirm": {
+      "title": "Clear Shopping Cart?",
+      "description": "Are you sure you want to remove all items from your cart? This action cannot be undone."
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "items": "items",
+      "shipping": "Shipping",
+      "free": "Free",
+      "discount": "Discount",
+      "tax": "Tax",
+      "total": "Total",
+      "couponPlaceholder": "Coupon code",
+      "applyCoupon": "Apply",
+      "checkout": "Proceed to Checkout"
+    },
+    "item": {
+      "size": "Size",
+      "remove": "Remove"
+    }
+  },
+  "wishlist": {
+    "title": "My Wishlist",
+    "subtitle": "Save items you love and come back to them later",
+    "itemCount": "{{count}} item(s) in your wishlist",
+    "empty": {
+      "title": "Your wishlist is empty",
+      "description": "Save items you love by clicking the heart icon"
+    },
+    "continueShopping": "Continue Shopping",
+    "addToCart": "Add to Cart",
+    "viewDetails": "View Details",
+    "addedOn": "Added on {{date}}"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "backToCart": "Back to Cart",
+    "shippingAddress": {
+      "title": "Shipping Address",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "phone": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "city": "City/Province",
+      "cityPlaceholder": "Select city",
+      "district": "District",
+      "districtPlaceholder": "Select district",
+      "ward": "Ward",
+      "wardPlaceholder": "Select ward",
+      "address": "Street Address",
+      "addressPlaceholder": "House number, street name",
+      "note": "Order Note (optional)",
+      "notePlaceholder": "Add any special instructions for delivery..."
+    },
+    "paymentMethod": {
+      "title": "Payment Method",
+      "sePay": {
+        "name": "SE Pay",
+        "description": "Pay securely with SE Pay wallet"
+      },
+      "creditCard": {
+        "name": "Credit/Debit Card",
+        "description": "Visa, MasterCard, American Express"
+      },
+      "cod": {
+        "name": "Cash on Delivery",
+        "description": "Pay when you receive your order"
+      }
+    },
+    "orderSummary": "Order Summary",
+    "placeOrder": "Place Order",
+    "termsNotice": "By placing this order, you agree to our Terms of Service and Privacy Policy",
+    "confirmOrder": {
+      "title": "Confirm Your Order",
+      "description": "You are about to place an order for ${{total}}. Payment will be processed via {{method}}."
+    },
+    "confirmAndPay": "Confirm & Pay",
+    "validation": {
+      "fullNameRequired": "Full name is required",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Invalid phone number",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "cityRequired": "City is required",
+      "districtRequired": "District is required",
+      "addressRequired": "Street address is required"
+    }
+  },
+  "paymentResult": {
+    "success": {
+      "title": "Payment Successful!",
+      "description": "Thank you for your purchase! Your order has been placed successfully.",
+      "orderNumber": "Order Number",
+      "emailSent": "A confirmation email has been sent to your email address. You can track your order in the Order History section.",
+      "viewOrders": "View My Orders",
+      "continueShopping": "Continue Shopping"
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "description": "Unfortunately, your payment could not be processed. Please try again or use a different payment method.",
+      "contactSupport": "If the problem persists, please contact our customer support.",
+      "tryAgain": "Try Again",
+      "backToCart": "Back to Cart"
+    }
+  },
+  "orders": {
+    "title": "Order History",
+    "subtitle": "View and track all your orders",
+    "empty": {
+      "title": "No orders found",
+      "allEmpty": "You haven't placed any orders yet",
+      "filteredEmpty": "No {{status}} orders"
+    },
+    "startShopping": "Start Shopping",
+    "filter": {
+      "all": "All",
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "orderNumber": "Order #{{number}}",
+    "placedOn": "Placed on {{date}}",
+    "total": "Total",
+    "moreItems": "+{{count}} more item(s)",
+    "viewDetails": "View Details",
+    "trackOrder": "Track Order",
+    "reorder": "Reorder",
+    "timeline": {
+      "title": "Track Order #{{number}}",
+      "orderPlaced": "Order Placed",
+      "orderPlacedDesc": "Your order has been placed successfully",
+      "processing": "Processing",
+      "processingDesc": "We are preparing your order",
+      "shipped": "Shipped",
+      "shippedDesc": "Your order is on the way",
+      "outForDelivery": "Out for Delivery",
+      "outForDeliveryDesc": "Your order will be delivered today",
+      "delivered": "Delivered",
+      "deliveredDesc": "Order delivered successfully"
+    }
+  },
+  "about": {
+    "hero": {
+      "subtitle": "Our Story",
+      "title": "About Shoes Shopping Online",
+      "description": "Founded in 2024, Shoes Shopping Online has become the premier destination for footwear enthusiasts. We curate the finest selection of shoes from top brands, ensuring quality, style, and comfort for every customer."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "To provide customers with an exceptional shopping experience by offering high-quality footwear, outstanding customer service, and a seamless online platform that makes finding the perfect pair of shoes effortless."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "To be the most trusted and loved online shoe retailer, known for our commitment to authenticity, customer satisfaction, and innovation in the footwear industry."
+    },
+    "features": {
+      "freeShipping": {
+        "title": "Free Shipping",
+        "description": "Free shipping on all orders over $100. Fast delivery within 3-5 business days."
+      },
+      "authentic": {
+        "title": "100% Authentic",
+        "description": "All products are 100% authentic and sourced directly from brands."
+      },
+      "easyReturns": {
+        "title": "Easy Returns",
+        "description": "30-day hassle-free return policy. No questions asked."
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "Our customer support team is available 24/7 to help you."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "trackOrder": {
+        "question": "How do I track my order?",
+        "answer": "Once your order is shipped, you will receive an email with a tracking number. You can use this number to track your package on our website or the carrier's website. You can also view your order status in your account under \"Order History\"."
+      },
+      "returnPolicy": {
+        "question": "What is your return policy?",
+        "answer": "We offer a 30-day return policy for all unworn items in their original packaging. Simply initiate a return through your account, print the prepaid shipping label, and drop off the package at any authorized location. Refunds are processed within 5-7 business days after we receive the item."
+      },
+      "findSize": {
+        "question": "How do I find my shoe size?",
+        "answer": "We provide a detailed size guide on each product page. You can also use our virtual fitting tool to find your perfect size. If you're between sizes, we recommend going up half a size for a more comfortable fit."
+      },
+      "authentic": {
+        "question": "Are all products authentic?",
+        "answer": "Yes, we guarantee 100% authenticity on all products. We source directly from brands and authorized distributors. Each item comes with original packaging, tags, and authenticity certificates where applicable."
+      },
+      "paymentMethods": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and SE Pay. All transactions are secured with SSL encryption."
+      },
+      "shippingTime": {
+        "question": "How long does shipping take?",
+        "answer": "Standard shipping takes 3-5 business days. Express shipping (1-2 business days) is available for an additional fee. International shipping times vary by location, typically 7-14 business days."
+      }
+    }
   },
   "footer": {
     "tagline": "Your one-stop shop for shoes. Premium products at competitive prices.",
     "shop": {
       "title": "Shop",
       "allProducts": "All Products",
-      "audio": "Audio",
-      "wearables": "Wearables",
-      "smartphones": "Smartphones",
-      "laptops": "Laptops"
+      "running": "Running",
+      "casual": "Casual",
+      "basketball": "Basketball",
+      "training": "Training"
     },
     "company": {
       "title": "Company",
@@ -52,6 +385,17 @@
       "sitemap": "Sitemap"
     },
     "copyright": "© {{year}} {{appName}}. All rights reserved."
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
   },
   "error": {
     "page": {

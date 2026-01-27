@@ -1,4 +1,13 @@
-import { LogIn, LogOut, User, UserCircle, UserPlus } from 'lucide-react';
+import {
+  LogIn,
+  LogOut,
+  User,
+  UserCircle,
+  UserPlus,
+  Package,
+  Heart,
+  ShoppingCart,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oidc-context';
 import { Link } from 'react-router';
@@ -133,6 +142,42 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         </Link>
       </Button>
       <Button
+        asChild
+        variant='ghost'
+        className='w-full justify-start'
+        size='sm'
+        onClick={onAfterAction}
+      >
+        <Link to='/orders'>
+          <Package className='mr-2 h-4 w-4' />
+          {t('nav.orders', { defaultValue: 'Đơn hàng' })}
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant='ghost'
+        className='w-full justify-start'
+        size='sm'
+        onClick={onAfterAction}
+      >
+        <Link to='/wishlist'>
+          <Heart className='mr-2 h-4 w-4' />
+          {t('nav.wishlist', { defaultValue: 'Yêu thích' })}
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant='ghost'
+        className='w-full justify-start'
+        size='sm'
+        onClick={onAfterAction}
+      >
+        <Link to='/cart'>
+          <ShoppingCart className='mr-2 h-4 w-4' />
+          {t('nav.cart', { defaultValue: 'Giỏ hàng' })}
+        </Link>
+      </Button>
+      <Button
         onClick={handleLogout}
         variant='outline'
         className='w-full justify-start'
@@ -170,6 +215,25 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
             <span>{t('auth.profile', { defaultValue: 'Hồ sơ' })}</span>
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/orders'>
+            <Package className='mr-2 h-4 w-4' />
+            <span>{t('nav.orders', { defaultValue: 'Đơn hàng' })}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/wishlist'>
+            <Heart className='mr-2 h-4 w-4' />
+            <span>{t('nav.wishlist', { defaultValue: 'Yêu thích' })}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/cart'>
+            <ShoppingCart className='mr-2 h-4 w-4' />
+            <span>{t('nav.cart', { defaultValue: 'Giỏ hàng' })}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>
           <LogOut className='mr-2 h-4 w-4' />
           <span>{t('auth.logout', { defaultValue: 'Đăng xuất' })}</span>

@@ -36,6 +36,22 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: 'products/:id',
+        lazy: async () => {
+          const { ShoeDetailPage: Component } =
+            await import('@/pages/main/products/ShoeDetailPage');
+          return { Component };
+        },
+      },
+      {
+        path: 'about',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/main/about/AboutPage');
+          return { Component };
+        },
+      },
+      {
         element: <ProtectedRoute />,
         children: [
           {
@@ -52,6 +68,46 @@ export const router = createBrowserRouter([
               };
             },
             errorElement: <RootErrorBoundary />,
+          },
+          {
+            path: 'cart',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/main/cart/CartPage');
+              return { Component };
+            },
+          },
+          {
+            path: 'wishlist',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/main/wishlist/WishlistPage');
+              return { Component };
+            },
+          },
+          {
+            path: 'checkout',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/main/checkout/CheckoutPage');
+              return { Component };
+            },
+          },
+          {
+            path: 'checkout/payment-result',
+            lazy: async () => {
+              const { PaymentResultPage: Component } =
+                await import('@/pages/main/checkout/PaymentResultPage');
+              return { Component };
+            },
+          },
+          {
+            path: 'orders',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/main/orders/OrderHistoryPage');
+              return { Component };
+            },
           },
         ],
       },
