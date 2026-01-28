@@ -459,5 +459,276 @@
       "description": "ID định danh từ Keycloak",
       "keycloakId": "Keycloak ID"
     }
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Tổng quan",
+      "products": "Sản phẩm",
+      "orders": "Đơn hàng",
+      "customers": "Khách hàng",
+      "brands": "Thương hiệu",
+      "categories": "Danh mục",
+      "reviews": "Đánh giá",
+      "inventory": "Kho hàng",
+      "analytics": "Phân tích",
+      "settings": "Cài đặt",
+      "help": "Trợ giúp",
+      "search": "Tìm kiếm"
+    },
+    "products": {
+      "title": "Quản Lý Sản Phẩm",
+      "subtitle": "Quản lý {{count}} sản phẩm",
+      "addProduct": "Thêm Sản Phẩm",
+      "searchPlaceholder": "Tìm kiếm sản phẩm...",
+      "filterStatus": "Trạng thái",
+      "filterBrand": "Thương hiệu",
+      "allStatuses": "Tất cả trạng thái",
+      "allBrands": "Tất cả thương hiệu",
+      "stats": {
+        "total": "Tổng Sản Phẩm",
+        "active": "Đang bán",
+        "outOfStock": "Hết hàng",
+        "lowStock": "Sắp hết"
+      },
+      "status": {
+        "active": "Đang bán",
+        "inactive": "Ngừng bán",
+        "outOfStock": "Hết hàng"
+      },
+      "table": {
+        "image": "Ảnh",
+        "name": "Tên",
+        "brand": "Thương hiệu",
+        "category": "Danh mục",
+        "price": "Giá",
+        "stock": "Tồn kho",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "view": "Xem",
+        "edit": "Sửa",
+        "delete": "Xóa"
+      },
+      "deleteDialog": {
+        "title": "Xóa Sản Phẩm?",
+        "description": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Thao tác này không thể hoàn tác."
+      }
+    },
+    "orders": {
+      "title": "Quản Lý Đơn Hàng",
+      "subtitle": "Quản lý {{count}} đơn hàng",
+      "searchPlaceholder": "Tìm kiếm đơn hàng...",
+      "filterStatus": "Trạng thái",
+      "allStatuses": "Tất cả trạng thái",
+      "stats": {
+        "newOrders": "Đơn Mới",
+        "processing": "Đang Xử Lý",
+        "shipped": "Đang Giao",
+        "revenue": "Doanh Thu"
+      },
+      "status": {
+        "placed": "Đã đặt",
+        "confirmed": "Đã xác nhận",
+        "processing": "Đang xử lý",
+        "shipped": "Đang giao",
+        "delivered": "Đã giao",
+        "cancelled": "Đã hủy"
+      },
+      "table": {
+        "orderNumber": "Mã ĐH",
+        "customer": "Khách hàng",
+        "items": "Sản phẩm",
+        "total": "Tổng",
+        "status": "Trạng thái",
+        "date": "Ngày",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "viewDetails": "Xem chi tiết",
+        "confirm": "Xác nhận",
+        "process": "Xử lý",
+        "ship": "Giao hàng",
+        "deliver": "Đánh dấu đã giao",
+        "cancel": "Hủy"
+      },
+      "detail": {
+        "title": "Đơn hàng {{number}}",
+        "status": "Trạng thái",
+        "customer": "Thông tin khách hàng",
+        "name": "Tên",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "shipping": "Địa chỉ giao hàng",
+        "items": "Sản phẩm đặt mua",
+        "total": "Tổng cộng"
+      }
+    },
+    "customers": {
+      "title": "Quản Lý Khách Hàng",
+      "subtitle": "Quản lý {{count}} khách hàng",
+      "searchPlaceholder": "Tìm kiếm khách hàng...",
+      "filterStatus": "Trạng thái",
+      "allStatuses": "Tất cả trạng thái",
+      "stats": {
+        "total": "Tổng Khách Hàng",
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động",
+        "banned": "Bị cấm"
+      },
+      "status": {
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động",
+        "banned": "Bị cấm"
+      },
+      "table": {
+        "customer": "Khách hàng",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "orders": "Đơn hàng",
+        "spent": "Tổng chi",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "viewDetails": "Xem chi tiết",
+        "sendEmail": "Gửi email",
+        "ban": "Cấm",
+        "unban": "Bỏ cấm"
+      },
+      "detail": {
+        "title": "Chi Tiết Khách Hàng",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "dob": "Ngày sinh",
+        "joined": "Ngày tham gia",
+        "totalOrders": "Tổng đơn hàng",
+        "totalSpent": "Tổng chi tiêu",
+        "reviews": "Đánh giá",
+        "defaultAddress": "Địa chỉ mặc định"
+      }
+    },
+    "brands": {
+      "title": "Quản Lý Thương Hiệu",
+      "subtitle": "Quản lý {{count}} thương hiệu",
+      "addBrand": "Thêm Thương Hiệu",
+      "searchPlaceholder": "Tìm kiếm thương hiệu...",
+      "stats": {
+        "total": "Tổng Thương Hiệu",
+        "totalProducts": "Tổng Sản Phẩm",
+        "countries": "Quốc Gia"
+      },
+      "table": {
+        "logo": "Logo",
+        "name": "Tên",
+        "country": "Quốc gia",
+        "products": "Sản phẩm",
+        "updated": "Cập nhật",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "edit": "Sửa",
+        "delete": "Xóa"
+      },
+      "createDialog": {
+        "title": "Tạo Thương Hiệu Mới"
+      },
+      "editDialog": {
+        "title": "Sửa Thương Hiệu"
+      },
+      "deleteDialog": {
+        "title": "Xóa Thương Hiệu?",
+        "description": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Thao tác này không thể hoàn tác."
+      },
+      "form": {
+        "name": "Tên thương hiệu",
+        "slug": "Slug",
+        "country": "Quốc gia",
+        "selectCountry": "Chọn quốc gia",
+        "logoUrl": "URL Logo",
+        "description": "Mô tả"
+      }
+    },
+    "categories": {
+      "title": "Quản Lý Danh Mục",
+      "subtitle": "Quản lý {{count}} danh mục",
+      "addCategory": "Thêm Danh Mục",
+      "searchPlaceholder": "Tìm kiếm danh mục...",
+      "stats": {
+        "total": "Tổng Danh Mục",
+        "root": "Danh Mục Gốc",
+        "totalProducts": "Tổng Sản Phẩm"
+      },
+      "table": {
+        "image": "Ảnh",
+        "name": "Tên",
+        "parent": "Danh mục cha",
+        "products": "Sản phẩm",
+        "updated": "Cập nhật",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "edit": "Sửa",
+        "delete": "Xóa"
+      },
+      "createDialog": {
+        "title": "Tạo Danh Mục Mới"
+      },
+      "editDialog": {
+        "title": "Sửa Danh Mục"
+      },
+      "deleteDialog": {
+        "title": "Xóa Danh Mục?",
+        "description": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Thao tác này không thể hoàn tác."
+      },
+      "form": {
+        "name": "Tên danh mục",
+        "slug": "Slug",
+        "parent": "Danh mục cha",
+        "selectParent": "Chọn danh mục cha",
+        "imageUrl": "URL Ảnh",
+        "description": "Mô tả"
+      }
+    },
+    "reviews": {
+      "title": "Quản Lý Đánh Giá",
+      "subtitle": "Quản lý {{count}} đánh giá",
+      "searchPlaceholder": "Tìm kiếm đánh giá...",
+      "filterStatus": "Trạng thái",
+      "filterRating": "Số sao",
+      "allStatuses": "Tất cả trạng thái",
+      "allRatings": "Tất cả đánh giá",
+      "stats": {
+        "total": "Tổng Đánh Giá",
+        "pending": "Chờ duyệt",
+        "approved": "Đã duyệt",
+        "rejected": "Từ chối",
+        "avgRating": "Đánh giá TB"
+      },
+      "status": {
+        "pending": "Chờ duyệt",
+        "approved": "Đã duyệt",
+        "rejected": "Từ chối"
+      },
+      "table": {
+        "customer": "Khách hàng",
+        "product": "Sản phẩm",
+        "rating": "Đánh giá",
+        "comment": "Nhận xét",
+        "status": "Trạng thái",
+        "date": "Ngày",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "viewDetails": "Xem chi tiết",
+        "approve": "Duyệt",
+        "reject": "Từ chối"
+      },
+      "detail": {
+        "title": "Chi Tiết Đánh Giá",
+        "order": "Đơn hàng",
+        "status": "Trạng thái"
+      }
+    }
   }
 }

@@ -1,23 +1,21 @@
 import * as React from 'react';
+import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import {
-  IconCamera,
+  IconBox,
+  IconBrandProducthunt,
+  IconCategory,
   IconChartBar,
   IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
   IconHelp,
-  IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
+  IconPackage,
   IconSearch,
   IconSettings,
+  IconShoe,
+  IconStar,
   IconUsers,
 } from '@tabler/icons-react';
 
-import { NavDocuments } from '@/layouts/admin/nav-documents';
 import { NavMain } from '@/layouts/admin/nav-main';
 import { NavSecondary } from '@/layouts/admin/nav-secondary';
 import { NavUser } from '@/layouts/admin/nav-user';
@@ -31,124 +29,81 @@ import {
   SidebarMenuItem,
 } from '@/layouts/admin/sidebar';
 
-const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
-  navMain: [
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { t } = useTranslation();
+
+  const user = {
+    name: 'Admin User',
+    email: 'admin@ssos.com',
+    avatar: '/avatars/admin.jpg',
+  };
+
+  const navMain = [
     {
-      title: 'Dashboard',
-      url: '#',
+      title: t('admin.nav.dashboard'),
+      url: '/admin',
       icon: IconDashboard,
     },
     {
-      title: 'Lifecycle',
-      url: '#',
-      icon: IconListDetails,
+      title: t('admin.nav.products'),
+      url: '/admin/products',
+      icon: IconShoe,
     },
     {
-      title: 'Analytics',
-      url: '#',
-      icon: IconChartBar,
+      title: t('admin.nav.orders'),
+      url: '/admin/orders',
+      icon: IconPackage,
     },
     {
-      title: 'Projects',
-      url: '#',
-      icon: IconFolder,
-    },
-    {
-      title: 'Team',
-      url: '#',
+      title: t('admin.nav.customers'),
+      url: '/admin/customers',
       icon: IconUsers,
     },
-  ],
-  navClouds: [
     {
-      title: 'Capture',
-      icon: IconCamera,
-      isActive: true,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
+      title: t('admin.nav.brands'),
+      url: '/admin/brands',
+      icon: IconBrandProducthunt,
     },
     {
-      title: 'Proposal',
-      icon: IconFileDescription,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
+      title: t('admin.nav.categories'),
+      url: '/admin/categories',
+      icon: IconCategory,
     },
     {
-      title: 'Prompts',
-      icon: IconFileAi,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
+      title: t('admin.nav.reviews'),
+      url: '/admin/reviews',
+      icon: IconStar,
     },
-  ],
-  navSecondary: [
     {
-      title: 'Settings',
-      url: '#',
+      title: t('admin.nav.inventory'),
+      url: '/admin/inventory',
+      icon: IconBox,
+    },
+    {
+      title: t('admin.nav.analytics'),
+      url: '/admin/analytics',
+      icon: IconChartBar,
+    },
+  ];
+
+  const navSecondary = [
+    {
+      title: t('admin.nav.settings'),
+      url: '/admin/settings',
       icon: IconSettings,
     },
     {
-      title: 'Get Help',
-      url: '#',
+      title: t('admin.nav.help'),
+      url: '/admin/help',
       icon: IconHelp,
     },
     {
-      title: 'Search',
+      title: t('admin.nav.search'),
       url: '#',
       icon: IconSearch,
     },
-  ],
-  documents: [
-    {
-      name: 'Data Library',
-      url: '#',
-      icon: IconDatabase,
-    },
-    {
-      name: 'Reports',
-      url: '#',
-      icon: IconReport,
-    },
-    {
-      name: 'Word Assistant',
-      url: '#',
-      icon: IconFileWord,
-    },
-  ],
-};
+  ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible='offcanvas' {...props}>
       <SidebarHeader>
@@ -158,21 +113,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className='data-[slot=sidebar-menu-button]:!p-1.5'
             >
-              <a href='#'>
-                <IconInnerShadowTop className='!size-5' />
-                <span className='text-base font-semibold'>Acme Inc.</span>
-              </a>
+              <Link to='/admin'>
+                <IconShoe className='!size-5' />
+                <span className='text-base font-semibold'>
+                  {t('appName')} Admin
+                </span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className='mt-auto' />
+        <NavMain items={navMain} />
+        <NavSecondary items={navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

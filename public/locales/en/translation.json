@@ -459,5 +459,276 @@
       "description": "Identifier ID from Keycloak",
       "keycloakId": "Keycloak ID"
     }
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "orders": "Orders",
+      "customers": "Customers",
+      "brands": "Brands",
+      "categories": "Categories",
+      "reviews": "Reviews",
+      "inventory": "Inventory",
+      "analytics": "Analytics",
+      "settings": "Settings",
+      "help": "Help",
+      "search": "Search"
+    },
+    "products": {
+      "title": "Products Management",
+      "subtitle": "Manage {{count}} products",
+      "addProduct": "Add Product",
+      "searchPlaceholder": "Search products...",
+      "filterStatus": "Status",
+      "filterBrand": "Brand",
+      "allStatuses": "All Statuses",
+      "allBrands": "All Brands",
+      "stats": {
+        "total": "Total Products",
+        "active": "Active",
+        "outOfStock": "Out of Stock",
+        "lowStock": "Low Stock"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "outOfStock": "Out of Stock"
+      },
+      "table": {
+        "image": "Image",
+        "name": "Name",
+        "brand": "Brand",
+        "category": "Category",
+        "price": "Price",
+        "stock": "Stock",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "deleteDialog": {
+        "title": "Delete Product?",
+        "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      }
+    },
+    "orders": {
+      "title": "Orders Management",
+      "subtitle": "Manage {{count}} orders",
+      "searchPlaceholder": "Search orders...",
+      "filterStatus": "Status",
+      "allStatuses": "All Statuses",
+      "stats": {
+        "newOrders": "New Orders",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "revenue": "Revenue"
+      },
+      "status": {
+        "placed": "Placed",
+        "confirmed": "Confirmed",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      },
+      "table": {
+        "orderNumber": "Order #",
+        "customer": "Customer",
+        "items": "Items",
+        "total": "Total",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "confirm": "Confirm",
+        "process": "Process",
+        "ship": "Ship",
+        "deliver": "Mark Delivered",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "title": "Order {{number}}",
+        "status": "Status",
+        "customer": "Customer Information",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "shipping": "Shipping Address",
+        "items": "Order Items",
+        "total": "Total"
+      }
+    },
+    "customers": {
+      "title": "Customers Management",
+      "subtitle": "Manage {{count}} customers",
+      "searchPlaceholder": "Search customers...",
+      "filterStatus": "Status",
+      "allStatuses": "All Statuses",
+      "stats": {
+        "total": "Total Customers",
+        "active": "Active",
+        "inactive": "Inactive",
+        "banned": "Banned"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "banned": "Banned"
+      },
+      "table": {
+        "customer": "Customer",
+        "email": "Email",
+        "phone": "Phone",
+        "orders": "Orders",
+        "spent": "Total Spent",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "sendEmail": "Send Email",
+        "ban": "Ban",
+        "unban": "Unban"
+      },
+      "detail": {
+        "title": "Customer Details",
+        "email": "Email",
+        "phone": "Phone",
+        "dob": "Date of Birth",
+        "joined": "Member Since",
+        "totalOrders": "Total Orders",
+        "totalSpent": "Total Spent",
+        "reviews": "Reviews",
+        "defaultAddress": "Default Address"
+      }
+    },
+    "brands": {
+      "title": "Brands Management",
+      "subtitle": "Manage {{count}} brands",
+      "addBrand": "Add Brand",
+      "searchPlaceholder": "Search brands...",
+      "stats": {
+        "total": "Total Brands",
+        "totalProducts": "Total Products",
+        "countries": "Countries"
+      },
+      "table": {
+        "logo": "Logo",
+        "name": "Name",
+        "country": "Country",
+        "products": "Products",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "createDialog": {
+        "title": "Create New Brand"
+      },
+      "editDialog": {
+        "title": "Edit Brand"
+      },
+      "deleteDialog": {
+        "title": "Delete Brand?",
+        "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      },
+      "form": {
+        "name": "Brand Name",
+        "slug": "Slug",
+        "country": "Country",
+        "selectCountry": "Select country",
+        "logoUrl": "Logo URL",
+        "description": "Description"
+      }
+    },
+    "categories": {
+      "title": "Categories Management",
+      "subtitle": "Manage {{count}} categories",
+      "addCategory": "Add Category",
+      "searchPlaceholder": "Search categories...",
+      "stats": {
+        "total": "Total Categories",
+        "root": "Root Categories",
+        "totalProducts": "Total Products"
+      },
+      "table": {
+        "image": "Image",
+        "name": "Name",
+        "parent": "Parent",
+        "products": "Products",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "createDialog": {
+        "title": "Create New Category"
+      },
+      "editDialog": {
+        "title": "Edit Category"
+      },
+      "deleteDialog": {
+        "title": "Delete Category?",
+        "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      },
+      "form": {
+        "name": "Category Name",
+        "slug": "Slug",
+        "parent": "Parent Category",
+        "selectParent": "Select parent category",
+        "imageUrl": "Image URL",
+        "description": "Description"
+      }
+    },
+    "reviews": {
+      "title": "Reviews Management",
+      "subtitle": "Manage {{count}} reviews",
+      "searchPlaceholder": "Search reviews...",
+      "filterStatus": "Status",
+      "filterRating": "Rating",
+      "allStatuses": "All Statuses",
+      "allRatings": "All Ratings",
+      "stats": {
+        "total": "Total Reviews",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "avgRating": "Avg. Rating"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "table": {
+        "customer": "Customer",
+        "product": "Product",
+        "rating": "Rating",
+        "comment": "Comment",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "detail": {
+        "title": "Review Details",
+        "order": "Order",
+        "status": "Status"
+      }
+    }
   }
 }

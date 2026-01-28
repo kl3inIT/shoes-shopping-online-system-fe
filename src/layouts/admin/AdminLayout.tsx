@@ -4,7 +4,7 @@ import { AppSidebar } from '@/layouts/admin/app-sidebar';
 import { SiteHeader } from '@/layouts/admin/site-header';
 import { SidebarInset, SidebarProvider } from '@/layouts/admin/sidebar';
 
-export function DashboardLayout() {
+export function AdminAdminLayout() {
   return (
     <SidebarProvider
       style={
