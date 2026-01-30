@@ -479,6 +479,87 @@
       "title": "Quản Lý Sản Phẩm",
       "subtitle": "Quản lý {{count}} sản phẩm",
       "addProduct": "Thêm Sản Phẩm",
+      "addPage": {
+        "breadcrumb": "SSOS Admin / Sản phẩm",
+        "title": "Thêm sản phẩm",
+        "subtitle": "Tạo giày mới với các biến thể theo size, màu, giá và tồn kho.",
+        "sections": {
+          "generalInfo": "Thông tin chung",
+          "images": "Ảnh sản phẩm",
+          "variants": "Biến thể"
+        },
+        "fields": {
+          "name": {
+            "label": "Tên",
+            "placeholder": "Ví dụ: SSOS Runner Pro"
+          },
+          "brand": {
+            "label": "Thương hiệu",
+            "placeholder": "Chọn thương hiệu"
+          },
+          "gender": {
+            "label": "Giới tính",
+            "placeholder": "Chọn giới tính"
+          },
+          "category": {
+            "label": "Danh mục",
+            "placeholder": "Chọn danh mục"
+          },
+          "status": {
+            "label": "Trạng thái",
+            "placeholder": "Chọn trạng thái"
+          },
+          "basePrice": {
+            "label": "Giá gốc",
+            "placeholder": "0"
+          },
+          "totalStock": {
+            "label": "Tổng tồn kho"
+          },
+          "material": {
+            "label": "Chất liệu",
+            "placeholder": "Ví dụ: Mesh, da tổng hợp..."
+          },
+          "description": {
+            "label": "Mô tả",
+            "placeholder": "Mô tả chi tiết về sản phẩm, chất liệu, tính năng..."
+          }
+        },
+        "imageDropzone": {
+          "title": "Kéo thả ảnh vào đây hoặc bấm để chọn file",
+          "hint": "Hỗ trợ PNG, JPG, WEBP. Kích thước đề xuất 1200x1200px.",
+          "button": "Chọn ảnh"
+        },
+        "variants": {
+          "subtitle": "Thêm biến thể theo size, màu, giá và tồn kho.",
+          "addButton": "+ Thêm variant",
+          "itemTitle": "Chi tiết biến thể #{{index}}",
+          "fields": {
+            "size": {
+              "label": "Kích cỡ",
+              "placeholder": "Ví dụ: 40"
+            },
+            "color": {
+              "label": "Màu sắc",
+              "placeholder": "Ví dụ: Black/White"
+            },
+            "price": {
+              "label": "Giá",
+              "placeholder": "0"
+            },
+            "stock": {
+              "label": "Tồn kho",
+              "placeholder": "0"
+            }
+          },
+          "image": {
+            "label": "Ảnh sản phẩm",
+            "title": "Kéo thả ảnh vào đây hoặc bấm để chọn file",
+            "hint": "Tối ưu khi nền trắng và hình chụp rõ sản phẩm.",
+            "button": "Chọn ảnh"
+          }
+        }
+      },
       "searchPlaceholder": "Tìm kiếm sản phẩm...",
       "filterStatus": "Trạng thái",
       "filterBrand": "Thương hiệu",

@@ -479,6 +479,87 @@
       "title": "Products Management",
       "subtitle": "Manage {{count}} products",
       "addProduct": "Add Product",
+      "addPage": {
+        "breadcrumb": "SSOS Admin / Products",
+        "title": "Add Product",
+        "subtitle": "Create a new shoe with variants for size, color, price and stock.",
+        "sections": {
+          "generalInfo": "General information",
+          "images": "Product images",
+          "variants": "Variants"
+        },
+        "fields": {
+          "name": {
+            "label": "Name",
+            "placeholder": "e.g. SSOS Runner Pro"
+          },
+          "brand": {
+            "label": "Brand",
+            "placeholder": "Select brand"
+          },
+          "gender": {
+            "label": "Gender",
+            "placeholder": "Select gender"
+          },
+          "category": {
+            "label": "Category",
+            "placeholder": "Select category"
+          },
+          "status": {
+            "label": "Status",
+            "placeholder": "Select status"
+          },
+          "basePrice": {
+            "label": "Base price",
+            "placeholder": "0"
+          },
+          "totalStock": {
+            "label": "Total stock"
+          },
+          "material": {
+            "label": "Material",
+            "placeholder": "e.g. Mesh, synthetic leather..."
+          },
+          "description": {
+            "label": "Description",
+            "placeholder": "Write product details, materials, features..."
+          }
+        },
+        "imageDropzone": {
+          "title": "Drag & drop images here or click to upload",
+          "hint": "Supports PNG, JPG, WEBP. Recommended size 1200x1200px.",
+          "button": "Choose image"
+        },
+        "variants": {
+          "subtitle": "Add variants by size, color, price and stock.",
+          "addButton": "+ Add variant",
+          "itemTitle": "Variant #{{index}}",
+          "fields": {
+            "size": {
+              "label": "Size",
+              "placeholder": "e.g. 40"
+            },
+            "color": {
+              "label": "Color",
+              "placeholder": "e.g. Black/White"
+            },
+            "price": {
+              "label": "Price",
+              "placeholder": "0"
+            },
+            "stock": {
+              "label": "Stock",
+              "placeholder": "0"
+            }
+          },
+          "image": {
+            "label": "Variant image",
+            "title": "Drag & drop an image here or click to upload",
+            "hint": "Best with a white background and clear product photo.",
+            "button": "Choose image"
+          }
+        }
+      },
       "searchPlaceholder": "Search products...",
       "filterStatus": "Status",
       "filterBrand": "Brand",
