@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconPlus } from '@tabler/icons-react';
 
@@ -23,6 +24,7 @@ import { mockProducts, brandOptions, statusOptions } from './data';
 
 export default function AdminProductsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [products, setProducts] = useState(mockProducts);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -86,7 +88,7 @@ export default function AdminProductsPage() {
             {t('admin.products.subtitle', { count: filteredProducts.length })}
           </p>
         </div>
-        <Button>
+        <Button onClick={() => navigate('/admin/addshoe')}>
           <IconPlus className='mr-2 h-4 w-4' />
           {t('admin.products.addProduct')}
         </Button>
