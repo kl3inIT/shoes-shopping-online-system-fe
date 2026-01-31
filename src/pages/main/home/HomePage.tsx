@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ProductCard } from '@/features/products';
+import { FloatingChat } from '@/components/FloatingChat';
 
 import {
   heroContent,
@@ -238,6 +239,9 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Floating Chat Widget */}
+      <FloatingChat />
     </div>
   );
 }
