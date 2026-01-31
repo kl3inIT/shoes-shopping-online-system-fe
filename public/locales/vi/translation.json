@@ -532,7 +532,7 @@
         },
         "variants": {
           "subtitle": "Thêm biến thể theo size, màu, giá và tồn kho.",
-          "addButton": "+ Thêm variant",
+          "addButton": "+ Thêm biến thể sản phẩm",
           "itemTitle": "Chi tiết biến thể #{{index}}",
           "fields": {
             "size": {
@@ -743,8 +743,11 @@
       "table": {
         "image": "Ảnh",
         "name": "Tên",
+        "description": "Mô tả",
         "parent": "Danh mục cha",
         "products": "Sản phẩm",
+        "createdAt": "Ngày tạo",
+        "updatedAt": "Ngày sửa",
         "updated": "Cập nhật",
         "actions": "Thao tác"
       },

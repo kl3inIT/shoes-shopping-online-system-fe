@@ -743,8 +743,11 @@
       "table": {
         "image": "Image",
         "name": "Name",
+        "description": "Description",
         "parent": "Parent",
         "products": "Products",
+        "createdAt": "Created",
+        "updatedAt": "Updated",
         "updated": "Updated",
         "actions": "Actions"
       },

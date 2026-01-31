@@ -20,7 +20,7 @@ import {
   type Category,
 } from '@/features/admin/categories';
 
-import { mockCategories, parentCategoryOptions } from './data';
+import { mockCategories } from './data';
 
 export default function AdminCategoriesPage() {
   const { t } = useTranslation();
@@ -36,10 +36,7 @@ export default function AdminCategoriesPage() {
   // Form state
   const [formData, setFormData] = useState({
     name: '',
-    slug: '',
     description: '',
-    imageUrl: '',
-    parentCategoryId: '',
   });
 
   // Filter categories
@@ -57,10 +54,7 @@ export default function AdminCategoriesPage() {
     setIsCreating(true);
     setFormData({
       name: '',
-      slug: '',
       description: '',
-      imageUrl: '',
-      parentCategoryId: '',
     });
     setEditDialogOpen(true);
   };
@@ -70,10 +64,7 @@ export default function AdminCategoriesPage() {
     setSelectedCategory(category);
     setFormData({
       name: category.name,
-      slug: category.slug,
       description: category.description,
-      imageUrl: category.imageUrl,
-      parentCategoryId: category.parentCategory?.id || '',
     });
     setEditDialogOpen(true);
   };
@@ -92,20 +83,14 @@ export default function AdminCategoriesPage() {
   };
 
   const handleSave = () => {
-    const parentCategory = formData.parentCategoryId
-      ? categories.find((c) => c.id === formData.parentCategoryId)
-      : null;
-
     if (isCreating) {
       const newCategory: Category = {
         id: String(Date.now()),
         name: formData.name,
-        slug: formData.slug,
+        slug: '',
         description: formData.description,
-        imageUrl: formData.imageUrl,
-        parentCategory: parentCategory
-          ? { id: parentCategory.id, name: parentCategory.name }
-          : null,
+        imageUrl: '',
+        parentCategory: null,
         productCount: 0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -118,12 +103,7 @@ export default function AdminCategoriesPage() {
             ? {
                 ...c,
                 name: formData.name,
-                slug: formData.slug,
                 description: formData.description,
-                imageUrl: formData.imageUrl,
-                parentCategory: parentCategory
-                  ? { id: parentCategory.id, name: parentCategory.name }
-                  : null,
                 updatedAt: new Date().toISOString(),
               }
             : c
@@ -186,7 +166,6 @@ export default function AdminCategoriesPage() {
         formData={formData}
         onFormChange={setFormData}
         onSave={handleSave}
-        parentOptions={parentCategoryOptions}
       />
 
       {/* Delete Dialog */}
