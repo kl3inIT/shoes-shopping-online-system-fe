@@ -772,7 +772,12 @@
         "selectParent": "Select parent category",
         "imageUrl": "Image URL",
         "description": "Description"
-      }
+      },
+      "fetchError": "Failed to load categories",
+      "createSuccess": "Category created successfully",
+      "updateSuccess": "Category updated successfully",
+      "deleteSuccess": "Category deleted successfully",
+      "fillRequired": "Please fill in name and description"
     },
     "reviews": {
       "title": "Reviews Management",

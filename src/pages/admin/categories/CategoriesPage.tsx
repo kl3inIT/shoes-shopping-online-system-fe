@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IconPlus, IconSearch } from '@tabler/icons-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,11 +21,20 @@ import {
   type Category,
 } from '@/features/admin/categories';
 
-import { mockCategories } from './data';
+import {
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from '@/features/admin/categories/api';
+import { getErrorMessage } from '@/features/apiClient';
 
 export default function AdminCategoriesPage() {
   const { t } = useTranslation();
-  const [categories, setCategories] = useState(mockCategories);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -38,6 +48,23 @@ export default function AdminCategoriesPage() {
     name: '',
     description: '',
   });
+
+  const fetchCategories = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch {
+      setCategories([]);
+      toast.error(t('admin.categories.fetchError', 'Không thể tải danh sách'));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    void fetchCategories();
+  }, [fetchCategories]);
 
   // Filter categories
   const filteredCategories = categories.filter((category) =>
@@ -74,43 +101,47 @@ export default function AdminCategoriesPage() {
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
-    if (selectedCategory) {
-      setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
+  const confirmDelete = async () => {
+    if (!selectedCategory) return;
+    setDeleting(true);
+    try {
+      await deleteCategory(selectedCategory.id);
+      toast.success(t('admin.categories.deleteSuccess', 'Đã xóa danh mục'));
       setDeleteDialogOpen(false);
       setSelectedCategory(null);
+      void fetchCategories();
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setDeleting(false);
     }
   };
 
-  const handleSave = () => {
-    if (isCreating) {
-      const newCategory: Category = {
-        id: String(Date.now()),
-        name: formData.name,
-        slug: '',
-        description: formData.description,
-        imageUrl: '',
-        parentCategory: null,
-        productCount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setCategories((prev) => [...prev, newCategory]);
-    } else if (selectedCategory) {
-      setCategories((prev) =>
-        prev.map((c) =>
-          c.id === selectedCategory.id
-            ? {
-                ...c,
-                name: formData.name,
-                description: formData.description,
-                updatedAt: new Date().toISOString(),
-              }
-            : c
-        )
+  const handleSave = async () => {
+    if (!formData.name.trim() || !formData.description.trim()) {
+      toast.error(
+        t('admin.categories.fillRequired', 'Vui lòng điền đầy đủ thông tin')
       );
+      return;
     }
-    setEditDialogOpen(false);
+    setSaving(true);
+    try {
+      if (isCreating) {
+        await createCategory(formData);
+        toast.success(t('admin.categories.createSuccess', 'Đã tạo danh mục'));
+      } else if (selectedCategory) {
+        await updateCategory(selectedCategory.id, formData);
+        toast.success(
+          t('admin.categories.updateSuccess', 'Đã cập nhật danh mục')
+        );
+      }
+      setEditDialogOpen(false);
+      void fetchCategories();
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -151,11 +182,17 @@ export default function AdminCategoriesPage() {
 
       {/* Table */}
       <div className='px-4 lg:px-6'>
-        <CategoryTable
-          categories={filteredCategories}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        {loading ? (
+          <div className='rounded-lg border p-8 text-center text-muted-foreground'>
+            {t('common.loading', 'Đang tải...')}
+          </div>
+        ) : (
+          <CategoryTable
+            categories={filteredCategories}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
 
       {/* Edit/Create Dialog */}
@@ -166,6 +203,7 @@ export default function AdminCategoriesPage() {
         formData={formData}
         onFormChange={setFormData}
         onSave={handleSave}
+        saving={saving}
       />
 
       {/* Delete Dialog */}
@@ -188,8 +226,14 @@ export default function AdminCategoriesPage() {
             >
               {t('common.cancel')}
             </Button>
-            <Button variant='destructive' onClick={confirmDelete}>
-              {t('common.delete')}
+            <Button
+              variant='destructive'
+              onClick={() => void confirmDelete()}
+              disabled={deleting}
+            >
+              {deleting
+                ? t('common.loading', 'Đang xóa...')
+                : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

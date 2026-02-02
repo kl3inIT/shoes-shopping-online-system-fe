@@ -24,6 +24,7 @@ interface CategoryFormDialogProps {
   formData: CategoryFormData;
   onFormChange: (data: CategoryFormData) => void;
   onSave: () => void;
+  saving?: boolean;
 }
 
 export function CategoryFormDialog({
@@ -33,6 +34,7 @@ export function CategoryFormDialog({
   formData,
   onFormChange,
   onSave,
+  saving = false,
 }: CategoryFormDialogProps) {
   const { t } = useTranslation();
 
@@ -71,7 +73,9 @@ export function CategoryFormDialog({
           <Button variant='outline' onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={onSave}>{t('common.save')}</Button>
+          <Button onClick={onSave} disabled={saving}>
+            {saving ? t('common.loading', 'Đang lưu...') : t('common.save')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

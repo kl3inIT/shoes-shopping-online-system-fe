@@ -772,7 +772,12 @@
         "selectParent": "Chọn danh mục cha",
         "imageUrl": "URL Ảnh",
         "description": "Mô tả"
-      }
+      },
+      "fetchError": "Không thể tải danh sách danh mục",
+      "createSuccess": "Đã tạo danh mục thành công",
+      "updateSuccess": "Đã cập nhật danh mục thành công",
+      "deleteSuccess": "Đã xóa danh mục thành công",
+      "fillRequired": "Vui lòng điền đầy đủ tên và mô tả"
     },
     "reviews": {
       "title": "Quản Lý Đánh Giá",
