@@ -13,11 +13,21 @@ export const router = createBrowserRouter([
       return { Component };
     },
     errorElement: <RootErrorBoundary />,
+    HydrateFallback: () => (
+      <div className='flex min-h-screen items-center justify-center'>
+        <div className='animate-pulse text-muted-foreground'>Đang tải...</div>
+      </div>
+    ),
   },
   {
     path: '/',
     element: <MainLayout />,
     errorElement: <RootErrorBoundary />,
+    HydrateFallback: () => (
+      <div className='flex min-h-screen items-center justify-center'>
+        <div className='animate-pulse text-muted-foreground'>Đang tải...</div>
+      </div>
+    ),
     children: [
       {
         index: true,
@@ -124,6 +134,11 @@ export const router = createBrowserRouter([
     path: '/admin',
     element: <AdminLayout />,
     errorElement: <RootErrorBoundary />,
+    HydrateFallback: () => (
+      <div className='flex min-h-screen items-center justify-center'>
+        <div className='animate-pulse text-muted-foreground'>Đang tải...</div>
+      </div>
+    ),
     children: [
       {
         index: true,
@@ -138,6 +153,14 @@ export const router = createBrowserRouter([
         lazy: async () => {
           const { default: Component } =
             await import('@/pages/admin/products/ProductsPage');
+          return { Component };
+        },
+      },
+      {
+        path: 'addshoe',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/products/AddShoePage');
           return { Component };
         },
       },
