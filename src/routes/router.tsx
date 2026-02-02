@@ -124,11 +124,6 @@ export const router = createBrowserRouter([
     path: '/admin',
     element: <AdminLayout />,
     errorElement: <RootErrorBoundary />,
-    HydrateFallback: () => (
-      <div className='flex min-h-screen items-center justify-center'>
-        <div className='animate-pulse text-muted-foreground'>Đang tải...</div>
-      </div>
-    ),
     children: [
       {
         index: true,
