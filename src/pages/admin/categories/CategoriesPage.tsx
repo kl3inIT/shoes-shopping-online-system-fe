@@ -27,7 +27,7 @@ import {
   updateCategory,
   deleteCategory,
 } from '@/features/admin/categories/api';
-import { getErrorMessage } from '@/features/apiClient';
+import { getErrorMessage, isNoResponseError } from '@/features/apiClient';
 
 export default function AdminCategoriesPage() {
   const { t } = useTranslation();
@@ -54,9 +54,13 @@ export default function AdminCategoriesPage() {
     try {
       const data = await getCategories();
       setCategories(data);
-    } catch {
+    } catch (error) {
       setCategories([]);
-      toast.error(t('admin.categories.fetchError', 'Không thể tải danh sách'));
+      if (!isNoResponseError(error)) {
+        toast.error(
+          t('admin.categories.fetchError', 'Không thể tải danh sách')
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -111,7 +115,9 @@ export default function AdminCategoriesPage() {
       setDeleteDialogOpen(false);
       setSelectedCategory(null);
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      if (!isNoResponseError(error)) {
+        toast.error(getErrorMessage(error));
+      }
     } finally {
       setDeleting(false);
     }
@@ -142,7 +148,9 @@ export default function AdminCategoriesPage() {
       }
       setEditDialogOpen(false);
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      if (!isNoResponseError(error)) {
+        toast.error(getErrorMessage(error));
+      }
     } finally {
       setSaving(false);
     }

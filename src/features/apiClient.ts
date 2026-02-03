@@ -27,7 +27,7 @@ const getBaseURL = (): string => {
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: getBaseURL(),
-  timeout: 30000,
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -103,11 +103,16 @@ apiClient.interceptors.response.use(
     });
 
     if (!error.response) {
-      const networkError = new HttpError(error.config, 0, {
-        detail: i18n.t('http.error.network', 'Không thể kết nối tới máy chủ'),
-        messageKey: 'http.error.network',
+      const isTimeout =
+        error.code === 'ECONNABORTED' || error.message?.includes('timeout');
+      const messageKey = isTimeout
+        ? 'http.error.timeout'
+        : 'http.error.network';
+      const noResponseError = new HttpError(error.config, 0, {
+        detail: i18n.t(messageKey),
+        messageKey,
       });
-      return Promise.reject(networkError);
+      return Promise.reject(noResponseError);
     }
 
     const { status = 0, data } = error.response;
@@ -179,6 +184,10 @@ apiClient.interceptors.response.use(
 
 export function isHttpError(error: unknown): error is HttpError {
   return error instanceof HttpError;
+}
+
+export function isNoResponseError(error: unknown): boolean {
+  return isHttpError(error) && error.status === 0;
 }
 
 export function getErrorMessage(error: unknown): string {
