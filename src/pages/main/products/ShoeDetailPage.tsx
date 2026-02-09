@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ProductDetail } from '@/features/products';
 import { ReviewCard, ReviewForm, Rating } from '@/features/reviews';
@@ -9,7 +9,6 @@ import { mockProductDetail, mockReviews } from './detailData';
 
 export function ShoeDetailPage() {
   const { t } = useTranslation();
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   // In real app, fetch product by id

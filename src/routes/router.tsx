@@ -142,6 +142,14 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: 'addshoe',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/products/AddShoePage');
+          return { Component };
+        },
+      },
+      {
         path: 'orders',
         lazy: async () => {
           const { default: Component } =

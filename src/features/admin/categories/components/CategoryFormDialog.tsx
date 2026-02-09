@@ -11,25 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 interface CategoryFormData {
   name: string;
-  slug: string;
   description: string;
-  imageUrl: string;
-  parentCategoryId: string;
-}
-
-interface ParentOption {
-  value: string;
-  label: string;
 }
 
 interface CategoryFormDialogProps {
@@ -39,7 +24,7 @@ interface CategoryFormDialogProps {
   formData: CategoryFormData;
   onFormChange: (data: CategoryFormData) => void;
   onSave: () => void;
-  parentOptions: ParentOption[];
+  saving?: boolean;
 }
 
 export function CategoryFormDialog({
@@ -49,7 +34,7 @@ export function CategoryFormDialog({
   formData,
   onFormChange,
   onSave,
-  parentOptions,
+  saving = false,
 }: CategoryFormDialogProps) {
   const { t } = useTranslation();
 
@@ -74,52 +59,6 @@ export function CategoryFormDialog({
             />
           </div>
           <div className='space-y-2'>
-            <Label>{t('admin.categories.form.slug')}</Label>
-            <Input
-              value={formData.slug}
-              onChange={(e) =>
-                onFormChange({ ...formData, slug: e.target.value })
-              }
-            />
-          </div>
-          <div className='space-y-2'>
-            <Label>{t('admin.categories.form.parent')}</Label>
-            <Select
-              value={formData.parentCategoryId || 'none'}
-              onValueChange={(value) =>
-                onFormChange({
-                  ...formData,
-                  parentCategoryId: value === 'none' ? '' : value,
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={t('admin.categories.form.selectParent')}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {parentOptions.map((option) => (
-                  <SelectItem
-                    key={option.value || 'none'}
-                    value={option.value || 'none'}
-                  >
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className='space-y-2'>
-            <Label>{t('admin.categories.form.imageUrl')}</Label>
-            <Input
-              value={formData.imageUrl}
-              onChange={(e) =>
-                onFormChange({ ...formData, imageUrl: e.target.value })
-              }
-            />
-          </div>
-          <div className='space-y-2'>
             <Label>{t('admin.categories.form.description')}</Label>
             <Textarea
               value={formData.description}
@@ -134,7 +73,9 @@ export function CategoryFormDialog({
           <Button variant='outline' onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={onSave}>{t('common.save')}</Button>
+          <Button onClick={onSave} disabled={saving}>
+            {saving ? t('common.loading', 'Đang lưu...') : t('common.save')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
