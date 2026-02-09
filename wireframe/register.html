@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wireframe - Register</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="screen-container">
+      <!-- Header -->
+      <header>
+        <div class="logo">
+          <a href="home.html" style="text-decoration: none; color: inherit"
+            >ShoeStore <i class="fas fa-shoe-prints"></i
+          ></a>
+        </div>
+        <nav class="nav-links">
+          <a href="home.html">Home</a>
+          <a href="#">Men</a>
+          <a href="#">Women</a>
+          <a href="#">Kids</a>
+        </nav>
+        <div class="header-icons">
+          <i class="fas fa-search" style="margin-right: 15px"></i>
+          <a href="cart.html" style="color: inherit; text-decoration: none"
+            ><i class="fas fa-shopping-cart"></i
+          ></a>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <div class="container" style="max-width: 500px; margin-top: 50px">
+        <div class="wf-box">
+          <!-- Tabs -->
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #ddd;
+            "
+          >
+            <a
+              href="auth.html"
+              style="
+                text-decoration: none;
+                color: #777;
+                padding: 10px 20px;
+                cursor: pointer;
+              "
+              >Login</a
+            >
+            <div
+              style="
+                padding: 10px 20px;
+                font-weight: bold;
+                border-bottom: 3px solid #333;
+                cursor: pointer;
+                color: #333;
+              "
+            >
+              Register
+            </div>
+          </div>
+
+          <!-- Register Form -->
+          <div id="register-form">
+            <h2 class="text-center">Create Account</h2>
+            <p class="text-center" style="color: #666; font-size: 14px">
+              Join us to get exclusive offers and track orders.
+            </p>
+
+            <div class="grid-2" style="gap: 20px; margin-bottom: 20px">
+              <div>
+                <label>First Name</label>
+                <input type="text" class="wf-input" />
+              </div>
+              <div>
+                <label>Last Name</label>
+                <input type="text" class="wf-input" />
+              </div>
+            </div>
+
+            <div class="mb-20">
+              <label>Email Address</label>
+              <input type="email" class="wf-input" />
+            </div>
+
+            <div class="mb-20">
+              <label>Password</label>
+              <input type="password" class="wf-input" />
+            </div>
+
+            <div class="mb-20">
+              <label>Confirm Password</label>
+              <input type="password" class="wf-input" />
+            </div>
+
+            <div
+              class="mb-20"
+              style="display: flex; align-items: center; font-size: 14px"
+            >
+              <input type="checkbox" style="margin-right: 10px" />
+              <span
+                >I agree to the <a href="#">Terms of Service</a> and
+                <a href="#">Privacy Policy</a>.</span
+              >
+            </div>
+
+            <button
+              class="wf-button"
+              style="width: 100%; background: #333; color: white"
+            >
+              Sign Up
+            </button>
+
+            <div style="text-align: center; margin: 20px 0; position: relative">
+              <hr style="border: 0; border-top: 1px solid #ccc" />
+              <span
+                style="
+                  position: absolute;
+                  top: -12px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  background: white;
+                  padding: 0 10px;
+                  color: #777;
+                "
+                >or</span
+              >
+            </div>
+
+            <button
+              class="wf-button"
+              style="
+                width: 100%;
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: white;
+              "
+            >
+              <i class="fab fa-google" style="margin-right: 10px"></i> Sign up
+              with Google
+            </button>
+          </div>
+        </div>
+
+        <div class="text-center mt-20">
+          Already have an account?
+          <a
+            href="auth.html"
+            style="text-decoration: underline; font-weight: bold"
+            >Log in here</a
+          >
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer>
+        <div class="text-center">&copy; 2026 ShoeStore.</div>
+      </footer>
+    </div>
+  </body>
+</html>
