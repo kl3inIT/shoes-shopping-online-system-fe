@@ -1,4 +1,13 @@
-import { LogIn, LogOut, User, UserCircle } from 'lucide-react';
+import {
+  LogIn,
+  LogOut,
+  User,
+  UserCircle,
+  UserPlus,
+  Package,
+  Heart,
+  ShoppingCart,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oidc-context';
 import { Link } from 'react-router';
@@ -37,6 +46,16 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
     onAfterAction?.();
   };
 
+  const handleRegister = () => {
+    // Keycloak supports `kc_action=register` to open the registration screen.
+    // `extraQueryParams` is supported by oidc-client-ts via react-oidc-context.
+    void auth.signinRedirect({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      extraQueryParams: { kc_action: 'register' } as any,
+    });
+    onAfterAction?.();
+  };
+
   const handleLogout = () => {
     void auth.signoutRedirect();
     onAfterAction?.();
@@ -54,17 +73,45 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
 
   if (!auth.isAuthenticated || !auth.user) {
     return mobile ? (
-      <Button onClick={handleLogin} className='w-full justify-start' size='sm'>
-        <LogIn className='mr-2 h-4 w-4' />
-        {t('auth.login', { defaultValue: 'Đăng nhập' })}
-      </Button>
-    ) : (
-      <Button onClick={handleLogin} size='sm' className='gap-2'>
-        <LogIn className='h-4 w-4' />
-        <span className='hidden sm:inline-block'>
+      <div className='flex flex-col gap-2'>
+        <Button
+          onClick={handleLogin}
+          className='w-full justify-start'
+          size='sm'
+        >
+          <LogIn className='mr-2 h-4 w-4' />
           {t('auth.login', { defaultValue: 'Đăng nhập' })}
-        </span>
-      </Button>
+        </Button>
+        <Button
+          onClick={handleRegister}
+          variant='outline'
+          className='w-full justify-start'
+          size='sm'
+        >
+          <UserPlus className='mr-2 h-4 w-4' />
+          {t('auth.register', { defaultValue: 'Đăng ký' })}
+        </Button>
+      </div>
+    ) : (
+      <div className='flex items-center gap-2'>
+        <Button onClick={handleLogin} size='sm' className='gap-2'>
+          <LogIn className='h-4 w-4' />
+          <span className='hidden sm:inline-block'>
+            {t('auth.login', { defaultValue: 'Đăng nhập' })}
+          </span>
+        </Button>
+        <Button
+          onClick={handleRegister}
+          size='sm'
+          variant='outline'
+          className='gap-2'
+        >
+          <UserPlus className='h-4 w-4' />
+          <span className='hidden sm:inline-block'>
+            {t('auth.register', { defaultValue: 'Đăng ký' })}
+          </span>
+        </Button>
+      </div>
     );
   }
 
@@ -92,6 +139,42 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         <Link to={profilePath}>
           <UserCircle className='mr-2 h-4 w-4' />
           {t('auth.profile', { defaultValue: 'Hồ sơ' })}
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant='ghost'
+        className='w-full justify-start'
+        size='sm'
+        onClick={onAfterAction}
+      >
+        <Link to='/orders'>
+          <Package className='mr-2 h-4 w-4' />
+          {t('nav.orders', { defaultValue: 'Đơn hàng' })}
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant='ghost'
+        className='w-full justify-start'
+        size='sm'
+        onClick={onAfterAction}
+      >
+        <Link to='/wishlist'>
+          <Heart className='mr-2 h-4 w-4' />
+          {t('nav.wishlist', { defaultValue: 'Yêu thích' })}
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant='ghost'
+        className='w-full justify-start'
+        size='sm'
+        onClick={onAfterAction}
+      >
+        <Link to='/cart'>
+          <ShoppingCart className='mr-2 h-4 w-4' />
+          {t('nav.cart', { defaultValue: 'Giỏ hàng' })}
         </Link>
       </Button>
       <Button
@@ -132,6 +215,25 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
             <span>{t('auth.profile', { defaultValue: 'Hồ sơ' })}</span>
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/orders'>
+            <Package className='mr-2 h-4 w-4' />
+            <span>{t('nav.orders', { defaultValue: 'Đơn hàng' })}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/wishlist'>
+            <Heart className='mr-2 h-4 w-4' />
+            <span>{t('nav.wishlist', { defaultValue: 'Yêu thích' })}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/cart'>
+            <ShoppingCart className='mr-2 h-4 w-4' />
+            <span>{t('nav.cart', { defaultValue: 'Giỏ hàng' })}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>
           <LogOut className='mr-2 h-4 w-4' />
           <span>{t('auth.logout', { defaultValue: 'Đăng xuất' })}</span>

@@ -136,35 +136,35 @@ export function Footer({ className }: { className?: string }) {
               <li>
                 <Link
                   className='text-muted-foreground hover:text-foreground'
-                  to='/products?category=audio'
+                  to='/products?category=running'
                 >
-                  {t('footer.shop.audio', { defaultValue: 'Audio' })}
+                  {t('footer.shop.running', { defaultValue: 'Running' })}
                 </Link>
               </li>
               <li>
                 <Link
                   className='text-muted-foreground hover:text-foreground'
-                  to='/products?category=wearables'
+                  to='/products?category=casual'
                 >
-                  {t('footer.shop.wearables', { defaultValue: 'Wearables' })}
+                  {t('footer.shop.casual', { defaultValue: 'Casual' })}
                 </Link>
               </li>
               <li>
                 <Link
                   className='text-muted-foreground hover:text-foreground'
-                  to='/products?category=smartphones'
+                  to='/products?category=basketball'
                 >
-                  {t('footer.shop.smartphones', {
-                    defaultValue: 'Smartphones',
+                  {t('footer.shop.basketball', {
+                    defaultValue: 'Basketball',
                   })}
                 </Link>
               </li>
               <li>
                 <Link
                   className='text-muted-foreground hover:text-foreground'
-                  to='/products?category=laptops'
+                  to='/products?category=training'
                 >
-                  {t('footer.shop.laptops', { defaultValue: 'Laptops' })}
+                  {t('footer.shop.training', { defaultValue: 'Training' })}
                 </Link>
               </li>
             </ul>

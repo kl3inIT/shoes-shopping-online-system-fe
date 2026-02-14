@@ -1,8 +1,16 @@
-export function StaticPage({ title }: { title: string }) {
+import { useTranslation } from 'react-i18next';
+
+export function StaticPage() {
+  const { t } = useTranslation();
+
   return (
-    <section className='space-y-2'>
-      <h1 className='text-2xl font-semibold'>{title}</h1>
-      <p className='text-muted-foreground'>Page placeholder.</p>
-    </section>
+    <div className='container mx-auto px-4 py-8'>
+      <h1 className='text-2xl font-semibold'>{t('static.title', 'Static')}</h1>
+      <p className='mt-2 text-muted-foreground'>
+        {t('static.description', 'This is a placeholder static page.')}
+      </p>
+    </div>
   );
 }
+
+export default StaticPage;
