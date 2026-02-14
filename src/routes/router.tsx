@@ -51,6 +51,7 @@ export const router = createBrowserRouter([
           return { Component };
         },
       },
+      // Protected routes - Yêu cầu đăng nhập
       {
         element: <ProtectedRoute />,
         children: [

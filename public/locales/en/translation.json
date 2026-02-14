@@ -352,6 +352,19 @@
       }
     }
   },
+  "qr": {
+    "title": "Sepay QR",
+    "subtitle": "Scan the QR code to pay.",
+    "pageTitle": "QR Payment",
+    "previewAlt": "Sepay QR code",
+    "demoDescription": "Order #12345",
+    "labels": {
+      "account": "Account",
+      "bank": "Bank",
+      "amount": "Amount",
+      "description": "Description"
+    }
+  },
   "footer": {
     "tagline": "Your one-stop shop for shoes. Premium products at competitive prices.",
     "shop": {
@@ -599,6 +612,7 @@
     "orders": {
       "title": "Orders Management",
       "subtitle": "Manage {{count}} orders",
+      "search": "Search",
       "searchPlaceholder": "Search orders...",
       "filterStatus": "Status",
       "allStatuses": "All Statuses",
@@ -614,7 +628,11 @@
         "processing": "Processing",
         "shipped": "Shipped",
         "delivered": "Delivered",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "pending_payment": "Pending Payment",
+        "payment_expired": "Payment Expired",
+        "paid": "Paid",
+        "refunded": "Refunded"
       },
       "table": {
         "orderNumber": "Order #",

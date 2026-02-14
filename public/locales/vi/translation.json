@@ -352,6 +352,19 @@
       }
     }
   },
+  "qr": {
+    "title": "Sepay QR",
+    "subtitle": "Quét mã QR để thanh toán.",
+    "pageTitle": "Thanh toán QR",
+    "previewAlt": "Mã QR Sepay",
+    "demoDescription": "Đơn hàng #12345",
+    "labels": {
+      "account": "Tài khoản",
+      "bank": "Ngân hàng",
+      "amount": "Số tiền",
+      "description": "Nội dung"
+    }
+  },
   "footer": {
     "tagline": "Cửa hàng giày một điểm đến. Sản phẩm chất lượng với giá cạnh tranh.",
     "shop": {
@@ -599,6 +612,7 @@
     "orders": {
       "title": "Quản Lý Đơn Hàng",
       "subtitle": "Quản lý {{count}} đơn hàng",
+      "search": "Tìm kiếm",
       "searchPlaceholder": "Tìm kiếm đơn hàng...",
       "filterStatus": "Trạng thái",
       "allStatuses": "Tất cả trạng thái",
@@ -614,7 +628,11 @@
         "processing": "Đang xử lý",
         "shipped": "Đang giao",
         "delivered": "Đã giao",
-        "cancelled": "Đã hủy"
+        "cancelled": "Đã hủy",
+        "pending_payment": "Chờ thanh toán",
+        "payment_expired": "Hết hạn thanh toán",
+        "paid": "Đã thanh toán",
+        "refunded": "Đã hoàn tiền"
       },
       "table": {
         "orderNumber": "Mã ĐH",
