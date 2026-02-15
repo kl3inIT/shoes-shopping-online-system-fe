@@ -23,7 +23,7 @@ import {
 import { statusOptions } from './data';
 
 const DEFAULT_PAGE = 0;
-const DEFAULT_SIZE = 10;
+const DEFAULT_SIZE = 5;
 
 export default function AdminOrdersPage() {
   const { t } = useTranslation();
