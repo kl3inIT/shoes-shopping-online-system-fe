@@ -616,6 +616,8 @@
       "searchPlaceholder": "Search orders...",
       "filterStatus": "Status",
       "allStatuses": "All Statuses",
+      "pageSize": "Show",
+      "pageSizeUnit": "/ page",
       "stats": {
         "newOrders": "New Orders",
         "processing": "Processing",

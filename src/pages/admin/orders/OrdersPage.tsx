@@ -23,7 +23,8 @@ import {
 import { statusOptions } from './data';
 
 const DEFAULT_PAGE = 0;
-const DEFAULT_SIZE = 5;
+const DEFAULT_SIZE = 10;
+const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
 export default function AdminOrdersPage() {
   const { t } = useTranslation();
@@ -41,7 +42,10 @@ export default function AdminOrdersPage() {
     orderStatus: undefined as OrderStatus | undefined,
   });
 
-  const { data: orders = [], isPending } = useQueryOrders(params);
+  const { data, isPending } = useQueryOrders(params);
+  const orders = data?.content ?? [];
+  const totalElements = data?.totalElements ?? 0;
+  const totalPages = data?.totalPages ?? 1;
 
   const stats = useMemo(() => {
     return {
@@ -69,13 +73,21 @@ export default function AdminOrdersPage() {
     setDetailDialogOpen(true);
   };
 
+  const handlePageChange = (page: number) => {
+    setParams((prev) => ({ ...prev, page }));
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setParams((prev) => ({ ...prev, size, page: 0 }));
+  };
+
   return (
     <div className='flex flex-col gap-4 py-4'>
       <div className='flex items-center justify-between px-4 lg:px-6'>
         <div>
           <h1 className='text-2xl font-bold'>{t('admin.orders.title')}</h1>
           <p className='text-muted-foreground'>
-            {t('admin.orders.subtitle', { count: orders.length })}
+            {t('admin.orders.subtitle', { count: totalElements })}
           </p>
         </div>
       </div>
@@ -123,7 +135,18 @@ export default function AdminOrdersPage() {
             {t('common.loading', 'Loading...')}
           </p>
         ) : (
-          <OrderTable orders={orders} onViewDetails={handleViewDetails} />
+          <OrderTable
+            orders={orders}
+            onViewDetails={handleViewDetails}
+            pagination={{
+              page: params.page,
+              totalPages,
+              onPageChange: handlePageChange,
+              pageSize: params.size,
+              pageSizeOptions: PAGE_SIZE_OPTIONS,
+              onPageSizeChange: handlePageSizeChange,
+            }}
+          />
         )}
       </div>
 
