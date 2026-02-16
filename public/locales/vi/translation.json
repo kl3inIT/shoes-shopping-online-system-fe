@@ -616,6 +616,8 @@
       "searchPlaceholder": "Tìm kiếm đơn hàng...",
       "filterStatus": "Trạng thái",
       "allStatuses": "Tất cả trạng thái",
+      "pageSize": "Hiển thị",
+      "pageSizeUnit": "/ trang",
       "stats": {
         "newOrders": "Đơn Mới",
         "processing": "Đang Xử Lý",
