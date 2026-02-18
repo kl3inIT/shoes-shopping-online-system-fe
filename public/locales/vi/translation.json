@@ -354,15 +354,23 @@
   },
   "qr": {
     "title": "Sepay QR",
-    "subtitle": "Quét mã QR để thanh toán.",
-    "pageTitle": "Thanh toán QR",
+    "subtitle": "Vui lòng quét mã QR bên dưới để hoàn tất thanh toán đơn hàng của bạn.",
+    "pageTitle": "Thanh toán bằng mã QR",
     "previewAlt": "Mã QR Sepay",
     "demoDescription": "Đơn hàng #12345",
+    "qrNote": "Quét mã bằng ứng dụng ngân hàng hoặc ví điện tử để thanh toán.",
     "labels": {
       "account": "Tài khoản",
+      "accountName": "Chủ tài khoản",
+      "accountNumber": "Số tài khoản",
       "bank": "Ngân hàng",
-      "amount": "Số tiền",
-      "description": "Nội dung"
+      "amount": "Số tiền thanh toán",
+      "description": "Nội dung chuyển khoản",
+      "orderCode": "Mã đơn hàng"
+    },
+    "notes": {
+      "checkInfo": "Kiểm tra kỹ thông tin trước khi thanh toán.",
+      "autoUpdate": "Sau khi thanh toán thành công, hệ thống sẽ tự động cập nhật trạng thái đơn hàng."
     }
   },
   "footer": {
