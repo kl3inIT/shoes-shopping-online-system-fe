@@ -354,15 +354,23 @@
   },
   "qr": {
     "title": "Sepay QR",
-    "subtitle": "Scan the QR code to pay.",
+    "subtitle": "Please scan the QR code below to complete your payment.",
     "pageTitle": "QR Payment",
     "previewAlt": "Sepay QR code",
     "demoDescription": "Order #12345",
+    "qrNote": "Scan the code with your banking app or e-wallet to pay.",
     "labels": {
       "account": "Account",
+      "accountName": "Account holder",
+      "accountNumber": "Account number",
       "bank": "Bank",
-      "amount": "Amount",
-      "description": "Description"
+      "amount": "Payment amount",
+      "description": "Transfer description",
+      "orderCode": "Order code"
+    },
+    "notes": {
+      "checkInfo": "Please double-check all information before making payment.",
+      "autoUpdate": "After a successful payment, your order status will be updated automatically."
     }
   },
   "footer": {
