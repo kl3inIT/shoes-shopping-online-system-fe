@@ -32,7 +32,12 @@ export interface ProductDetailProps {
   isNew?: boolean;
   isSale?: boolean;
   specifications?: { label: string; value: string }[];
-  onAddToCart?: (id: string, size: string, quantity: number) => void;
+  onAddToCart?: (
+    id: string,
+    size: string,
+    color: string | undefined,
+    quantity: number
+  ) => void;
   onAddToWishlist?: (id: string) => void;
   onShare?: (id: string) => void;
 }
@@ -46,6 +51,7 @@ export function ProductDetail({
   description,
   images,
   sizes,
+  colors = [],
   rating,
   reviewCount,
   isNew,
@@ -57,6 +63,9 @@ export function ProductDetail({
 }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(
+    colors.length > 0 ? colors[0] : null
+  );
   const [quantity, setQuantity] = useState(1);
 
   const discount = originalPrice
@@ -65,7 +74,7 @@ export function ProductDetail({
 
   const handleAddToCart = () => {
     if (selectedSize) {
-      onAddToCart?.(id, selectedSize, quantity);
+      onAddToCart?.(id, selectedSize, selectedColor ?? undefined, quantity);
     }
   };
 
@@ -143,6 +152,25 @@ export function ProductDetail({
         </div>
 
         <Separator />
+
+        {/* Color (optional) */}
+        {colors.length > 0 && (
+          <div>
+            <h3 className='mb-3 font-medium'>Color</h3>
+            <div className='flex flex-wrap gap-2'>
+              {colors.map((color) => (
+                <Button
+                  key={color}
+                  variant={selectedColor === color ? 'default' : 'outline'}
+                  size='sm'
+                  onClick={() => setSelectedColor(color)}
+                >
+                  {color}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Size Selection */}
         <div>

@@ -59,7 +59,24 @@ export const router = createBrowserRouter([
           return { Component };
         },
       },
-      // Protected routes - Yêu cầu đăng nhập
+      // Route public (không cần Keycloak)
+      {
+        path: 'cart',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/main/cart/CartPage');
+          return { Component };
+        },
+      },
+      {
+        path: 'wishlist',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/main/wishlist/WishlistPage');
+          return { Component };
+        },
+      },
+      // Protected routes - Yêu cầu đăng nhập (profile, checkout, orders)
       {
         element: <ProtectedRoute />,
         children: [
@@ -77,22 +94,6 @@ export const router = createBrowserRouter([
               };
             },
             errorElement: <RootErrorBoundary />,
-          },
-          {
-            path: 'cart',
-            lazy: async () => {
-              const { default: Component } =
-                await import('@/pages/main/cart/CartPage');
-              return { Component };
-            },
-          },
-          {
-            path: 'wishlist',
-            lazy: async () => {
-              const { default: Component } =
-                await import('@/pages/main/wishlist/WishlistPage');
-              return { Component };
-            },
           },
           {
             path: 'checkout',

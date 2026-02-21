@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/pagination';
 
 import { ProductGrid, ProductFilter } from '@/features/products';
+import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
+import { useAddToWishlistMutation } from '@/features/wishlist';
 import { useIsMobile } from '@/hooks/useMobile';
 
 import {
@@ -101,18 +103,30 @@ export default function ProductsPage() {
     currentPage * itemsPerPage
   );
 
+  const [addToCartDialogOpen, setAddToCartDialogOpen] = useState(false);
+  const [addToCartProduct, setAddToCartProduct] =
+    useState<AddToCartDialogProduct | null>(null);
+
   const handleProductClick = (id: string) => {
     navigate(`/products/${id}`);
   };
 
   const handleAddToCart = (id: string) => {
-    console.log('Add to cart:', id);
-    // TODO: Implement add to cart
+    const product = sortedProducts.find((p) => p.id === id);
+    if (product) {
+      setAddToCartProduct({
+        id: product.id,
+        name: product.name,
+        image: product.image,
+        price: product.price,
+      });
+      setAddToCartDialogOpen(true);
+    }
   };
 
+  const addToWishlistMutation = useAddToWishlistMutation();
   const handleAddToWishlist = (id: string) => {
-    console.log('Add to wishlist:', id);
-    // TODO: Implement add to wishlist
+    addToWishlistMutation.mutate(id);
   };
 
   const handleClearFilters = () => {
@@ -272,6 +286,12 @@ export default function ProductsPage() {
           )}
         </div>
       </div>
+
+      <AddToCartDialog
+        open={addToCartDialogOpen}
+        onOpenChange={setAddToCartDialogOpen}
+        product={addToCartProduct}
+      />
     </div>
   );
 }

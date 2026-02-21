@@ -1,7 +1,8 @@
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ProductDetail } from '@/features/products';
 import { ReviewCard, ReviewForm, Rating } from '@/features/reviews';
+import { useAddToCartMutation } from '@/features/cart';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -10,18 +11,32 @@ import { mockProductDetail, mockReviews } from './detailData';
 export function ShoeDetailPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const addToCartMutation = useAddToCartMutation();
 
-  // In real app, fetch product by id
   const product = mockProductDetail;
   const reviews = mockReviews;
+  const shoeId = id ?? product.id;
 
   const handleAddToCart = (
-    productId: string,
+    _productId: string,
     size: string,
+    color: string | undefined,
     quantity: number
   ) => {
-    console.log('Add to cart:', { productId, size, quantity });
-    // TODO: Implement add to cart logic
+    addToCartMutation.mutate(
+      {
+        shoeId,
+        size,
+        color: color ?? undefined,
+        quantity,
+      },
+      {
+        onError: (err) => {
+          console.error('Add to cart failed:', err);
+        },
+      }
+    );
   };
 
   const handleAddToWishlist = (productId: string) => {

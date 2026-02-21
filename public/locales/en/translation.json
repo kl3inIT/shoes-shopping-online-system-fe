@@ -101,6 +101,7 @@
   "productDetail": {
     "backToProducts": "Back to Products",
     "selectSize": "Select Size",
+    "selectColor": "Color",
     "pleaseSelectSize": "Please select a size",
     "quantity": "Quantity",
     "addToCart": "Add to Cart",
@@ -164,15 +165,23 @@
   "wishlist": {
     "title": "My Wishlist",
     "subtitle": "Save items you love and come back to them later",
+    "savedItems": "Saved Items",
     "itemCount": "{{count}} item(s) in your wishlist",
     "empty": {
       "title": "Your wishlist is empty",
       "description": "Save items you love by clicking the heart icon"
     },
     "continueShopping": "Continue Shopping",
+    "shareList": "Share List",
+    "dateAddedNewest": "Date Added (newest)",
+    "dateAddedOldest": "Date Added (oldest)",
+    "loadError": "Failed to load wishlist",
     "addToCart": "Add to Cart",
     "viewDetails": "View Details",
-    "addedOn": "Added on {{date}}"
+    "soldOut": "Sold Out",
+    "removeFromWishlist": "Remove from wishlist",
+    "addedOn": "Added on {{date}}",
+    "added": "Added {{date}}"
   },
   "checkout": {
     "title": "Checkout",
