@@ -422,8 +422,11 @@
     "confirm": "Xác nhận",
     "save": "Lưu",
     "delete": "Xóa",
+    "deleting": "Đang xóa...",
     "edit": "Sửa",
     "loading": "Đang tải...",
+    "loadError": "Không tải được dữ liệu",
+    "uploading": "Đang tải lên...",
     "error": "Lỗi",
     "success": "Thành công"
   },
@@ -764,6 +767,9 @@
         "country": "Quốc gia",
         "selectCountry": "Chọn quốc gia",
         "logoUrl": "URL Logo",
+        "uploadLogo": "Tải lên",
+        "logoPreviewHint": "Xem trước – ảnh chỉ tải lên MinIO khi bấm Lưu",
+        "noImage": "Không có ảnh",
         "description": "Mô tả"
       }
     },

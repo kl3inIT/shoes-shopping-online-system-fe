@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IconPlus, IconSearch } from '@tabler/icons-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,25 +14,50 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
+import { getErrorMessage } from '@/features/apiClient';
 import {
   BrandTable,
   BrandStatsCards,
   BrandFormDialog,
+  useQueryBrands,
+  useCreateBrandMutation,
+  useUpdateBrandMutation,
+  useDeleteBrandMutation,
   type Brand,
 } from '@/features/admin/brands';
 
-import { mockBrands, countryOptions } from './data';
+function mapDtoToBrand(dto: {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  country: string;
+  logoUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  productCount?: number;
+}): Brand {
+  return {
+    id: dto.id,
+    name: dto.name,
+    slug: dto.slug,
+    description: dto.description,
+    country: dto.country,
+    logoUrl: dto.logoUrl,
+    productCount: dto.productCount ?? 0,
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
+  };
+}
 
 export default function AdminBrandsPage() {
   const { t } = useTranslation();
-  const [brands, setBrands] = useState(mockBrands);
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -40,7 +66,12 @@ export default function AdminBrandsPage() {
     logoUrl: '',
   });
 
-  // Filter brands
+  const { data: brandsData, isPending, isError, error } = useQueryBrands();
+  const createMutation = useCreateBrandMutation();
+  const updateMutation = useUpdateBrandMutation();
+  const deleteMutation = useDeleteBrandMutation();
+
+  const brands: Brand[] = (brandsData ?? []).map(mapDtoToBrand);
   const filteredBrands = brands.filter(
     (brand) =>
       brand.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -49,7 +80,7 @@ export default function AdminBrandsPage() {
 
   const stats = {
     total: brands.length,
-    totalProducts: brands.reduce((sum, b) => sum + b.productCount, 0),
+    totalProducts: brands.reduce((sum, b) => sum + (b.productCount ?? 0), 0),
     countries: new Set(brands.map((b) => b.country)).size,
   };
 
@@ -85,37 +116,70 @@ export default function AdminBrandsPage() {
 
   const confirmDelete = () => {
     if (selectedBrand) {
-      setBrands((prev) => prev.filter((b) => b.id !== selectedBrand.id));
-      setDeleteDialogOpen(false);
-      setSelectedBrand(null);
+      deleteMutation.mutate(selectedBrand.id, {
+        onSuccess: () => {
+          setDeleteDialogOpen(false);
+          setSelectedBrand(null);
+        },
+        onError: (error) => {
+          setDeleteDialogOpen(false);
+          setSelectedBrand(null);
+          toast.error(getErrorMessage(error));
+        },
+      });
     }
   };
 
-  const handleSave = () => {
+  const handleSave = (data: {
+    name: string;
+    slug: string;
+    description: string;
+    country: string;
+    logoUrl: string;
+  }) => {
+    const body = {
+      name: data.name,
+      slug: data.slug,
+      description: data.description,
+      country: data.country,
+      logoUrl: data.logoUrl,
+    };
     if (isCreating) {
-      const newBrand: Brand = {
-        id: String(Date.now()),
-        ...formData,
-        productCount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setBrands((prev) => [...prev, newBrand]);
+      createMutation.mutate(body, {
+        onSuccess: () => setEditDialogOpen(false),
+        onError: (error) => toast.error(getErrorMessage(error)),
+      });
     } else if (selectedBrand) {
-      setBrands((prev) =>
-        prev.map((b) =>
-          b.id === selectedBrand.id
-            ? { ...b, ...formData, updatedAt: new Date().toISOString() }
-            : b
-        )
+      updateMutation.mutate(
+        { id: selectedBrand.id, body },
+        {
+          onSuccess: () => setEditDialogOpen(false),
+          onError: (error) => toast.error(getErrorMessage(error)),
+        }
       );
     }
-    setEditDialogOpen(false);
   };
+
+  if (isPending) {
+    return (
+      <div className='flex justify-center py-16'>
+        <div className='h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent' />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className='px-4 py-16 text-center'>
+        <p className='text-destructive'>
+          {error instanceof Error ? error.message : t('common.loadError')}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className='flex flex-col gap-4 py-4'>
-      {/* Header */}
       <div className='flex items-center justify-between px-4 lg:px-6'>
         <div>
           <h1 className='text-2xl font-bold'>{t('admin.brands.title')}</h1>
@@ -129,12 +193,10 @@ export default function AdminBrandsPage() {
         </Button>
       </div>
 
-      {/* Stats */}
       <div className='px-4 lg:px-6'>
         <BrandStatsCards {...stats} />
       </div>
 
-      {/* Search */}
       <div className='flex items-center gap-4 px-4 lg:px-6'>
         <div className='relative flex-1 max-w-sm'>
           <IconSearch className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
@@ -147,7 +209,6 @@ export default function AdminBrandsPage() {
         </div>
       </div>
 
-      {/* Table */}
       <div className='px-4 lg:px-6'>
         <BrandTable
           brands={filteredBrands}
@@ -156,7 +217,6 @@ export default function AdminBrandsPage() {
         />
       </div>
 
-      {/* Edit/Create Dialog */}
       <BrandFormDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
@@ -164,11 +224,15 @@ export default function AdminBrandsPage() {
         formData={formData}
         onFormChange={setFormData}
         onSave={handleSave}
-        countryOptions={countryOptions}
       />
 
-      {/* Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) deleteMutation.reset();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('admin.brands.deleteDialog.title')}</DialogTitle>
@@ -185,8 +249,14 @@ export default function AdminBrandsPage() {
             >
               {t('common.cancel')}
             </Button>
-            <Button variant='destructive' onClick={confirmDelete}>
-              {t('common.delete')}
+            <Button
+              variant='destructive'
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending
+                ? t('common.deleting')
+                : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

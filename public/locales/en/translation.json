@@ -422,8 +422,11 @@
     "confirm": "Confirm",
     "save": "Save",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "loading": "Loading...",
+    "loadError": "Failed to load data",
+    "uploading": "Uploading...",
     "error": "Error",
     "success": "Success"
   },
@@ -764,6 +767,9 @@
         "country": "Country",
         "selectCountry": "Select country",
         "logoUrl": "Logo URL",
+        "uploadLogo": "Upload",
+        "logoPreviewHint": "Preview – file will be uploaded when you Save",
+        "noImage": "No image",
         "description": "Description"
       }
     },
