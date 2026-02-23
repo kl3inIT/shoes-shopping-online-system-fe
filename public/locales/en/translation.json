@@ -352,6 +352,27 @@
       }
     }
   },
+  "qr": {
+    "title": "Sepay QR",
+    "subtitle": "Please scan the QR code below to complete your payment.",
+    "pageTitle": "QR Payment",
+    "previewAlt": "Sepay QR code",
+    "demoDescription": "Order #12345",
+    "qrNote": "Scan the code with your banking app or e-wallet to pay.",
+    "labels": {
+      "account": "Account",
+      "accountName": "Account holder",
+      "accountNumber": "Account number",
+      "bank": "Bank",
+      "amount": "Payment amount",
+      "description": "Transfer description",
+      "orderCode": "Order code"
+    },
+    "notes": {
+      "checkInfo": "Please double-check all information before making payment.",
+      "autoUpdate": "After a successful payment, your order status will be updated automatically."
+    }
+  },
   "footer": {
     "tagline": "Your one-stop shop for shoes. Premium products at competitive prices.",
     "shop": {
@@ -599,9 +620,12 @@
     "orders": {
       "title": "Orders Management",
       "subtitle": "Manage {{count}} orders",
+      "search": "Search",
       "searchPlaceholder": "Search orders...",
       "filterStatus": "Status",
       "allStatuses": "All Statuses",
+      "pageSize": "Show",
+      "pageSizeUnit": "/ page",
       "stats": {
         "newOrders": "New Orders",
         "processing": "Processing",
@@ -614,7 +638,11 @@
         "processing": "Processing",
         "shipped": "Shipped",
         "delivered": "Delivered",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "pending_payment": "Pending Payment",
+        "payment_expired": "Payment Expired",
+        "paid": "Paid",
+        "refunded": "Refunded"
       },
       "table": {
         "orderNumber": "Order #",

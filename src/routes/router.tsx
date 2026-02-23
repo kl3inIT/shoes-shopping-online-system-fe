@@ -52,6 +52,15 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: 'payment/qr',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/main/qr/PaymentQrPage');
+          return { Component };
+        },
+      },
+      // Protected routes - Yêu cầu đăng nhập
+      {
         element: <ProtectedRoute />,
         children: [
           {

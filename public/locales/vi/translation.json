@@ -352,6 +352,27 @@
       }
     }
   },
+  "qr": {
+    "title": "Sepay QR",
+    "subtitle": "Vui lòng quét mã QR bên dưới để hoàn tất thanh toán đơn hàng của bạn.",
+    "pageTitle": "Thanh toán bằng mã QR",
+    "previewAlt": "Mã QR Sepay",
+    "demoDescription": "Đơn hàng #12345",
+    "qrNote": "Quét mã bằng ứng dụng ngân hàng hoặc ví điện tử để thanh toán.",
+    "labels": {
+      "account": "Tài khoản",
+      "accountName": "Chủ tài khoản",
+      "accountNumber": "Số tài khoản",
+      "bank": "Ngân hàng",
+      "amount": "Số tiền thanh toán",
+      "description": "Nội dung chuyển khoản",
+      "orderCode": "Mã đơn hàng"
+    },
+    "notes": {
+      "checkInfo": "Kiểm tra kỹ thông tin trước khi thanh toán.",
+      "autoUpdate": "Sau khi thanh toán thành công, hệ thống sẽ tự động cập nhật trạng thái đơn hàng."
+    }
+  },
   "footer": {
     "tagline": "Cửa hàng giày một điểm đến. Sản phẩm chất lượng với giá cạnh tranh.",
     "shop": {
@@ -599,9 +620,12 @@
     "orders": {
       "title": "Quản Lý Đơn Hàng",
       "subtitle": "Quản lý {{count}} đơn hàng",
+      "search": "Tìm kiếm",
       "searchPlaceholder": "Tìm kiếm đơn hàng...",
       "filterStatus": "Trạng thái",
       "allStatuses": "Tất cả trạng thái",
+      "pageSize": "Hiển thị",
+      "pageSizeUnit": "/ trang",
       "stats": {
         "newOrders": "Đơn Mới",
         "processing": "Đang Xử Lý",
@@ -614,7 +638,11 @@
         "processing": "Đang xử lý",
         "shipped": "Đang giao",
         "delivered": "Đã giao",
-        "cancelled": "Đã hủy"
+        "cancelled": "Đã hủy",
+        "pending_payment": "Chờ thanh toán",
+        "payment_expired": "Hết hạn thanh toán",
+        "paid": "Đã thanh toán",
+        "refunded": "Đã hoàn tiền"
       },
       "table": {
         "orderNumber": "Mã ĐH",
