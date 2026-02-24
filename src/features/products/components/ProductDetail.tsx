@@ -115,7 +115,6 @@ export function ProductDetail({
   const handleAddToCart = () => {
     if (selectedSize && selectedColor) {
       onAddToCart?.(id, selectedSize, selectedColor, quantity);
-
     }
   };
 
@@ -208,16 +207,16 @@ export function ProductDetail({
         <Separator />
 
         {/* Color (optional) */}
-        {colors.length > 0 && (
+        {availableColors.length > 0 && !selectedSize && (
           <div>
             <h3 className='mb-3 font-medium'>Color</h3>
             <div className='flex flex-wrap gap-2'>
-              {colors.map((color) => (
+              {availableColors.map((color) => (
                 <Button
                   key={color}
                   variant={selectedColor === color ? 'default' : 'outline'}
                   size='sm'
-                  onClick={() => setSelectedColor(color)}
+                  onClick={() => handleColorSelect(color)}
                 >
                   {color}
                 </Button>
