@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { IconTrash } from '@tabler/icons-react';
@@ -23,6 +23,7 @@ import {
   type Gender,
   type ProductStatus as ShoeStatus,
 } from './data';
+import { uploadShoeImage } from '@/features/admin/products/api';
 interface VariantFormState {
   id: string;
   size: string;
@@ -60,6 +61,20 @@ export default function AddShoePage() {
   const [variants, setVariants] = useState<VariantFormState[]>([
     createEmptyVariant(1),
   ]);
+
+  const [mainImage, setMainImage] = useState<File | null>(null);
+  const mainImageInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleChooseMainImage = () => {
+    mainImageInputRef.current?.click();
+  };
+
+  const handleMainImageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0] ?? null;
+    setMainImage(file);
+  };
 
   const handleChange =
     (field: keyof ShoeFormState) =>
@@ -110,14 +125,20 @@ export default function AddShoePage() {
     navigate('/admin/products');
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    let imageUrl: string | undefined;
+    if (mainImage) {
+      imageUrl = await uploadShoeImage(mainImage);
+    }
 
     const payload = {
       shoe: {
         ...shoe,
         quantity: totalStock,
         price: Number(shoe.basePrice) || 0,
+        imageUrl,
       },
       variants: variants.map((v) => ({
         size: v.size,
@@ -336,6 +357,13 @@ export default function AddShoePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <input
+                ref={mainImageInputRef}
+                type='file'
+                accept='image/*'
+                className='hidden'
+                onChange={handleMainImageChange}
+              />
               <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/40 px-6 py-10 text-center'>
                 <p className='text-sm font-medium'>
                   {t('admin.products.addPage.imageDropzone.title')}
@@ -343,7 +371,17 @@ export default function AddShoePage() {
                 <p className='text-xs text-muted-foreground'>
                   {t('admin.products.addPage.imageDropzone.hint')}
                 </p>
-                <Button variant='outline' size='sm'>
+                {mainImage && (
+                  <p className='text-xs text-muted-foreground'>
+                    Đã chọn: {mainImage.name}
+                  </p>
+                )}
+                <Button
+                  variant='outline'
+                  size='sm'
+                  type='button'
+                  onClick={handleChooseMainImage}
+                >
                   {t('admin.products.addPage.imageDropzone.button')}
                 </Button>
               </div>

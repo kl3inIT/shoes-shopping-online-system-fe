@@ -457,6 +457,7 @@
   "http": {
     "error": {
       "network": "Không thể kết nối tới máy chủ",
+      "timeout": "Máy chủ phản hồi quá chậm. Vui lòng thử lại.",
       "unknown": "Đã xảy ra lỗi, vui lòng thử lại",
       "400": "Dữ liệu không hợp lệ",
       "401": "Phiên đăng nhập đã hết hạn",
