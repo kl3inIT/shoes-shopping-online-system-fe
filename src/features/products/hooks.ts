@@ -4,6 +4,7 @@ import {
   getAllShoes,
   getAllBrands,
   getAllCategories,
+  getShoeById,
   type ShoeResponse,
   type BrandResponse,
   type CategoryResponse,
@@ -12,6 +13,7 @@ import {
 export const shoesQueryKey = ['shoes'] as const;
 export const brandsQueryKey = ['brands'] as const;
 export const categoriesQueryKey = ['categories'] as const;
+export const shoeByIdQueryKey = (id: string) => ['shoes', id] as const;
 
 export function useShoes(): UseQueryResult<ShoeResponse[], Error> {
   return useQuery({
@@ -31,5 +33,13 @@ export function useCategories(): UseQueryResult<CategoryResponse[], Error> {
   return useQuery({
     queryKey: categoriesQueryKey,
     queryFn: getAllCategories,
+  });
+}
+
+export function useShoeById(id?: string): UseQueryResult<ShoeResponse, Error> {
+  return useQuery({
+    queryKey: shoeByIdQueryKey(id ?? ''),
+    queryFn: () => getShoeById(id!),
+    enabled: !!id,
   });
 }

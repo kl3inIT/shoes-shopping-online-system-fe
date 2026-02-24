@@ -33,6 +33,7 @@ import {
   type CategoryResponse,
 } from '@/features/products';
 import { useIsMobile } from '@/hooks/useMobile';
+import { resolveImageUrl } from '@/lib/image';
 
 import { sizeOptions, sortOptions, priceRange } from './data';
 
@@ -65,7 +66,8 @@ export default function ProductsPage() {
       price: shoe.price,
       image:
         shoe.imageUrls && shoe.imageUrls.length > 0
-          ? shoe.imageUrls[0]
+          ? (resolveImageUrl(shoe.imageUrls[0]) ??
+            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400')
           : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', // fallback
       brand: shoe.brandName,
       brandSlug: shoe.brandSlug,
