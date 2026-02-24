@@ -35,9 +35,10 @@ function toCategory(dto: CategoryResponseDto): Category {
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const response = await apiClient.get<
-    ApiSuccessResponse<CategoryResponseDto[]>
-  >('/categories', { skipAuth: true });
+  const response =
+    await apiClient.get<ApiSuccessResponse<CategoryResponseDto[]>>(
+      '/categories'
+    );
 
   const dtos = response.data.data ?? [];
   return dtos.map(toCategory);

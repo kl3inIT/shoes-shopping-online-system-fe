@@ -4,7 +4,6 @@ import { Link, NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQueryCart } from '@/features/cart';
 import { useQueryWishlist } from '@/features/wishlist';
-import { useAuth } from 'react-oidc-context';
 import { LanguageToggle } from '@/components/language-toggle';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
@@ -37,7 +36,6 @@ export function Header() {
     { to: '/about', label: t('nav.about', { defaultValue: 'About' }) },
   ];
 
-  // Route public: cart/wishlist không cần Keycloak
   const handleCartClick = () => navigate('/cart');
   const handleWishlistClick = () => navigate('/wishlist');
 

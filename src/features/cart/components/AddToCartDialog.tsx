@@ -87,12 +87,11 @@ export function AddToCartDialog({
   };
 
   const handleAddToCart = () => {
-    if (!product || !selectedSize || !selectedColor) return;
+    if (!product || !selectedVariant) return;
+
     addMutation.mutate(
       {
-        shoeId: product.id,
-        size: selectedSize,
-        color: selectedColor,
+        shoeVariantId: selectedVariant.id,
         quantity,
       },
       {

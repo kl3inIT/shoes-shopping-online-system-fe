@@ -59,27 +59,25 @@ export const router = createBrowserRouter([
           return { Component };
         },
       },
-      // Route public (không cần Keycloak)
-      {
-        path: 'cart',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/main/cart/CartPage');
-          return { Component };
-        },
-      },
-      {
-        path: 'wishlist',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/main/wishlist/WishlistPage');
-          return { Component };
-        },
-      },
-      // Protected routes - Yêu cầu đăng nhập (profile, checkout, orders)
       {
         element: <ProtectedRoute />,
         children: [
+          {
+            path: 'cart',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/main/cart/CartPage');
+              return { Component };
+            },
+          },
+          {
+            path: 'wishlist',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/main/wishlist/WishlistPage');
+              return { Component };
+            },
+          },
           {
             path: 'profile/:keycloakId',
             lazy: async () => {
