@@ -71,30 +71,43 @@ export function ProductDetail({
     (v) => v.size === selectedSize && v.color === selectedColor
   );
 
-  // Combine shoe images and variant images for the gallery
-  // We prioritize variant images if a variant is selected
-  const displayImages =
-    selectedVariant && selectedVariant.imageUrls.length > 0
-      ? selectedVariant.imageUrls.map((url, i) => ({
-          id: `variant-${i}`,
-          url,
-          alt: `${name} ${selectedColor}`,
-        }))
-      : images;
-
-  const discount = originalPrice
-    ? Math.round(((originalPrice - price) / originalPrice) * 100)
-    : 0;
+  // Combine shoe images and all variant images for a single horizontal gallery
+  // Each image will have a unique stable ID to avoid re-renders
+  const allImages = [
+    ...images.map((img, i) => ({ ...img, type: 'shoe', index: i })),
+    ...variants.flatMap((v) =>
+      v.imageUrls.map((url, i) => ({
+        id: `variant-${v.id}-${i}`,
+        url,
+        alt: `${name} ${v.color}`,
+        type: 'variant',
+        variantId: v.id,
+      }))
+    ),
+  ];
 
   const handleSizeSelect = (size: string) => {
     setSelectedSize(size);
-    setSelectedColor(null); // Reset color when size changes
+    setSelectedColor(null);
     setQuantity(1);
   };
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     setQuantity(1);
+
+    // When color is selected, find the first image of this variant and scroll to it
+    const variant = variants.find(
+      (v) => v.size === selectedSize && v.color === color
+    );
+    if (variant && variant.imageUrls.length > 0) {
+      const firstImageIndex = allImages.findIndex(
+        (img) => img.type === 'variant' && img.variantId === variant.id
+      );
+      if (firstImageIndex !== -1) {
+        setActiveImageIndex(firstImageIndex);
+      }
+    }
   };
 
   const handleAddToCart = () => {
@@ -105,15 +118,19 @@ export function ProductDetail({
 
   const maxQuantity = selectedVariant?.quantity || 0;
 
+  const discount = originalPrice
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
+    : 0;
+
   return (
     <div className='grid gap-8 lg:grid-cols-2'>
       {/* Images Gallery */}
       <div className='space-y-4'>
         <div className='relative aspect-square overflow-hidden rounded-lg bg-muted'>
           <img
-            src={displayImages[activeImageIndex]?.url}
-            alt={displayImages[activeImageIndex]?.alt}
-            className='h-full w-full object-cover'
+            src={allImages[activeImageIndex]?.url}
+            alt={allImages[activeImageIndex]?.alt}
+            className='h-full w-full object-contain'
           />
           <div className='absolute left-4 top-4 flex flex-col gap-2'>
             {isSale && discount > 0 && (
@@ -122,7 +139,7 @@ export function ProductDetail({
           </div>
         </div>
         <div className='flex gap-2 overflow-x-auto pb-2'>
-          {displayImages.map((image, index) => (
+          {allImages.map((image, index) => (
             <button
               key={image.id}
               onClick={() => setActiveImageIndex(index)}
@@ -135,7 +152,7 @@ export function ProductDetail({
               <img
                 src={image.url}
                 alt={image.alt}
-                className='h-full w-full object-cover'
+                className='h-full w-full object-contain'
               />
             </button>
           ))}
