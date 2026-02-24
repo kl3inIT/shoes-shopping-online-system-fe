@@ -117,4 +117,4 @@ export const sortOptions: FilterOption[] = [
   { value: 'popular', label: 'Most Popular' },
 ];
 
-export const priceRange = { min: 0, max: 500 };
+export const priceRange = { min: 0, max: 10000000 };

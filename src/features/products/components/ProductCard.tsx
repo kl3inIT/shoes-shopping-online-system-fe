@@ -6,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { formatCurrency } from '@/lib/utils';
 import { Heart, ShoppingCart } from 'lucide-react';
 
 export interface ProductCardProps {
@@ -53,7 +54,6 @@ export function ProductCard({
           className='h-full w-full object-cover transition-transform group-hover:scale-105'
         />
         <div className='absolute left-2 top-2 flex flex-col gap-1'>
-          {isNew && <Badge variant='default'>New</Badge>}
           {isSale && discount > 0 && (
             <Badge variant='destructive'>-{discount}%</Badge>
           )}
@@ -107,10 +107,10 @@ export function ProductCard({
       </CardContent>
       <CardFooter className='p-4 pt-0'>
         <div className='flex items-center gap-2'>
-          <span className='text-lg font-bold'>${price.toFixed(2)}</span>
+          <span className='text-lg font-bold'>{formatCurrency(price)}</span>
           {originalPrice && originalPrice > price && (
             <span className='text-sm text-muted-foreground line-through'>
-              ${originalPrice.toFixed(2)}
+              {formatCurrency(originalPrice)}
             </span>
           )}
         </div>
