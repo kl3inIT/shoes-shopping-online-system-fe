@@ -52,23 +52,16 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: 'payment/qr',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/main/qr/PaymentQrPage');
+          return { Component };
+        },
+      },
+      {
         element: <ProtectedRoute />,
         children: [
-          {
-            path: 'profile/:keycloakId',
-            lazy: async () => {
-              const [{ default: Component }, { profileLoader }] =
-                await Promise.all([
-                  import('@/pages/main/profile/ProfilePage'),
-                  import('@/pages/main/profile/profileLoader'),
-                ]);
-              return {
-                Component,
-                loader: profileLoader(queryClient),
-              };
-            },
-            errorElement: <RootErrorBoundary />,
-          },
           {
             path: 'cart',
             lazy: async () => {
@@ -84,6 +77,21 @@ export const router = createBrowserRouter([
                 await import('@/pages/main/wishlist/WishlistPage');
               return { Component };
             },
+          },
+          {
+            path: 'profile/:keycloakId',
+            lazy: async () => {
+              const [{ default: Component }, { profileLoader }] =
+                await Promise.all([
+                  import('@/pages/main/profile/ProfilePage'),
+                  import('@/pages/main/profile/profileLoader'),
+                ]);
+              return {
+                Component,
+                loader: profileLoader(queryClient),
+              };
+            },
+            errorElement: <RootErrorBoundary />,
           },
           {
             path: 'checkout',

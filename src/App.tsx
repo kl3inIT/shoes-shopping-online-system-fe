@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router';
+
+import { Toaster } from '@/components/ui/sonner';
 import { router } from './routes/router';
 import { Toaster } from './components/ui/sonner';
 

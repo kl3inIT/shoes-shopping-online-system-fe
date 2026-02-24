@@ -71,16 +71,27 @@ export function BrandTable({ brands, onEdit, onDelete }: BrandTableProps) {
           {brands.map((brand) => (
             <TableRow key={brand.id}>
               <TableCell>
-                <div className='flex h-10 w-10 items-center justify-center rounded-md bg-muted p-1'>
-                  <img
-                    src={brand.logoUrl}
-                    alt={brand.name}
-                    className='h-full w-full object-contain'
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        'https://via.placeholder.com/40';
-                    }}
-                  />
+                <div className='flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-muted p-1'>
+                  {brand.logoUrl ? (
+                    <img
+                      src={brand.logoUrl}
+                      alt={brand.name}
+                      className='h-full w-full object-contain'
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const parent = e.currentTarget.nextElementSibling;
+                        if (parent)
+                          (parent as HTMLElement).style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className='hidden h-full w-full items-center justify-center text-[10px] text-muted-foreground'
+                    style={{ display: brand.logoUrl ? 'none' : 'flex' }}
+                    aria-hidden
+                  >
+                    No logo
+                  </div>
                 </div>
               </TableCell>
               <TableCell>

@@ -101,6 +101,7 @@
   "productDetail": {
     "backToProducts": "Back to Products",
     "selectSize": "Select Size",
+    "selectColor": "Color",
     "pleaseSelectSize": "Please select a size",
     "quantity": "Quantity",
     "addToCart": "Add to Cart",
@@ -164,15 +165,23 @@
   "wishlist": {
     "title": "My Wishlist",
     "subtitle": "Save items you love and come back to them later",
+    "savedItems": "Saved Items",
     "itemCount": "{{count}} item(s) in your wishlist",
     "empty": {
       "title": "Your wishlist is empty",
       "description": "Save items you love by clicking the heart icon"
     },
     "continueShopping": "Continue Shopping",
+    "shareList": "Share List",
+    "dateAddedNewest": "Date Added (newest)",
+    "dateAddedOldest": "Date Added (oldest)",
+    "loadError": "Failed to load wishlist",
     "addToCart": "Add to Cart",
     "viewDetails": "View Details",
-    "addedOn": "Added on {{date}}"
+    "soldOut": "Sold Out",
+    "removeFromWishlist": "Remove from wishlist",
+    "addedOn": "Added on {{date}}",
+    "added": "Added {{date}}"
   },
   "checkout": {
     "title": "Checkout",
@@ -352,6 +361,27 @@
       }
     }
   },
+  "qr": {
+    "title": "Sepay QR",
+    "subtitle": "Please scan the QR code below to complete your payment.",
+    "pageTitle": "QR Payment",
+    "previewAlt": "Sepay QR code",
+    "demoDescription": "Order #12345",
+    "qrNote": "Scan the code with your banking app or e-wallet to pay.",
+    "labels": {
+      "account": "Account",
+      "accountName": "Account holder",
+      "accountNumber": "Account number",
+      "bank": "Bank",
+      "amount": "Payment amount",
+      "description": "Transfer description",
+      "orderCode": "Order code"
+    },
+    "notes": {
+      "checkInfo": "Please double-check all information before making payment.",
+      "autoUpdate": "After a successful payment, your order status will be updated automatically."
+    }
+  },
   "footer": {
     "tagline": "Your one-stop shop for shoes. Premium products at competitive prices.",
     "shop": {
@@ -392,8 +422,11 @@
     "confirm": "Confirm",
     "save": "Save",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "loading": "Loading...",
+    "loadError": "Failed to load data",
+    "uploading": "Uploading...",
     "error": "Error",
     "success": "Success"
   },
@@ -600,9 +633,12 @@
     "orders": {
       "title": "Orders Management",
       "subtitle": "Manage {{count}} orders",
+      "search": "Search",
       "searchPlaceholder": "Search orders...",
       "filterStatus": "Status",
       "allStatuses": "All Statuses",
+      "pageSize": "Show",
+      "pageSizeUnit": "/ page",
       "stats": {
         "newOrders": "New Orders",
         "processing": "Processing",
@@ -615,7 +651,11 @@
         "processing": "Processing",
         "shipped": "Shipped",
         "delivered": "Delivered",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "pending_payment": "Pending Payment",
+        "payment_expired": "Payment Expired",
+        "paid": "Paid",
+        "refunded": "Refunded"
       },
       "table": {
         "orderNumber": "Order #",
@@ -728,6 +768,9 @@
         "country": "Country",
         "selectCountry": "Select country",
         "logoUrl": "Logo URL",
+        "uploadLogo": "Upload",
+        "logoPreviewHint": "Preview – file will be uploaded when you Save",
+        "noImage": "No image",
         "description": "Description"
       }
     },

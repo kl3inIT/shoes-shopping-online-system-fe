@@ -101,6 +101,7 @@
   "productDetail": {
     "backToProducts": "Quay lại danh sách",
     "selectSize": "Chọn Size",
+    "selectColor": "Màu sắc",
     "pleaseSelectSize": "Vui lòng chọn size",
     "quantity": "Số lượng",
     "addToCart": "Thêm Vào Giỏ",
@@ -164,15 +165,23 @@
   "wishlist": {
     "title": "Danh Sách Yêu Thích",
     "subtitle": "Lưu những sản phẩm bạn yêu thích để quay lại sau",
+    "savedItems": "Sản phẩm đã lưu",
     "itemCount": "{{count}} sản phẩm trong danh sách yêu thích",
     "empty": {
       "title": "Danh sách yêu thích trống",
       "description": "Lưu sản phẩm yêu thích bằng cách nhấn vào biểu tượng trái tim"
     },
     "continueShopping": "Tiếp Tục Mua Sắm",
+    "shareList": "Chia sẻ danh sách",
+    "dateAddedNewest": "Ngày thêm (mới nhất)",
+    "dateAddedOldest": "Ngày thêm (cũ nhất)",
+    "loadError": "Không tải được danh sách yêu thích",
     "addToCart": "Thêm Vào Giỏ",
     "viewDetails": "Xem Chi Tiết",
-    "addedOn": "Đã thêm vào {{date}}"
+    "soldOut": "Hết hàng",
+    "removeFromWishlist": "Xóa khỏi danh sách yêu thích",
+    "addedOn": "Đã thêm vào {{date}}",
+    "added": "Đã thêm {{date}}"
   },
   "checkout": {
     "title": "Thanh Toán",
@@ -352,6 +361,27 @@
       }
     }
   },
+  "qr": {
+    "title": "Sepay QR",
+    "subtitle": "Vui lòng quét mã QR bên dưới để hoàn tất thanh toán đơn hàng của bạn.",
+    "pageTitle": "Thanh toán bằng mã QR",
+    "previewAlt": "Mã QR Sepay",
+    "demoDescription": "Đơn hàng #12345",
+    "qrNote": "Quét mã bằng ứng dụng ngân hàng hoặc ví điện tử để thanh toán.",
+    "labels": {
+      "account": "Tài khoản",
+      "accountName": "Chủ tài khoản",
+      "accountNumber": "Số tài khoản",
+      "bank": "Ngân hàng",
+      "amount": "Số tiền thanh toán",
+      "description": "Nội dung chuyển khoản",
+      "orderCode": "Mã đơn hàng"
+    },
+    "notes": {
+      "checkInfo": "Kiểm tra kỹ thông tin trước khi thanh toán.",
+      "autoUpdate": "Sau khi thanh toán thành công, hệ thống sẽ tự động cập nhật trạng thái đơn hàng."
+    }
+  },
   "footer": {
     "tagline": "Cửa hàng giày một điểm đến. Sản phẩm chất lượng với giá cạnh tranh.",
     "shop": {
@@ -392,8 +422,11 @@
     "confirm": "Xác nhận",
     "save": "Lưu",
     "delete": "Xóa",
+    "deleting": "Đang xóa...",
     "edit": "Sửa",
     "loading": "Đang tải...",
+    "loadError": "Không tải được dữ liệu",
+    "uploading": "Đang tải lên...",
     "error": "Lỗi",
     "success": "Thành công"
   },
@@ -600,9 +633,12 @@
     "orders": {
       "title": "Quản Lý Đơn Hàng",
       "subtitle": "Quản lý {{count}} đơn hàng",
+      "search": "Tìm kiếm",
       "searchPlaceholder": "Tìm kiếm đơn hàng...",
       "filterStatus": "Trạng thái",
       "allStatuses": "Tất cả trạng thái",
+      "pageSize": "Hiển thị",
+      "pageSizeUnit": "/ trang",
       "stats": {
         "newOrders": "Đơn Mới",
         "processing": "Đang Xử Lý",
@@ -615,7 +651,11 @@
         "processing": "Đang xử lý",
         "shipped": "Đang giao",
         "delivered": "Đã giao",
-        "cancelled": "Đã hủy"
+        "cancelled": "Đã hủy",
+        "pending_payment": "Chờ thanh toán",
+        "payment_expired": "Hết hạn thanh toán",
+        "paid": "Đã thanh toán",
+        "refunded": "Đã hoàn tiền"
       },
       "table": {
         "orderNumber": "Mã ĐH",
@@ -728,6 +768,9 @@
         "country": "Quốc gia",
         "selectCountry": "Chọn quốc gia",
         "logoUrl": "URL Logo",
+        "uploadLogo": "Tải lên",
+        "logoPreviewHint": "Xem trước – ảnh chỉ tải lên MinIO khi bấm Lưu",
+        "noImage": "Không có ảnh",
         "description": "Mô tả"
       }
     },

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight } from 'lucide-react';
@@ -6,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ProductCard } from '@/features/products';
+import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
+import { useAddToWishlistMutation } from '@/features/wishlist';
 import { FloatingChat } from '@/components/FloatingChat';
 
 import {
@@ -17,22 +20,35 @@ import {
   brands,
 } from './data';
 
+const allHomeProducts = [...featuredProducts, ...newArrivals];
+
 export default function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [addToCartDialogOpen, setAddToCartDialogOpen] = useState(false);
+  const [addToCartProduct, setAddToCartProduct] =
+    useState<AddToCartDialogProduct | null>(null);
 
   const handleProductClick = (id: string) => {
     navigate(`/products/${id}`);
   };
 
   const handleAddToCart = (id: string) => {
-    console.log('Add to cart:', id);
-    // TODO: Implement add to cart
+    const product = allHomeProducts.find((p) => p.id === id);
+    if (product) {
+      setAddToCartProduct({
+        id: product.id,
+        name: product.name,
+        image: product.image,
+        price: product.price,
+      });
+      setAddToCartDialogOpen(true);
+    }
   };
 
+  const addToWishlistMutation = useAddToWishlistMutation();
   const handleAddToWishlist = (id: string) => {
-    console.log('Add to wishlist:', id);
-    // TODO: Implement add to wishlist
+    addToWishlistMutation.mutate(id);
   };
 
   return (
@@ -240,7 +256,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Floating Chat Widget */}
+      {/* Add to Cart dialog (size + color) */}
+      <AddToCartDialog
+        open={addToCartDialogOpen}
+        onOpenChange={setAddToCartDialogOpen}
+        product={addToCartProduct}
+      />
+
       <FloatingChat />
     </div>
   );

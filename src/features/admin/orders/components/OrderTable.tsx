@@ -1,12 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import {
-  IconEye,
-  IconDots,
-  IconPackage,
-  IconTruck,
-  IconCheck,
-  IconX,
-} from '@tabler/icons-react';
+import { IconEye, IconDots } from '@tabler/icons-react';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,100 +15,57 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import type { OrderStatus, OrderTableProps } from '../types';
 
-export type OrderStatus =
-  | 'PLACED'
-  | 'CONFIRMED'
-  | 'PROCESSING'
-  | 'SHIPPED'
-  | 'DELIVERED'
-  | 'CANCELLED';
+const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
-export interface OrderItem {
-  id: string;
-  productName: string;
-  productImage: string;
-  size: string;
-  color: string;
-  quantity: number;
-  price: number;
-}
-
-export interface Order {
-  id: string;
-  orderNumber: string;
-  customer: {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-  };
-  items: OrderItem[];
-  totalAmount: number;
-  status: OrderStatus;
-  shippingName: string;
-  shippingPhone: string;
-  shippingEmail: string;
-  shippingAddress: string;
-  paymentMethod: string;
-  paymentTransactionId?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface OrderTableProps {
-  orders: Order[];
-  onViewDetails?: (order: Order) => void;
-  onUpdateStatus?: (orderId: string, status: OrderStatus) => void;
-}
+const statusConfig: Record<OrderStatus, { className: string }> = {
+  PENDING_PAYMENT: { className: 'bg-slate-500' },
+  PAYMENT_EXPIRED: { className: 'bg-gray-500' },
+  PAID: { className: 'bg-blue-500' },
+  CONFIRMED: { className: 'bg-indigo-500' },
+  SHIPPED: { className: 'bg-purple-500' },
+  DELIVERED: { className: 'bg-green-500' },
+  CANCELLED: { className: 'bg-red-500' },
+  REFUNDED: { className: 'bg-orange-500' },
+};
 
 export function OrderTable({
   orders,
   onViewDetails,
-  onUpdateStatus,
+  pagination,
 }: OrderTableProps) {
   const { t } = useTranslation();
+  const page = pagination?.page ?? 0;
+  const totalPages = pagination?.totalPages ?? 1;
+  const onPageChange = pagination?.onPageChange;
+  const pageSize = pagination?.pageSize ?? 10;
+  const pageSizeOptions =
+    pagination?.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS;
+  const onPageSizeChange = pagination?.onPageSizeChange;
 
   const getStatusBadge = (status: OrderStatus) => {
-    const statusConfig: Record<
-      OrderStatus,
-      { className: string; icon: React.ReactNode }
-    > = {
-      PLACED: {
-        className: 'bg-blue-500',
-        icon: <IconPackage className='mr-1 h-3 w-3' />,
-      },
-      CONFIRMED: {
-        className: 'bg-indigo-500',
-        icon: <IconCheck className='mr-1 h-3 w-3' />,
-      },
-      PROCESSING: {
-        className: 'bg-yellow-500',
-        icon: <IconPackage className='mr-1 h-3 w-3' />,
-      },
-      SHIPPED: {
-        className: 'bg-purple-500',
-        icon: <IconTruck className='mr-1 h-3 w-3' />,
-      },
-      DELIVERED: {
-        className: 'bg-green-500',
-        icon: <IconCheck className='mr-1 h-3 w-3' />,
-      },
-      CANCELLED: {
-        className: 'bg-red-500',
-        icon: <IconX className='mr-1 h-3 w-3' />,
-      },
-    };
-
     const config = statusConfig[status];
     return (
-      <Badge className={`${config.className} flex items-center`}>
-        {config.icon}
-        {t(`admin.orders.status.${status.toLowerCase()}`)}
+      <Badge className={config?.className ?? 'bg-gray-500'}>
+        {t(`admin.orders.status.${status.toLowerCase()}`, status)}
       </Badge>
     );
   };
@@ -137,7 +87,9 @@ export function OrderTable({
           <TableRow>
             <TableHead>{t('admin.orders.table.orderNumber')}</TableHead>
             <TableHead>{t('admin.orders.table.customer')}</TableHead>
-            <TableHead>{t('admin.orders.table.items')}</TableHead>
+            <TableHead className='text-right'>
+              {t('admin.orders.table.items')}
+            </TableHead>
             <TableHead className='text-right'>
               {t('admin.orders.table.total')}
             </TableHead>
@@ -150,37 +102,26 @@ export function OrderTable({
         </TableHeader>
         <TableBody>
           {orders.map((order) => (
-            <TableRow key={order.id}>
-              <TableCell className='font-medium'>{order.orderNumber}</TableCell>
+            <TableRow key={order.orderId}>
+              <TableCell className='font-medium'>{order.orderCode}</TableCell>
               <TableCell>
                 <div>
-                  <p className='font-medium'>{order.customer.name}</p>
+                  <p className='font-medium'>{order.customerName}</p>
                   <p className='text-xs text-muted-foreground'>
-                    {order.customer.email}
+                    {order.customerEmail}
                   </p>
                 </div>
               </TableCell>
-              <TableCell>
-                <div className='flex items-center gap-2'>
-                  {order.items.slice(0, 2).map((item) => (
-                    <img
-                      key={item.id}
-                      src={item.productImage}
-                      alt={item.productName}
-                      className='h-8 w-8 rounded object-cover'
-                    />
-                  ))}
-                  {order.items.length > 2 && (
-                    <span className='text-xs text-muted-foreground'>
-                      +{order.items.length - 2}
-                    </span>
-                  )}
-                </div>
+              <TableCell className='text-right'>{order.itemCount}</TableCell>
+              <TableCell className='text-right'>
+                {order.totalAmount.toLocaleString('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                })}
               </TableCell>
-              <TableCell className='text-right'>${order.totalAmount}</TableCell>
-              <TableCell>{getStatusBadge(order.status)}</TableCell>
+              <TableCell>{getStatusBadge(order.orderStatus)}</TableCell>
               <TableCell className='text-sm text-muted-foreground'>
-                {formatDate(order.createdAt)}
+                {formatDate(order.orderDate)}
               </TableCell>
               <TableCell className='text-right'>
                 <DropdownMenu>
@@ -194,53 +135,6 @@ export function OrderTable({
                       <IconEye className='mr-2 h-4 w-4' />
                       {t('admin.orders.actions.viewDetails')}
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    {order.status === 'PLACED' && (
-                      <DropdownMenuItem
-                        onClick={() => onUpdateStatus?.(order.id, 'CONFIRMED')}
-                      >
-                        <IconCheck className='mr-2 h-4 w-4' />
-                        {t('admin.orders.actions.confirm')}
-                      </DropdownMenuItem>
-                    )}
-                    {order.status === 'CONFIRMED' && (
-                      <DropdownMenuItem
-                        onClick={() => onUpdateStatus?.(order.id, 'PROCESSING')}
-                      >
-                        <IconPackage className='mr-2 h-4 w-4' />
-                        {t('admin.orders.actions.process')}
-                      </DropdownMenuItem>
-                    )}
-                    {order.status === 'PROCESSING' && (
-                      <DropdownMenuItem
-                        onClick={() => onUpdateStatus?.(order.id, 'SHIPPED')}
-                      >
-                        <IconTruck className='mr-2 h-4 w-4' />
-                        {t('admin.orders.actions.ship')}
-                      </DropdownMenuItem>
-                    )}
-                    {order.status === 'SHIPPED' && (
-                      <DropdownMenuItem
-                        onClick={() => onUpdateStatus?.(order.id, 'DELIVERED')}
-                      >
-                        <IconCheck className='mr-2 h-4 w-4' />
-                        {t('admin.orders.actions.deliver')}
-                      </DropdownMenuItem>
-                    )}
-                    {!['DELIVERED', 'CANCELLED'].includes(order.status) && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className='text-destructive'
-                          onClick={() =>
-                            onUpdateStatus?.(order.id, 'CANCELLED')
-                          }
-                        >
-                          <IconX className='mr-2 h-4 w-4' />
-                          {t('admin.orders.actions.cancel')}
-                        </DropdownMenuItem>
-                      </>
-                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -248,6 +142,77 @@ export function OrderTable({
           ))}
         </TableBody>
       </Table>
+      {pagination != null && (
+        <div className='flex flex-wrap items-center justify-between gap-4 border-t px-4 py-3'>
+          <div className='flex items-center gap-2'>
+            <span className='text-sm text-muted-foreground'>
+              {t('admin.orders.pageSize', 'Hiển thị')}
+            </span>
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => onPageSizeChange?.(Number(v))}
+            >
+              <SelectTrigger className='h-9 w-[72px]'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {pageSizeOptions.map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className='text-sm text-muted-foreground'>
+              {t('admin.orders.pageSizeUnit', '/ trang')}
+            </span>
+          </div>
+          <Pagination className='mx-0 w-auto'>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page > 0) onPageChange?.(page - 1);
+                  }}
+                  className={page <= 0 ? 'pointer-events-none opacity-50' : ''}
+                  aria-disabled={page <= 0}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i).map((i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    href='#'
+                    isActive={i === page}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onPageChange?.(i);
+                    }}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page < totalPages - 1) onPageChange?.(page + 1);
+                  }}
+                  className={
+                    page >= totalPages - 1
+                      ? 'pointer-events-none opacity-50'
+                      : ''
+                  }
+                  aria-disabled={page >= totalPages - 1}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

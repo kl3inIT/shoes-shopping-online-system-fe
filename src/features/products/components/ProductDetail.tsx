@@ -30,6 +30,7 @@ export interface ProductDetailProps {
     id: string,
     size: string,
     color: string,
+
     quantity: number
   ) => void;
   onAddToWishlist?: (id: string) => void;
@@ -55,6 +56,7 @@ export function ProductDetail({
 }: ProductDetailProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -113,6 +115,7 @@ export function ProductDetail({
   const handleAddToCart = () => {
     if (selectedSize && selectedColor) {
       onAddToCart?.(id, selectedSize, selectedColor, quantity);
+
     }
   };
 
@@ -203,6 +206,25 @@ export function ProductDetail({
         </div>
 
         <Separator />
+
+        {/* Color (optional) */}
+        {colors.length > 0 && (
+          <div>
+            <h3 className='mb-3 font-medium'>Color</h3>
+            <div className='flex flex-wrap gap-2'>
+              {colors.map((color) => (
+                <Button
+                  key={color}
+                  variant={selectedColor === color ? 'default' : 'outline'}
+                  size='sm'
+                  onClick={() => setSelectedColor(color)}
+                >
+                  {color}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Size Selection */}
         <div className='space-y-3'>
