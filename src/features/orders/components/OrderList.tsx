@@ -11,6 +11,30 @@ export type OrderFilterStatus =
   | 'delivered'
   | 'cancelled';
 
+interface EmptyStateProps {
+  activeFilter: OrderFilterStatus;
+  onContinueShopping?: () => void;
+}
+
+function EmptyState({ activeFilter, onContinueShopping }: EmptyStateProps) {
+  return (
+    <div className='flex flex-col items-center justify-center py-16 text-center'>
+      <Package className='mb-4 h-16 w-16 text-muted-foreground/50' />
+      <h3 className='text-lg font-medium'>No orders found</h3>
+      <p className='mt-1 text-sm text-muted-foreground'>
+        {activeFilter === 'all'
+          ? "You haven't placed any orders yet"
+          : `No ${activeFilter} orders`}
+      </p>
+      {onContinueShopping && (
+        <Button className='mt-4' onClick={onContinueShopping}>
+          Start Shopping
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export interface OrderListProps {
   orders: Omit<
     OrderCardProps,
@@ -38,23 +62,6 @@ export function OrderList({
       ? orders
       : orders.filter((order) => order.status === activeFilter);
 
-  const EmptyState = () => (
-    <div className='flex flex-col items-center justify-center py-16 text-center'>
-      <Package className='mb-4 h-16 w-16 text-muted-foreground/50' />
-      <h3 className='text-lg font-medium'>No orders found</h3>
-      <p className='mt-1 text-sm text-muted-foreground'>
-        {activeFilter === 'all'
-          ? "You haven't placed any orders yet"
-          : `No ${activeFilter} orders`}
-      </p>
-      {onContinueShopping && (
-        <Button className='mt-4' onClick={onContinueShopping}>
-          Start Shopping
-        </Button>
-      )}
-    </div>
-  );
-
   return (
     <div className='space-y-4'>
       <Tabs
@@ -72,7 +79,10 @@ export function OrderList({
 
         <TabsContent value={activeFilter} className='mt-4'>
           {filteredOrders.length === 0 ? (
-            <EmptyState />
+            <EmptyState
+              activeFilter={activeFilter}
+              onContinueShopping={onContinueShopping}
+            />
           ) : (
             <div className='space-y-4'>
               {filteredOrders.map((order) => (

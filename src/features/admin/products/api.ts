@@ -1,4 +1,5 @@
 import apiClient from '@/features/apiClient';
+import type { ResponseGeneral } from '@/features/products';
 
 export async function uploadShoeImage(file: File): Promise<string> {
   const formData = new FormData();
@@ -35,7 +36,7 @@ export async function createShoe(
   payload: CreateShoePayload,
   shoeImages?: File[],
   variantImages?: File[][]
-) {
+): Promise<ResponseGeneral<unknown>> {
   const formData = new FormData();
 
   formData.append('request', JSON.stringify(payload));
@@ -56,7 +57,10 @@ export async function createShoe(
     });
   }
 
-  const response = await apiClient.post('/api/shoes', formData);
+  const response = await apiClient.post<ResponseGeneral<unknown>>(
+    '/api/shoes',
+    formData
+  );
 
   return response.data;
 }

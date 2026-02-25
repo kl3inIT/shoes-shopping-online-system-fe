@@ -1,7 +1,6 @@
 import apiClient from '@/features/apiClient';
 import {
   type ShoeResponse,
-  type ShoeVariantResponse,
   type ResponseGeneral,
   type PageResponse,
   type BrandResponse,
