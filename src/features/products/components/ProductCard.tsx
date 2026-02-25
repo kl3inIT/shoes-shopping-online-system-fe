@@ -16,7 +16,6 @@ export interface ProductCardProps {
   originalPrice?: number;
   image: string;
   brand: string;
-  isNew?: boolean;
   isSale?: boolean;
   rating?: number;
   onAddToCart?: (id: string) => void;
@@ -31,7 +30,6 @@ export function ProductCard({
   originalPrice,
   image,
   brand,
-  isNew,
   isSale,
   rating,
   onAddToCart,

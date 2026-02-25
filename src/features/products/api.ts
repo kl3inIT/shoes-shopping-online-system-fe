@@ -38,20 +38,6 @@ export async function getShoeById(id: string): Promise<ShoeResponse> {
   return response.data.data;
 }
 
-/**
- * Get variants for a specific shoe
- * @param shoeId - Shoe UUID
- * @returns Promise with array of ShoeVariantResponse
- */
-export async function getShoeVariants(
-  shoeId: string
-): Promise<ShoeVariantResponse[]> {
-  const response = await apiClient.get<ResponseGeneral<ShoeVariantResponse[]>>(
-    `${SHOES_ENDPOINT}/${shoeId}/variants`
-  );
-  return response.data.data;
-}
-
 export async function deleteShoe(id: string): Promise<void> {
   await apiClient.delete(`${SHOES_ENDPOINT}/${id}`);
 }

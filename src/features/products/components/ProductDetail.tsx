@@ -5,6 +5,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Heart, ShoppingCart, Minus, Plus, Share2 } from 'lucide-react';
 
+export interface ProductImage {
+  id: string;
+  url: string;
+  alt: string;
+}
+
+export interface ProductSize {
+  value: string;
+  label: string;
+  inStock?: boolean;
+}
+
 export interface ProductVariant {
   id: string;
   size: string;
@@ -22,6 +34,7 @@ export interface ProductDetailProps {
   description: string;
   images: ProductImage[]; // Base images from shoe
   variants: ProductVariant[];
+  sizes?: ProductSize[];
   rating?: number;
   reviewCount?: number;
   isSale?: boolean;
