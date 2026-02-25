@@ -1,45 +1,45 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import {
-  getAllShoes,
-  getAllBrands,
-  getAllCategories,
-  getShoeById,
-  type ShoeResponse,
-  type BrandResponse,
-  type CategoryResponse,
-} from './api';
+  shoesQueryOptions,
+  adminShoesAllQueryOptions,
+  adminShoesDeletedQueryOptions,
+  adminShoesNotDeletedQueryOptions,
+  brandsQueryOptions,
+  categoriesQueryOptions,
+  shoeByIdQueryOptions,
+} from './queryOptions';
+import type { ShoeResponse, BrandResponse, CategoryResponse } from './types';
 
-export const shoesQueryKey = ['shoes'] as const;
-export const brandsQueryKey = ['brands'] as const;
-export const categoriesQueryKey = ['categories'] as const;
-export const shoeByIdQueryKey = (id: string) => ['shoes', id] as const;
+export * from './queryOptions';
 
 export function useShoes(): UseQueryResult<ShoeResponse[], Error> {
-  return useQuery({
-    queryKey: shoesQueryKey,
-    queryFn: getAllShoes,
-  });
+  return useQuery(shoesQueryOptions());
+}
+
+export function useAdminShoesAll(): UseQueryResult<ShoeResponse[], Error> {
+  return useQuery(adminShoesAllQueryOptions());
+}
+
+export function useAdminShoesDeleted(): UseQueryResult<ShoeResponse[], Error> {
+  return useQuery(adminShoesDeletedQueryOptions());
+}
+
+export function useAdminShoesNotDeleted(): UseQueryResult<
+  ShoeResponse[],
+  Error
+> {
+  return useQuery(adminShoesNotDeletedQueryOptions());
 }
 
 export function useBrands(): UseQueryResult<BrandResponse[], Error> {
-  return useQuery({
-    queryKey: brandsQueryKey,
-    queryFn: getAllBrands,
-  });
+  return useQuery(brandsQueryOptions());
 }
 
 export function useCategories(): UseQueryResult<CategoryResponse[], Error> {
-  return useQuery({
-    queryKey: categoriesQueryKey,
-    queryFn: getAllCategories,
-  });
+  return useQuery(categoriesQueryOptions());
 }
 
 export function useShoeById(id?: string): UseQueryResult<ShoeResponse, Error> {
-  return useQuery({
-    queryKey: shoeByIdQueryKey(id ?? ''),
-    queryFn: () => getShoeById(id!),
-    enabled: !!id,
-  });
+  return useQuery(shoeByIdQueryOptions(id ?? null));
 }

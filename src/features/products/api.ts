@@ -1,55 +1,29 @@
 import apiClient from '@/features/apiClient';
-
-export interface ShoeVariantResponse {
-  id: string;
-  shoeId: string;
-  size: string;
-  color: string;
-  quantity: number;
-  sku: string;
-  imageUrls: string[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ShoeResponse {
-  id: string;
-  name: string;
-  description: string;
-  slug: string;
-  material: string;
-  gender: string;
-  status: string;
-  categoryId: string;
-  categoryName: string;
-  categorySlug: string;
-  brandId: string;
-  brandName: string;
-  brandSlug: string;
-  price: number;
-  imageUrls: string[];
-  variants: ShoeVariantResponse[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ResponseGeneral<T> {
-  message: string;
-  code: string;
-  data: T;
-  timestamp: string;
-}
+import {
+  type ShoeResponse,
+  type ShoeVariantResponse,
+  type ResponseGeneral,
+  type PageResponse,
+  type BrandResponse,
+  type CategoryResponse,
+} from './types';
 
 const SHOES_ENDPOINT = '/api/shoes';
 
 /**
- * Get all shoes from the backend API
- * @returns Promise with array of ShoeResponse
+ * Get all shoes from the backend API (first page) for catalog/admin.
+ * Hiện tại FE tự filter & paginate, nên chỉ cần content.
  */
 export async function getAllShoes(): Promise<ShoeResponse[]> {
-  const response =
-    await apiClient.get<ResponseGeneral<ShoeResponse[]>>(SHOES_ENDPOINT);
-  return response.data.data;
+  const response = await apiClient.get<
+    ResponseGeneral<PageResponse<ShoeResponse>>
+  >(SHOES_ENDPOINT, {
+    params: {
+      page: 0,
+      size: 200,
+    },
+  });
+  return response.data.data.content;
 }
 
 /**
@@ -78,20 +52,31 @@ export async function getShoeVariants(
   return response.data.data;
 }
 
-export interface BrandResponse {
-  id: string;
-  name: string;
-  description: string;
-  slug: string;
-  imageUrl?: string;
+export async function deleteShoe(id: string): Promise<void> {
+  await apiClient.delete(`${SHOES_ENDPOINT}/${id}`);
 }
 
-export interface CategoryResponse {
-  id: string;
-  name: string;
-  description: string;
-  slug: string;
-  parentId?: string;
+// ===== Admin-only shoe APIs =====
+
+export async function getAdminShoesAll(): Promise<ShoeResponse[]> {
+  const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
+    `${SHOES_ENDPOINT}/admin/all`
+  );
+  return response.data.data;
+}
+
+export async function getAdminShoesDeleted(): Promise<ShoeResponse[]> {
+  const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
+    `${SHOES_ENDPOINT}/admin/deleted`
+  );
+  return response.data.data;
+}
+
+export async function getAdminShoesNotDeleted(): Promise<ShoeResponse[]> {
+  const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
+    `${SHOES_ENDPOINT}/admin/not-deleted`
+  );
+  return response.data.data;
 }
 
 export async function getAllBrands(): Promise<BrandResponse[]> {
