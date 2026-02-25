@@ -47,7 +47,7 @@ export const mockProductDetail: Omit<
     { value: '44', label: '44', inStock: true },
     { value: '45', label: '45', inStock: false },
   ],
-  colors: ['Black', 'White', 'Red', 'Navy'],
+  variants: [],
   rating: 4.5,
   reviewCount: 128,
   isNew: true,

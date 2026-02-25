@@ -63,7 +63,8 @@ apiClient.interceptors.request.use(
     const isFormData = config.data instanceof FormData;
 
     if (!config.headers) {
-      config.headers = {};
+      config.headers = axios.defaults.headers
+        .common as InternalAxiosRequestConfig['headers'];
     }
 
     if (isFormData) {

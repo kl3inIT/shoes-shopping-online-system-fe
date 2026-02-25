@@ -16,6 +16,7 @@ export interface ProductCardProps {
   originalPrice?: number;
   image: string;
   brand: string;
+  isNew?: boolean;
   isSale?: boolean;
   rating?: number;
   onAddToCart?: (id: string) => void;

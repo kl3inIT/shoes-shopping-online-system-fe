@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { QrPaymentCard, type QrPaymentInfo } from '@/features/qr';
-import { use, useEffect } from 'react';
-import { WebSocketContext } from '@/providers';
 
 export function PaymentQrPage() {
   const navigate = useNavigate();

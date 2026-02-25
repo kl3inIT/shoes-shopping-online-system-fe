@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  forwardRef,
-  useCallback,
-  useRef,
-  useState,
-  type ReactElement,
-} from 'react';
+import { useCallback, useRef, useState, type ReactElement } from 'react';
 import { ArrowDown, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
