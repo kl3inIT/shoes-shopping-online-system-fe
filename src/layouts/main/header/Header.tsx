@@ -1,4 +1,4 @@
-import { Menu, X, ShoppingCart, Heart } from 'lucide-react';
+import { Menu, X, ShoppingCart, Heart, Bell } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -13,9 +13,19 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { UserMenu } from './UserMenu';
 import { useIsMobile } from '@/hooks/useMobile';
+import { NotificationList } from '@/features/notifications/components';
+import {
+  useUserNotifications,
+  useMarkNotificationAsRead,
+} from '@/features/notifications/api/userNotificationApi';
 
 export function Header() {
   const { t } = useTranslation();
@@ -29,6 +39,9 @@ export function Header() {
   // Mock cart count - replace with real data later
   const cartItemCount = 3;
   const wishlistCount = 2;
+
+  const { data: notifications = [] } = useUserNotifications();
+  const markAsReadMutation = useMarkNotificationAsRead();
 
   const mainNavigation = [
     { to: '/', label: t('nav.home') },
@@ -88,6 +101,51 @@ export function Header() {
           </div>
 
           <div className='flex items-center gap-2'>
+            {/* Notifications */}
+            {auth.isAuthenticated && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='relative hidden sm:flex'
+                  >
+                    <Bell className='h-5 w-5' />
+                    {notifications.some((n) => !n.isRead) && (
+                      <Badge
+                        variant='destructive'
+                        className='absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs'
+                      >
+                        {
+                          notifications.filter(
+                            (notification) => !notification.isRead
+                          ).length
+                        }
+                      </Badge>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align='end'
+                  className='w-[360px] p-0'
+                  sideOffset={8}
+                >
+                  <NotificationList
+                    notifications={notifications}
+                    maxHeight={400}
+                    onMarkAsRead={(id) => {
+                      const notification = notifications.find(
+                        (n) => n.id === id
+                      );
+                      if (notification && !notification.isRead) {
+                        markAsReadMutation.mutate(id);
+                      }
+                    }}
+                  />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             {/* Wishlist Button */}
             <Tooltip>
               <TooltipTrigger asChild>

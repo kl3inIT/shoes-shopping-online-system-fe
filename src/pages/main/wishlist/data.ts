@@ -6,7 +6,7 @@ export const mockWishlistItems: Omit<
 >[] = [
   {
     id: 'wish-1',
-    productId: '1',
+    productId: '11111111-1111-1111-1111-111111111111',
     name: 'Nike Air Max 270',
     brand: 'Nike',
     image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
@@ -17,7 +17,7 @@ export const mockWishlistItems: Omit<
   },
   {
     id: 'wish-2',
-    productId: '4',
+    productId: '44444444-4444-4444-4444-444444444444',
     name: 'New Balance 990v5',
     brand: 'New Balance',
     image: 'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400',
@@ -27,7 +27,7 @@ export const mockWishlistItems: Omit<
   },
   {
     id: 'wish-3',
-    productId: '7',
+    productId: '77777777-7777-7777-7777-777777777777',
     name: 'Jordan 1 Retro High',
     brand: 'Jordan',
     image: 'https://images.unsplash.com/photo-1597045566677-8cf032ed6634?w=400',
@@ -37,7 +37,7 @@ export const mockWishlistItems: Omit<
   },
   {
     id: 'wish-4',
-    productId: '3',
+    productId: '33333333-3333-3333-3333-333333333333',
     name: 'Puma RS-X',
     brand: 'Puma',
     image: 'https://images.unsplash.com/photo-1608379743498-fa39e1ca79b2?w=400',

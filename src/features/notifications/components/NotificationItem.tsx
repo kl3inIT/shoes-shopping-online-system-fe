@@ -1,12 +1,13 @@
 import { Package, Tag, Bell, CreditCard, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Đồng bộ với enum NotificationType trên backend (SYSTEM, PROMOTION, ORDER, PAYMENT, DELIVERY)
 export type NotificationType =
-  | 'order'
-  | 'promotion'
-  | 'system'
-  | 'payment'
-  | 'delivery';
+  | 'ORDER'
+  | 'PROMOTION'
+  | 'SYSTEM'
+  | 'PAYMENT'
+  | 'DELIVERY';
 
 export interface NotificationItemProps {
   id: string;
@@ -24,11 +25,11 @@ const typeConfig: Record<
   NotificationType,
   { icon: typeof Bell; color: string }
 > = {
-  order: { icon: Package, color: 'text-blue-500' },
-  promotion: { icon: Tag, color: 'text-green-500' },
-  system: { icon: Bell, color: 'text-gray-500' },
-  payment: { icon: CreditCard, color: 'text-purple-500' },
-  delivery: { icon: CheckCircle, color: 'text-orange-500' },
+  ORDER: { icon: Package, color: 'text-blue-500' },
+  PROMOTION: { icon: Tag, color: 'text-green-500' },
+  SYSTEM: { icon: Bell, color: 'text-gray-500' },
+  PAYMENT: { icon: CreditCard, color: 'text-purple-500' },
+  DELIVERY: { icon: CheckCircle, color: 'text-orange-500' },
 };
 
 export function NotificationItem({

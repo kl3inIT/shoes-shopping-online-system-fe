@@ -7,6 +7,7 @@ import {
   IconStarFilled,
   IconEye,
 } from '@tabler/icons-react';
+import { type ReviewStatus } from '@/features/reviews';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,9 +28,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export type ReviewStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
-
-export interface Review {
+export interface AdminReviewItem {
   id: string;
   customer: {
     id: string;
@@ -54,15 +53,17 @@ export interface Review {
 }
 
 interface ReviewTableProps {
-  reviews: Review[];
-  onViewDetails?: (review: Review) => void;
+  reviews: AdminReviewItem[];
+  onViewDetails?: (review: AdminReviewItem) => void;
   onUpdateStatus?: (reviewId: string, status: ReviewStatus) => void;
+  onDelete?: (reviewId: string) => void;
 }
 
 export function ReviewTable({
   reviews,
   onViewDetails,
   onUpdateStatus,
+  onDelete,
 }: ReviewTableProps) {
   const { t } = useTranslation();
 
@@ -191,6 +192,14 @@ export function ReviewTable({
                         {t('admin.reviews.actions.reject')}
                       </DropdownMenuItem>
                     )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className='text-destructive'
+                      onClick={() => onDelete?.(review.id)}
+                    >
+                      <IconX className='mr-2 h-4 w-4' />
+                      {t('admin.reviews.actions.delete')}
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

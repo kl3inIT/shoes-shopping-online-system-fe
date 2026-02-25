@@ -5,6 +5,7 @@ import {
   IconStar,
   IconStarFilled,
 } from '@tabler/icons-react';
+import { type ReviewStatus } from '@/features/reviews';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,12 +18,12 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
-import type { Review, ReviewStatus } from './ReviewTable';
+import type { AdminReviewItem } from './ReviewTable';
 
 interface ReviewDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  review: Review | null;
+  review: AdminReviewItem | null;
   onUpdateStatus?: (reviewId: string, status: ReviewStatus) => void;
 }
 

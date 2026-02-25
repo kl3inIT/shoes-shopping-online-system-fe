@@ -5,7 +5,7 @@ export const mockProductDetail: Omit<
   ProductDetailProps,
   'onAddToCart' | 'onAddToWishlist' | 'onShare'
 > = {
-  id: '1',
+  id: '11111111-1111-1111-1111-111111111111',
   name: 'Nike Air Max 270',
   brand: 'Nike',
   price: 150,
@@ -35,14 +35,54 @@ export const mockProductDetail: Omit<
     },
   ],
   sizes: [
-    { value: '38', label: '38', inStock: true },
-    { value: '39', label: '39', inStock: true },
-    { value: '40', label: '40', inStock: true },
-    { value: '41', label: '41', inStock: false },
-    { value: '42', label: '42', inStock: true },
-    { value: '43', label: '43', inStock: true },
-    { value: '44', label: '44', inStock: true },
-    { value: '45', label: '45', inStock: false },
+    {
+      id: 'fb4a4b1a-9c1a-1a2b-3c4d-5e6f7a8b9c0d',
+      value: '38',
+      label: '38',
+      inStock: true,
+    },
+    {
+      id: 'ab1a2b3c-4d5e-6f7a-8b9c-0d1e2f3a4b5c',
+      value: '39',
+      label: '39',
+      inStock: true,
+    },
+    {
+      id: 'bc2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d',
+      value: '40',
+      label: '40',
+      inStock: true,
+    },
+    {
+      id: 'cd3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e',
+      value: '41',
+      label: '41',
+      inStock: false,
+    },
+    {
+      id: 'de4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f',
+      value: '42',
+      label: '42',
+      inStock: true,
+    },
+    {
+      id: '14141414-1414-1414-1414-141414141414',
+      value: '43',
+      label: '43',
+      inStock: true,
+    }, // <-- đổi sang ID trong DB
+    {
+      id: 'fa6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b',
+      value: '44',
+      label: '44',
+      inStock: true,
+    },
+    {
+      id: '0b7a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c',
+      value: '45',
+      label: '45',
+      inStock: false,
+    },
   ],
   rating: 4.5,
   reviewCount: 128,

@@ -15,20 +15,52 @@ import {
   ReviewTable,
   ReviewStatsCards,
   ReviewDetailDialog,
-  type Review,
-  type ReviewStatus,
+  useAdminReviews,
+  useUpdateReviewStatus,
+  useDeleteReview,
+  type AdminReviewItem,
 } from '@/features/admin/reviews';
+import { type ReviewStatus } from '@/features/reviews';
 
-import { mockReviews, statusOptions, ratingOptions } from './data';
+import { statusOptions, ratingOptions } from './data';
+import { toast } from 'sonner';
 
 export default function AdminReviewsPage() {
   const { t } = useTranslation();
-  const [reviews, setReviews] = useState(mockReviews);
+  const { data: apiReviews = [], isLoading } = useAdminReviews();
+  const updateStatusMutation = useUpdateReviewStatus();
+  const deleteReviewMutation = useDeleteReview();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [ratingFilter, setRatingFilter] = useState<string>('all');
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+  const [selectedReview, setSelectedReview] = useState<AdminReviewItem | null>(
+    null
+  );
+
+  // Transform API reviews to local Review format
+  const reviews: AdminReviewItem[] = apiReviews.map((r: any) => ({
+    id: r.id,
+    customer: {
+      id: r.customerId,
+      name: r.customerName,
+      email: '', // Backend hiện chưa trả về email trong ReviewResponse
+      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.customerName}`,
+    },
+    product: {
+      id: r.shoeVariantId,
+      name: r.shoeName,
+      imageUrl:
+        r.imageUrls?.[0] ||
+        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+    },
+    rating: r.numberStars,
+    comment: r.description,
+    status: r.status,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+  }));
 
   // Filter reviews
   const filteredReviews = reviews.filter((review) => {
@@ -56,23 +88,39 @@ export default function AdminReviewsPage() {
         : '0',
   };
 
-  const handleViewDetails = (review: Review) => {
+  const handleViewDetails = (review: AdminReviewItem) => {
     setSelectedReview(review);
     setDetailDialogOpen(true);
   };
 
   const handleUpdateStatus = (reviewId: string, newStatus: ReviewStatus) => {
-    setReviews((prev) =>
-      prev.map((review) =>
-        review.id === reviewId
-          ? {
-              ...review,
-              status: newStatus,
-              updatedAt: new Date().toISOString(),
-            }
-          : review
-      )
+    updateStatusMutation.mutate(
+      { reviewId, status: newStatus },
+      {
+        onSuccess: () => {
+          toast.success(t('admin.reviews.updateSuccess'));
+          if (selectedReview?.id === reviewId) {
+            setDetailDialogOpen(false);
+          }
+        },
+        onError: () => {
+          toast.error(t('admin.reviews.updateError'));
+        },
+      }
     );
+  };
+
+  const handleDeleteReview = (reviewId: string) => {
+    if (window.confirm(t('admin.reviews.deleteConfirm'))) {
+      deleteReviewMutation.mutate(reviewId, {
+        onSuccess: () => {
+          toast.success(t('admin.reviews.deleteSuccess'));
+        },
+        onError: () => {
+          toast.error(t('admin.reviews.deleteError'));
+        },
+      });
+    }
   };
 
   return (
@@ -135,11 +183,18 @@ export default function AdminReviewsPage() {
 
       {/* Table */}
       <div className='px-4 lg:px-6'>
-        <ReviewTable
-          reviews={filteredReviews}
-          onViewDetails={handleViewDetails}
-          onUpdateStatus={handleUpdateStatus}
-        />
+        {isLoading ? (
+          <div className='flex h-64 items-center justify-center'>
+            <p>{t('common.loading')}</p>
+          </div>
+        ) : (
+          <ReviewTable
+            reviews={filteredReviews}
+            onViewDetails={handleViewDetails}
+            onUpdateStatus={handleUpdateStatus}
+            onDelete={handleDeleteReview}
+          />
+        )}
       </div>
 
       {/* Review Detail Dialog */}

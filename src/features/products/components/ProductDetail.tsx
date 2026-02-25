@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Heart, ShoppingCart, Minus, Plus, Share2 } from 'lucide-react';
 
 export interface ProductSize {
+  id: string;
   value: string;
   label: string;
   inStock: boolean;
@@ -35,6 +36,7 @@ export interface ProductDetailProps {
   onAddToCart?: (id: string, size: string, quantity: number) => void;
   onAddToWishlist?: (id: string) => void;
   onShare?: (id: string) => void;
+  onVariantChange?: (variantId: string) => void;
 }
 
 export function ProductDetail({
@@ -54,6 +56,7 @@ export function ProductDetail({
   onAddToCart,
   onAddToWishlist,
   onShare,
+  onVariantChange,
 }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -154,7 +157,10 @@ export function ProductDetail({
                 variant={selectedSize === size.value ? 'default' : 'outline'}
                 size='sm'
                 disabled={!size.inStock}
-                onClick={() => setSelectedSize(size.value)}
+                onClick={() => {
+                  setSelectedSize(size.value);
+                  onVariantChange?.(size.id);
+                }}
                 className='min-w-[3rem]'
               >
                 {size.label}

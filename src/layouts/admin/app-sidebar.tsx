@@ -8,6 +8,7 @@ import {
   IconChartBar,
   IconDashboard,
   IconHelp,
+  IconNotification,
   IconPackage,
   IconSearch,
   IconSettings,
@@ -73,6 +74,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t('admin.nav.reviews'),
       url: '/admin/reviews',
       icon: IconStar,
+    },
+    {
+      title: t('admin.nav.notifications'),
+      url: '/admin/notifications',
+      icon: IconNotification,
     },
     {
       title: t('admin.nav.inventory'),

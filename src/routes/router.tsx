@@ -198,6 +198,14 @@ export const router = createBrowserRouter([
           return { Component };
         },
       },
+      {
+        path: 'notifications',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/notifications/AdminNotificationsPage');
+          return { Component };
+        },
+      },
     ],
   },
 ]);

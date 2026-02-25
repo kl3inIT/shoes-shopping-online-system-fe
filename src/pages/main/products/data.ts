@@ -3,7 +3,7 @@ import type { FilterOption } from '@/features/products';
 
 export const mockProducts: ProductCardProps[] = [
   {
-    id: '1',
+    id: '11111111-1111-1111-1111-111111111111',
     name: 'Nike Air Max 270',
     price: 150,
     originalPrice: 180,
@@ -14,7 +14,7 @@ export const mockProducts: ProductCardProps[] = [
     rating: 4.5,
   },
   {
-    id: '2',
+    id: '22222222-2222-2222-2222-222222222222',
     name: 'Adidas Ultraboost 22',
     price: 190,
     image: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
@@ -23,7 +23,7 @@ export const mockProducts: ProductCardProps[] = [
     rating: 4.8,
   },
   {
-    id: '3',
+    id: '33333333-3333-3333-3333-333333333333',
     name: 'Puma RS-X',
     price: 110,
     originalPrice: 130,
@@ -33,7 +33,7 @@ export const mockProducts: ProductCardProps[] = [
     rating: 4.2,
   },
   {
-    id: '4',
+    id: '44444444-4444-4444-4444-444444444444',
     name: 'New Balance 990v5',
     price: 185,
     image: 'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400',
@@ -41,7 +41,7 @@ export const mockProducts: ProductCardProps[] = [
     rating: 4.7,
   },
   {
-    id: '5',
+    id: '55555555-5555-5555-5555-555555555555',
     name: 'Converse Chuck Taylor',
     price: 65,
     image: 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=400',
@@ -49,7 +49,7 @@ export const mockProducts: ProductCardProps[] = [
     rating: 4.4,
   },
   {
-    id: '6',
+    id: '66666666-6666-6666-6666-666666666666',
     name: 'Vans Old Skool',
     price: 70,
     image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
@@ -57,7 +57,7 @@ export const mockProducts: ProductCardProps[] = [
     rating: 4.3,
   },
   {
-    id: '7',
+    id: '77777777-7777-7777-7777-777777777777',
     name: 'Jordan 1 Retro High',
     price: 170,
     image: 'https://images.unsplash.com/photo-1597045566677-8cf032ed6634?w=400',
@@ -66,7 +66,7 @@ export const mockProducts: ProductCardProps[] = [
     rating: 4.9,
   },
   {
-    id: '8',
+    id: '88888888-8888-8888-8888-888888888888',
     name: 'Reebok Classic Leather',
     price: 80,
     originalPrice: 95,
