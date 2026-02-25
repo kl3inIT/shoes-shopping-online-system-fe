@@ -27,7 +27,8 @@ import {
   ProductFilters,
   type Product,
 } from '@/features/admin/products';
-import { useShoes, type ShoeResponse } from '@/features/products';
+import { useAdminShoesAll, type ShoeResponse } from '@/features/products';
+import { deleteShoe } from '@/features/products/api';
 import { API_BASE_URL } from '@/features/apiClient';
 
 import { brandOptions, statusOptions } from './data';
@@ -56,6 +57,7 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
     imageUrl: firstImageUrl,
     basePrice: shoe.price,
     status: shoe.status as Product['status'],
+    deleted: shoe.deleted,
     variants: shoe.variants.map((variant) => ({
       id: variant.id,
       sku: variant.sku,
@@ -63,9 +65,7 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
       color: variant.color,
       price: shoe.price,
       stockQuantity: variant.quantity,
-      status: (variant.quantity === 0
-        ? 'OUT_OF_STOCK'
-        : 'AVAILABLE') as (typeof shoe.variants)[number]['status'],
+      status: variant.quantity === 0 ? 'OUT_OF_STOCK' : 'AVAILABLE',
     })),
     reviewCount: 0,
     averageRating: 0,
@@ -77,7 +77,7 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
 export default function AdminProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: shoes, isLoading, isError } = useShoes();
+  const { data: shoes } = useAdminShoesAll();
   const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -147,11 +147,15 @@ export default function AdminProductsPage() {
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedProduct) {
-      setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id));
-      setDeleteDialogOpen(false);
-      setSelectedProduct(null);
+      try {
+        await deleteShoe(selectedProduct.id);
+        setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id));
+      } finally {
+        setDeleteDialogOpen(false);
+        setSelectedProduct(null);
+      }
     }
   };
 

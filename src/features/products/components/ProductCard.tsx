@@ -31,7 +31,6 @@ export function ProductCard({
   originalPrice,
   image,
   brand,
-  isNew,
   isSale,
   rating,
   onAddToCart,

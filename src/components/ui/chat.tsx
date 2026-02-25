@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  forwardRef,
-  useCallback,
-  useRef,
-  useState,
-  type ReactElement,
-} from 'react';
+import { useCallback, useRef, useState, type ReactElement } from 'react';
 import { ArrowDown, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -277,10 +271,13 @@ export function ChatMessages({
   );
 }
 
-export const ChatContainer = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+export const ChatContainer = ({
+  ref,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  ref?: React.RefObject<HTMLDivElement | null>;
+}) => {
   return (
     <div
       ref={ref}
@@ -288,7 +285,7 @@ export const ChatContainer = forwardRef<
       {...props}
     />
   );
-});
+};
 ChatContainer.displayName = 'ChatContainer';
 
 interface ChatFormProps {
@@ -304,28 +301,31 @@ interface ChatFormProps {
   }) => ReactElement;
 }
 
-export const ChatForm = forwardRef<HTMLFormElement, ChatFormProps>(
-  ({ children, handleSubmit, className }, ref) => {
-    const [files, setFiles] = useState<File[] | null>(null);
+export const ChatForm = ({
+  ref,
+  children,
+  handleSubmit,
+  className,
+}: ChatFormProps & { ref?: React.RefObject<HTMLFormElement | null> }) => {
+  const [files, setFiles] = useState<File[] | null>(null);
 
-    const onSubmit = (event: React.FormEvent) => {
-      if (!files) {
-        handleSubmit(event);
-        return;
-      }
+  const onSubmit = (event: React.FormEvent) => {
+    if (!files) {
+      handleSubmit(event);
+      return;
+    }
 
-      const fileList = createFileList(files);
-      handleSubmit(event, { experimental_attachments: fileList });
-      setFiles(null);
-    };
+    const fileList = createFileList(files);
+    handleSubmit(event, { experimental_attachments: fileList });
+    setFiles(null);
+  };
 
-    return (
-      <form ref={ref} onSubmit={onSubmit} className={className}>
-        {children({ files, setFiles })}
-      </form>
-    );
-  }
-);
+  return (
+    <form ref={ref} onSubmit={onSubmit} className={className}>
+      {children({ files, setFiles })}
+    </form>
+  );
+};
 ChatForm.displayName = 'ChatForm';
 
 function createFileList(files: File[] | FileList): FileList {

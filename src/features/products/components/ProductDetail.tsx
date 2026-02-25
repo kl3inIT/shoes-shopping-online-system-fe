@@ -5,6 +5,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Heart, ShoppingCart, Minus, Plus, Share2 } from 'lucide-react';
 
+export interface ProductImage {
+  id: string;
+  url: string;
+  alt: string;
+}
+
+export interface ProductSize {
+  value: string;
+  label: string;
+  inStock?: boolean;
+}
+
 export interface ProductVariant {
   id: string;
   size: string;
@@ -22,9 +34,11 @@ export interface ProductDetailProps {
   description: string;
   images: ProductImage[]; // Base images from shoe
   variants: ProductVariant[];
+  sizes?: ProductSize[];
   rating?: number;
   reviewCount?: number;
   isSale?: boolean;
+  isNew?: boolean;
   specifications?: { label: string; value: string }[];
   onAddToCart?: (
     id: string,
@@ -76,13 +90,13 @@ export function ProductDetail({
   // Combine shoe images and all variant images for a single horizontal gallery
   // Each image will have a unique stable ID to avoid re-renders
   const allImages = [
-    ...images.map((img, i) => ({ ...img, type: 'shoe', index: i })),
+    ...images.map((img) => ({ ...img, type: 'shoe' as const })),
     ...variants.flatMap((v) =>
       v.imageUrls.map((url, i) => ({
         id: `variant-${v.id}-${i}`,
         url,
         alt: `${name} ${v.color}`,
-        type: 'variant',
+        type: 'variant' as const,
         variantId: v.id,
       }))
     ),
@@ -104,7 +118,10 @@ export function ProductDetail({
     );
     if (variant && variant.imageUrls.length > 0) {
       const firstImageIndex = allImages.findIndex(
-        (img) => img.type === 'variant' && img.variantId === variant.id
+        (img) =>
+          img.type === 'variant' &&
+          'variantId' in img &&
+          img.variantId === variant.id
       );
       if (firstImageIndex !== -1) {
         setActiveImageIndex(firstImageIndex);

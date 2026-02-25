@@ -62,14 +62,17 @@ apiClient.interceptors.request.use(
     // ==== QUAN TRỌNG: xử lý Content-Type ====
     const isFormData = config.data instanceof FormData;
 
+    if (!config.headers) {
+      config.headers = axios.defaults.headers
+        .common as InternalAxiosRequestConfig['headers'];
+    }
+
     if (isFormData) {
-      if (config.headers && 'Content-Type' in config.headers) {
-        delete (config.headers as any)['Content-Type'];
+      if ('Content-Type' in config.headers) {
+        delete (config.headers as Record<string, unknown>)['Content-Type'];
       }
-    } else {
-      if (!config.headers['Content-Type']) {
-        config.headers['Content-Type'] = 'application/json';
-      }
+    } else if (!config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json';
     }
 
     (config as unknown as { _metadata?: { startTime: number } })._metadata = {

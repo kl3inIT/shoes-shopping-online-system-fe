@@ -28,7 +28,6 @@ import {
   useBrands,
   useCategories,
   type ShoeResponse,
-  type ProductCardProps,
   type BrandResponse,
   type CategoryResponse,
 } from '@/features/products';
@@ -36,6 +35,18 @@ import { useIsMobile } from '@/hooks/useMobile';
 import { resolveImageUrl } from '@/lib/image';
 
 import { sizeOptions, sortOptions, priceRange } from './data';
+
+type MappedProduct = {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  brand: string;
+  brandSlug: string;
+  categorySlug: string;
+  createdAt: string;
+  rating: number;
+};
 
 export default function ProductsPage() {
   const { t } = useTranslation();
@@ -58,8 +69,8 @@ export default function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // Map ShoeResponse to ProductCardProps
-  const mappedProducts: ProductCardProps[] = shoesData.map(
+  // Map ShoeResponse to view model for filters + ProductGrid
+  const mappedProducts: MappedProduct[] = shoesData.map(
     (shoe: ShoeResponse) => ({
       id: shoe.id,
       name: shoe.name,
@@ -78,7 +89,7 @@ export default function ProductsPage() {
   );
 
   // Filter products based on search and filters
-  const filteredProducts = mappedProducts.filter((product: any) => {
+  const filteredProducts = mappedProducts.filter((product: MappedProduct) => {
     // Search filter
     if (
       searchValue &&
@@ -116,22 +127,24 @@ export default function ProductsPage() {
   });
 
   // Sort products
-  const sortedProducts = [...filteredProducts].sort((a: any, b: any) => {
-    switch (selectedSort) {
-      case 'newest':
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      case 'price-asc':
-        return a.price - b.price;
-      case 'price-desc':
-        return b.price - a.price;
-      case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
-      default:
-        return 0;
+  const sortedProducts = [...filteredProducts].sort(
+    (a: MappedProduct, b: MappedProduct) => {
+      switch (selectedSort) {
+        case 'newest':
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case 'price-asc':
+          return a.price - b.price;
+        case 'price-desc':
+          return b.price - a.price;
+        case 'rating':
+          return b.rating - a.rating;
+        default:
+          return 0;
+      }
     }
-  });
+  );
 
   // Client-side Paginate
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
@@ -311,17 +324,19 @@ export default function ProductsPage() {
                     />
                   </PaginationItem>
 
-                  {Array.from({ length: totalPages }).map((_, i) => (
-                    <PaginationItem key={i + 1}>
-                      <PaginationLink
-                        onClick={() => setCurrentPage(i + 1)}
-                        isActive={currentPage === i + 1}
-                        className='cursor-pointer'
-                      >
-                        {i + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(
+                    (page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(page)}
+                          isActive={currentPage === page}
+                          className='cursor-pointer'
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
 
                   <PaginationItem>
                     <PaginationNext

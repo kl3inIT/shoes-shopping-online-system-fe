@@ -46,6 +46,7 @@ export interface Product {
   averageRating: number;
   createdAt: string;
   updatedAt: string;
+  deleted?: boolean;
 }
 
 interface ProductTableProps {
@@ -110,6 +111,7 @@ export function ProductTable({
               {t('admin.products.table.stock')}
             </TableHead>
             <TableHead>{t('admin.products.table.status')}</TableHead>
+            <TableHead>{'Deleted'}</TableHead>
             <TableHead className='text-right'>
               {t('admin.products.table.actions')}
             </TableHead>
@@ -150,6 +152,13 @@ export function ProductTable({
                 </span>
               </TableCell>
               <TableCell>{getStatusBadge(product.status)}</TableCell>
+              <TableCell>
+                {product.deleted ? (
+                  <Badge variant='destructive'>Deleted</Badge>
+                ) : (
+                  <Badge variant='outline'>Active</Badge>
+                )}
+              </TableCell>
               <TableCell className='text-right'>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

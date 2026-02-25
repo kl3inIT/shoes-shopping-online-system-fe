@@ -1,4 +1,3 @@
-import type { ProductCardProps } from '@/features/products';
 import type { FilterOption } from '@/features/products';
 
 export const brandOptions: FilterOption[] = [
