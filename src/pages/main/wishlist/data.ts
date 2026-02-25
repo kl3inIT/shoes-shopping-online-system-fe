@@ -2,7 +2,7 @@ import type { WishlistItemProps } from '@/features/wishlist';
 
 export const mockWishlistItems: Omit<
   WishlistItemProps,
-  'onAddToCart' | 'onRemove' | 'onClick'
+  'onRemove' | 'onClick'
 >[] = [
   {
     id: 'wish-1',

@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { QrPaymentCard, type QrPaymentInfo } from '@/features/qr';
-import { useContext, useEffect } from 'react';
-import { WebSocketContext } from '@/providers';
 
 export function PaymentQrPage() {
   const navigate = useNavigate();
@@ -18,18 +16,18 @@ export function PaymentQrPage() {
     orderCode: 'SSOS-OD3423-JSKDF',
   };
 
-  const stompClient = useContext(WebSocketContext);
-  useEffect(() => {
-    if (!stompClient) return;
+  // const stompClient = use(WebSocketContext);
+  // useEffect(() => {
+  //   if (!stompClient) return;
 
-    const subscription = stompClient.subscribe('/user/queue/orders', (msg) => {
-      console.log('QR nhận:', msg.body);
-    });
+  //   const subscription = stompClient.subscribe('/user/queue/orders', (msg) => {
+  //     console.log('QR nhận:', msg.body);
+  //   });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [stompClient]);
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, [stompClient]);
 
   return (
     <div className='container mx-auto px-4 py-8'>

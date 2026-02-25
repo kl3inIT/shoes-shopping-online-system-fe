@@ -59,25 +59,9 @@ export const router = createBrowserRouter([
           return { Component };
         },
       },
-      // Protected routes - Yêu cầu đăng nhập
       {
         element: <ProtectedRoute />,
         children: [
-          {
-            path: 'profile/:keycloakId',
-            lazy: async () => {
-              const [{ default: Component }, { profileLoader }] =
-                await Promise.all([
-                  import('@/pages/main/profile/ProfilePage'),
-                  import('@/pages/main/profile/profileLoader'),
-                ]);
-              return {
-                Component,
-                loader: profileLoader(queryClient),
-              };
-            },
-            errorElement: <RootErrorBoundary />,
-          },
           {
             path: 'cart',
             lazy: async () => {
@@ -93,6 +77,21 @@ export const router = createBrowserRouter([
                 await import('@/pages/main/wishlist/WishlistPage');
               return { Component };
             },
+          },
+          {
+            path: 'profile/:keycloakId',
+            lazy: async () => {
+              const [{ default: Component }, { profileLoader }] =
+                await Promise.all([
+                  import('@/pages/main/profile/ProfilePage'),
+                  import('@/pages/main/profile/profileLoader'),
+                ]);
+              return {
+                Component,
+                loader: profileLoader(queryClient),
+              };
+            },
+            errorElement: <RootErrorBoundary />,
           },
           {
             path: 'checkout',
