@@ -42,7 +42,9 @@ apiClient.interceptors.request.use(
     if (getIsAuthReady()) {
       try {
         const token = await getAccessTokenFromProvider();
-        config.headers.Authorization = `Bearer ${token}`;
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       } catch (error) {
         console.warn(
           '[API Client] Failed to get access token, proceeding without token:',
@@ -53,6 +55,19 @@ apiClient.interceptors.request.use(
       console.log(
         `[API Client] Auth not ready, proceeding without token for ${config.method?.toUpperCase()} ${config.url}`
       );
+    }
+
+    // ==== QUAN TRỌNG: xử lý Content-Type ====
+    const isFormData = config.data instanceof FormData;
+
+    if (isFormData) {
+      if (config.headers && 'Content-Type' in config.headers) {
+        delete (config.headers as any)['Content-Type'];
+      }
+    } else {
+      if (!config.headers['Content-Type']) {
+        config.headers['Content-Type'] = 'application/json';
+      }
     }
 
     (config as unknown as { _metadata?: { startTime: number } })._metadata = {

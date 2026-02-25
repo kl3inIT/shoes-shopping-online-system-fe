@@ -12,3 +12,51 @@ export async function uploadShoeImage(file: File): Promise<string> {
 
   return res.data as string;
 }
+
+export interface CreateShoePayloadVariant {
+  size: string;
+  color: string;
+  quantity: number;
+}
+
+export interface CreateShoePayload {
+  name: string;
+  description: string;
+  material: string;
+  gender: string;
+  status: string;
+  categoryId: string;
+  brandId: string;
+  price: number;
+  variants: CreateShoePayloadVariant[];
+}
+
+export async function createShoe(
+  payload: CreateShoePayload,
+  shoeImages?: File[],
+  variantImages?: File[][]
+) {
+  const formData = new FormData();
+
+  formData.append('request', JSON.stringify(payload));
+
+  if (shoeImages && shoeImages.length > 0) {
+    shoeImages.forEach((file) => {
+      formData.append('shoeImages', file);
+    });
+  }
+
+  if (variantImages && variantImages.length > 0) {
+    variantImages.forEach((variantFiles, index) => {
+      if (variantFiles && variantFiles.length > 0) {
+        variantFiles.forEach((file) => {
+          formData.append(`variantImages${index}`, file);
+        });
+      }
+    });
+  }
+
+  const response = await apiClient.post('/api/shoes', formData);
+
+  return response.data;
+}
