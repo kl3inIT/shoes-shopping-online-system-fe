@@ -17,16 +17,18 @@ declare module 'axios' {
   }
 }
 
-const getBaseURL = (): string => {
+export const API_BASE_URL = getBaseURL();
+
+function getBaseURL(): string {
   // const envUrl = import.meta.env.VITE_API_BASE_URL;
   // if (envUrl) {
   //   return envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl;
   // }
   return 'http://localhost:8088';
-};
+}
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: getBaseURL(),
+  baseURL: API_BASE_URL,
   timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
