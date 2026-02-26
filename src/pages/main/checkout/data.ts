@@ -1,6 +1,6 @@
-import type { CheckoutItem } from '@/features/checkout';
-import type { PaymentOption } from '@/features/checkout';
-import type { ShippingAddress } from '@/features/checkout';
+import type { CheckoutItem } from '@/features/home/checkout';
+import type { PaymentOption } from '@/features/home/checkout';
+import type { ShippingAddress } from '@/features/home/checkout';
 
 export const mockCheckoutItems: CheckoutItem[] = [
   {

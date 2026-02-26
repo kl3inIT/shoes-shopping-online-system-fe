@@ -23,7 +23,7 @@ import {
   type ProductStatus as ShoeStatus,
 } from './data';
 import { createShoe } from '@/features/admin/products/api';
-import { useBrands, useCategories } from '@/features/products';
+import { useBrands, useCategories } from '@/features/home/products';
 
 interface VariantFormState {
   id: string;

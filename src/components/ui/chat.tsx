@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  forwardRef,
-  useCallback,
-  useRef,
-  useState,
-  type ReactElement,
-} from 'react';
+import { useCallback, useRef, useState, type ReactElement } from 'react';
 import { ArrowDown, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -79,9 +73,15 @@ export function Chat({
     if (!setMessages) return;
 
     const latestMessages = [...messagesRef.current];
-    const lastAssistantMessage = latestMessages.findLast(
-      (m) => m.role === 'assistant'
-    );
+    // Find last assistant message without using Array.prototype.findLast
+    let lastAssistantMessage: Message | undefined;
+    for (let i = latestMessages.length - 1; i >= 0; i -= 1) {
+      const msg = latestMessages[i];
+      if (msg.role === 'assistant') {
+        lastAssistantMessage = msg;
+        break;
+      }
+    }
 
     if (!lastAssistantMessage) return;
 
@@ -90,7 +90,7 @@ export function Chat({
 
     if (lastAssistantMessage.toolInvocations) {
       const updatedToolInvocations = lastAssistantMessage.toolInvocations.map(
-        (toolInvocation) => {
+        (toolInvocation: any) => {
           if (toolInvocation.state === 'call') {
             needsUpdate = true;
             return {
@@ -147,7 +147,7 @@ export function Chat({
 
     if (needsUpdate) {
       const messageIndex = latestMessages.findIndex(
-        (m) => m.id === lastAssistantMessage.id
+        (m: Message) => m.id === lastAssistantMessage!.id
       );
       if (messageIndex !== -1) {
         latestMessages[messageIndex] = updatedMessage;
@@ -213,11 +213,7 @@ export function Chat({
         </ChatMessages>
       ) : null}
 
-      <ChatForm
-        className='mt-auto'
-        isPending={isGenerating || isTyping}
-        handleSubmit={handleSubmit}
-      >
+      <ChatForm className='mt-auto' handleSubmit={handleSubmit}>
         {({ files, setFiles }) => (
           <MessageInput
             value={input}
@@ -298,7 +294,6 @@ ChatContainer.displayName = 'ChatContainer';
 
 interface ChatFormProps {
   className?: string;
-  isPending: boolean;
   handleSubmit: (
     event?: { preventDefault?: () => void },
     options?: { experimental_attachments?: FileList }
@@ -313,7 +308,6 @@ export const ChatForm = ({
   ref,
   children,
   handleSubmit,
-  isPending,
   className,
 }: ChatFormProps & { ref?: React.RefObject<HTMLFormElement | null> }) => {
   const [files, setFiles] = useState<File[] | null>(null);

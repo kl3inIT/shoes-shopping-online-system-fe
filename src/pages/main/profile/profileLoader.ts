@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { QueryClient } from '@tanstack/react-query';
-import { getUserDetailQueryOptions } from '@/features/user/queryOptions';
+import { getUserDetailQueryOptions } from '@/features/home/user/queryOptions';
 import { isHttpError } from '@/features/apiClient';
 
 export const profileLoader =

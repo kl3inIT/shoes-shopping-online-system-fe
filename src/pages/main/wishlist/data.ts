@@ -1,4 +1,4 @@
-import type { WishlistItemProps } from '@/features/wishlist';
+import type { WishlistItemProps } from '@/features/home/wishlist';
 
 export const mockWishlistItems: Omit<
   WishlistItemProps,

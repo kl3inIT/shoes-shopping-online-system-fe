@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useUserDetailQuery } from '@/features/user/hooks';
+import { useUserDetailQuery } from '@/features/home/user/hooks';
 
 type ProfileLoaderData = Awaited<
   ReturnType<ReturnType<typeof import('./profileLoader').profileLoader>>

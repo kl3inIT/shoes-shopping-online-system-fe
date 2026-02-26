@@ -6,9 +6,12 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ProductCard } from '@/features/products';
-import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
-import { useAddToWishlistMutation } from '@/features/wishlist';
+import { ProductCard } from '@/features/home/products';
+import {
+  AddToCartDialog,
+  type AddToCartDialogProduct,
+} from '@/features/home/cart';
+import { useAddToWishlistMutation } from '@/features/home/wishlist';
 import { FloatingChat } from '@/features/ai/component/FloatingChat';
 
 import {

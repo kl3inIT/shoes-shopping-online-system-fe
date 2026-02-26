@@ -6,7 +6,7 @@ import {
   useQueryWishlist,
   useRemoveFromWishlistMutation,
   mapWishlistDtoToItemProps,
-} from '@/features/wishlist';
+} from '@/features/home/wishlist';
 
 export function WishlistPage() {
   const { t } = useTranslation();

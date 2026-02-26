@@ -4,8 +4,8 @@ import {
   ProductDetail,
   useShoeById,
   type ProductDetailProps,
-} from '@/features/products';
-import { ReviewCard, ReviewForm, Rating } from '@/features/reviews';
+} from '@/features/home/products';
+import { ReviewCard, ReviewForm, Rating } from '@/features/home/reviews';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';

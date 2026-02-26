@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { QrPaymentCard, type QrPaymentInfo } from '@/features/qr';
+import { QrPaymentCard, type QrPaymentInfo } from '@/features/home/qr';
 
 export function PaymentQrPage() {
   const navigate = useNavigate();
