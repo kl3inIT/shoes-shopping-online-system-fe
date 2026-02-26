@@ -15,7 +15,7 @@ export function WishlistPage() {
 
   const filterParams = {
     sortBy: 'createdAt' as const,
-    sortOrder: (sortByDateAsc ? 'desc' : 'asc') as 'desc' | 'asc',
+    sortOrder: sortByDateAsc ? 'desc' : 'asc',
   };
 
   const { data, isPending, isError, error } = useQueryWishlist(filterParams);

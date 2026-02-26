@@ -1,22 +1,14 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type Message } from '@/components/ui/chat-message';
-import apiClient from '@/features/apiClient';
-
-interface ChatRequest {
-  question: string;
-  provider?: 'chatgpt' | 'gemini';
-}
-
-interface ChatResponse {
-  provider: string;
-  answer: string;
-}
+import { sendChat } from '@/features/ai/api';
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -25,31 +17,10 @@ export function useChat() {
     []
   );
 
-  const append = useCallback((message: { role: 'user'; content: string }) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: message.content,
-      createdAt: new Date(),
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-  }, []);
+  const sendMessage = useCallback(
+    async (question: string) => {
+      if (!question.trim() || isLoading) return;
 
-  const handleSubmit = useCallback(
-    async (
-      event?: { preventDefault?: () => void },
-      _options?: { experimental_attachments?: FileList }
-    ) => {
-      event?.preventDefault?.();
-
-      if (!input.trim() || isLoading) return;
-
-      const question = input.trim();
-      setInput('');
-      setError(null);
-
-      // Thêm user message vào UI ngay lập tức
       const userMessage: Message = {
         id: `user-${Date.now()}`,
         role: 'user',
@@ -58,36 +29,34 @@ export function useChat() {
       };
       setMessages((prev) => [...prev, userMessage]);
       setIsLoading(true);
+      setError(null);
 
       try {
-        const response = await apiClient.post<ChatResponse>(
-          '/chat',
-          {
-            question,
-            provider: 'chatgpt',
-          } as ChatRequest,
-          {
-            skipAuth: true, // Chat endpoint là public
-          }
-        );
+        const chatData = await sendChat(question, { skipAuth: true });
 
-        // Thêm assistant message
         const assistantMessage: Message = {
           id: `assistant-${Date.now()}`,
           role: 'assistant',
-          content: response.data.answer,
+          content: chatData.output,
           createdAt: new Date(),
         };
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (err) {
-        setError('Không thể kết nối tới chatbot. Vui lòng thử lại.');
+        setError(
+          t(
+            'ai.chat.error.cannotConnect',
+            'Không thể kết nối tới chatbot. Vui lòng thử lại.'
+          )
+        );
         console.error('Chat error:', err);
 
-        // Thêm error message
         const errorMessage: Message = {
           id: `error-${Date.now()}`,
           role: 'assistant',
-          content: 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.',
+          content: t(
+            'ai.chat.error.generic',
+            'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.'
+          ),
           createdAt: new Date(),
         };
         setMessages((prev) => [...prev, errorMessage]);
@@ -95,7 +64,30 @@ export function useChat() {
         setIsLoading(false);
       }
     },
-    [input, isLoading]
+    [isLoading, t]
+  );
+
+  const append = useCallback(
+    (message: { role: 'user'; content: string }) => {
+      setInput('');
+      void sendMessage(message.content);
+    },
+    [sendMessage]
+  );
+
+  const handleSubmit = useCallback(
+    async (
+      event?: { preventDefault?: () => void },
+      _options?: { experimental_attachments?: FileList }
+    ) => {
+      event?.preventDefault?.();
+
+      const question = input.trim();
+      setInput('');
+      if (!question) return;
+      await sendMessage(question);
+    },
+    [input, sendMessage]
   );
 
   const stop = useCallback(() => {

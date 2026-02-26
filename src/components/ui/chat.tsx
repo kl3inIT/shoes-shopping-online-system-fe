@@ -1,7 +1,14 @@
 'use client';
 
-import { useCallback, useRef, useState, type ReactElement } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useRef,
+  useState,
+  type ReactElement,
+} from 'react';
 import { ArrowDown, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/utils';
 import { useAutoScroll } from '@/hooks/use-auto-scroll';
@@ -63,6 +70,7 @@ export function Chat({
 
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
+  const { t } = useTranslation();
 
   // Enhanced stop function that marks pending tool calls as cancelled
   const handleStop = useCallback(() => {
@@ -71,9 +79,9 @@ export function Chat({
     if (!setMessages) return;
 
     const latestMessages = [...messagesRef.current];
-    const lastAssistantMessage = [...latestMessages]
-      .reverse()
-      .find((m: Message) => m.role === 'assistant');
+    const lastAssistantMessage = latestMessages.findLast(
+      (m) => m.role === 'assistant'
+    );
 
     if (!lastAssistantMessage) return;
 
@@ -82,7 +90,7 @@ export function Chat({
 
     if (lastAssistantMessage.toolInvocations) {
       const updatedToolInvocations = lastAssistantMessage.toolInvocations.map(
-        (toolInvocation: any) => {
+        (toolInvocation) => {
           if (toolInvocation.state === 'call') {
             needsUpdate = true;
             return {
@@ -189,7 +197,7 @@ export function Chat({
     <ChatContainer className={className}>
       {isEmpty && append && suggestions ? (
         <PromptSuggestions
-          label='Try these prompts ✨'
+          label={t('ai.chat.tryThesePrompts', 'Try these prompts ✨')}
           append={append}
           suggestions={suggestions}
         />
@@ -305,6 +313,7 @@ export const ChatForm = ({
   ref,
   children,
   handleSubmit,
+  isPending,
   className,
 }: ChatFormProps & { ref?: React.RefObject<HTMLFormElement | null> }) => {
   const [files, setFiles] = useState<File[] | null>(null);

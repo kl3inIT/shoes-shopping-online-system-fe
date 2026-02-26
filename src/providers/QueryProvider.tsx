@@ -6,9 +6,9 @@ export function QueryProvider({ children }: Readonly<PropsWithChildren>) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {import.meta.env.DEV && (
+      {/* {import.meta.env.DEV && (
         <ReactQueryDevtools initialIsOpen={false} position='bottom' />
-      )}
+      )} */}
     </QueryClientProvider>
   );
 }
