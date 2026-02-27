@@ -1,4 +1,4 @@
-import apiClient from '../../apiClient';
+import apiClient from '../apiClient';
 import type { User, UserResponseDto } from './types';
 
 export async function getUserById(id: string): Promise<User> {

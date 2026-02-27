@@ -30,7 +30,7 @@ import {
   type ShoeResponse,
   type BrandResponse,
   type CategoryResponse,
-} from '@/features/home/products';
+} from '@/features/products';
 import { useIsMobile } from '@/hooks/useMobile';
 import { resolveImageUrl } from '@/lib/image';
 

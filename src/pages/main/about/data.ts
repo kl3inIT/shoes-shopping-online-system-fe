@@ -1,6 +1,6 @@
 import { Truck, Shield, RefreshCw, Headphones } from 'lucide-react';
-import type { FaqItem } from '@/features/home/about';
-import type { AboutFeature } from '@/features/home/about';
+import type { FaqItem } from '@/features/about';
+import type { AboutFeature } from '@/features/about';
 
 export const aboutFeatures: AboutFeature[] = [
   {

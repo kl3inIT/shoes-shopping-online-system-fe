@@ -6,7 +6,7 @@ import {
   CheckoutOrderSummary,
   PaymentMethod,
   type ShippingAddress,
-} from '@/features/home/checkout';
+} from '@/features/checkout';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import {

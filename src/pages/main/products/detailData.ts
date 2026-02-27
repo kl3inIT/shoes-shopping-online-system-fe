@@ -1,5 +1,5 @@
-import type { ProductDetailProps } from '@/features/home/products';
-import type { ReviewCardProps } from '@/features/home/reviews';
+import type { ProductDetailProps } from '@/features/products';
+import type { ReviewCardProps } from '@/features/reviews';
 
 /** UUID giày Nike Air Max 270 - khớp với bảng shoes trong DB */
 const MOCK_SHOE_ID = '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d';

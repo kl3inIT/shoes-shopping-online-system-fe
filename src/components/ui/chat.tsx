@@ -147,7 +147,7 @@ export function Chat({
 
     if (needsUpdate) {
       const messageIndex = latestMessages.findIndex(
-        (m: Message) => m.id === lastAssistantMessage!.id
+        (m: Message) => m.id === lastAssistantMessage.id
       );
       if (messageIndex !== -1) {
         latestMessages[messageIndex] = updatedMessage;

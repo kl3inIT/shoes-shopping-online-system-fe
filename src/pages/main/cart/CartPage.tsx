@@ -9,7 +9,7 @@ import {
   useRemoveCartItemMutation,
   useClearCartMutation,
   mapCartItemDtoToProps,
-} from '@/features/home/cart';
+} from '@/features/cart';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, ArrowLeft, Trash2 } from 'lucide-react';
 import {

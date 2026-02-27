@@ -1,5 +1,5 @@
 import apiClient from '@/features/apiClient';
-import type { ResponseGeneral } from '@/features/home/products';
+import type { ResponseGeneral } from '@/features/products';
 
 export async function uploadShoeImage(file: File): Promise<string> {
   const formData = new FormData();

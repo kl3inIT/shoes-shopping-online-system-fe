@@ -1,4 +1,4 @@
-import type { FilterOption } from '@/features/home/products';
+import type { FilterOption } from '@/features/products';
 
 export const brandOptions: FilterOption[] = [
   { value: 'nike', label: 'Nike', count: 15 },

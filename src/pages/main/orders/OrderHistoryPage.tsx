@@ -5,7 +5,7 @@ import {
   OrderList,
   OrderTimeline,
   type OrderFilterStatus,
-} from '@/features/home/orders';
+} from '@/features/orders';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import {

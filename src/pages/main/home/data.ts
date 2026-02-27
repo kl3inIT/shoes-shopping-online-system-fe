@@ -1,4 +1,4 @@
-import type { ProductCardProps } from '@/features/home/products';
+import type { ProductCardProps } from '@/features/products';
 import { Truck, Shield, RefreshCw, Headphones } from 'lucide-react';
 
 export const heroContent = {

@@ -1,16 +1,16 @@
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useNavigation,
-  useSearchParams,
-} from 'react-router';
+import { useEffect, useState } from 'react';
+import { Link, useLoaderData, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 import {
   type AiTargetType,
   useAiParametersListQuery,
   useAiParameterDetailQuery,
+  useCreateAiParameterFromDefaultMutation,
+  useUpdateAiParameterMutation,
+  useActivateAiParameterMutation,
+  useCopyAiParameterMutation,
+  useDeleteAiParameterMutation,
 } from '@/features/ai/parameters';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,12 +27,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-type LoaderData = Awaited<
-  ReturnType<
-    ReturnType<typeof import('./aiParametersLoader').aiParametersLoader>
-  >
->;
-
 function targetToLabel(type: AiTargetType) {
   switch (type) {
     case 'SEARCH':
@@ -45,17 +39,40 @@ function targetToLabel(type: AiTargetType) {
 
 export function AiParametersTab() {
   const { t } = useTranslation();
-  const navigation = useNavigation();
   const [searchParams] = useSearchParams();
-  const loaderData = useLoaderData() as LoaderData;
-  const currentType = loaderData.type as AiTargetType;
-  const selectedId = loaderData.selectedId as string | null;
+  const loaderData = useLoaderData();
+  const currentType = loaderData.type;
+  const selectedId = loaderData.selectedId;
 
   const { data: list } = useAiParametersListQuery(currentType);
   const hasSelection = !!selectedId;
   const { data: selected } = useAiParameterDetailQuery(selectedId ?? '');
 
-  const isSubmitting = navigation.state === 'submitting';
+  const [description, setDescription] = useState('');
+  const [content, setContent] = useState('');
+
+  useEffect(() => {
+    if (selected) {
+      setDescription(selected.description ?? '');
+      setContent(selected.content);
+    } else {
+      setDescription('');
+      setContent('');
+    }
+  }, [selected]);
+
+  const createFromDefaultMutation = useCreateAiParameterFromDefaultMutation();
+  const updateMutation = useUpdateAiParameterMutation();
+  const activateMutation = useActivateAiParameterMutation();
+  const copyMutation = useCopyAiParameterMutation();
+  const deleteMutation = useDeleteAiParameterMutation();
+
+  const isSubmitting =
+    createFromDefaultMutation.isPending ||
+    updateMutation.isPending ||
+    activateMutation.isPending ||
+    copyMutation.isPending ||
+    deleteMutation.isPending;
 
   const makeTypeUrl = (type: AiTargetType) => {
     const next = new URLSearchParams(searchParams);
@@ -68,6 +85,34 @@ export function AiParametersTab() {
     const next = new URLSearchParams(searchParams);
     next.set('id', id);
     return `?${next.toString()}`;
+  };
+
+  const handleCreateFromDefault = () => {
+    createFromDefaultMutation.mutate(currentType);
+  };
+
+  const handleUpdate = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selected) return;
+    updateMutation.mutate({
+      id: selected.id,
+      payload: { content, description },
+    });
+  };
+
+  const handleActivate = () => {
+    if (!selected) return;
+    activateMutation.mutate(selected.id);
+  };
+
+  const handleCopy = () => {
+    if (!selected) return;
+    copyMutation.mutate(selected.id);
+  };
+
+  const handleDelete = () => {
+    if (!selected || selected.active) return;
+    deleteMutation.mutate(selected.id);
   };
 
   return (
@@ -117,16 +162,17 @@ export function AiParametersTab() {
                 }
               )}
             </p>
-            <Form method='post'>
-              <input type='hidden' name='intent' value='createFromDefault' />
-              <input type='hidden' name='targetType' value={currentType} />
-              <Button size='sm' variant='outline' disabled={isSubmitting}>
-                {t(
-                  'admin.ai.parameters.createFromDefault',
-                  'Tạo từ default YAML'
-                )}
-              </Button>
-            </Form>
+            <Button
+              size='sm'
+              variant='outline'
+              disabled={isSubmitting}
+              onClick={handleCreateFromDefault}
+            >
+              {t(
+                'admin.ai.parameters.createFromDefault',
+                'Tạo từ default YAML'
+              )}
+            </Button>
           </div>
 
           <ScrollArea className='h-[360px]'>
@@ -203,21 +249,15 @@ export function AiParametersTab() {
               )}
             </p>
           ) : (
-            <Form method='post' className='space-y-3'>
-              <input type='hidden' name='id' value={selected.id} />
-              <input
-                type='hidden'
-                name='targetType'
-                value={selected.targetType}
-              />
-
+            <form className='space-y-3' onSubmit={handleUpdate}>
               <div className='space-y-1'>
                 <label className='text-xs font-medium text-muted-foreground'>
                   {t('admin.ai.parameters.fields.description', 'Mô tả')}
                 </label>
                 <Input
                   name='description'
-                  defaultValue={selected.description ?? ''}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   placeholder={t(
                     'admin.ai.parameters.fields.descriptionPlaceholder',
                     'VD: Prompt cho Chat / Search'
@@ -231,7 +271,8 @@ export function AiParametersTab() {
                 </label>
                 <Textarea
                   name='content'
-                  defaultValue={selected.content}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
                   className='font-mono text-xs leading-relaxed'
                   rows={18}
                 />
@@ -239,48 +280,39 @@ export function AiParametersTab() {
 
               <div className='flex flex-wrap items-center justify-between gap-2 pt-1'>
                 <div className='flex gap-2'>
-                  <Button
-                    type='submit'
-                    name='intent'
-                    value='update'
-                    size='sm'
-                    disabled={isSubmitting}
-                  >
+                  <Button type='submit' size='sm' disabled={isSubmitting}>
                     {t('common.save', 'Lưu')}
                   </Button>
                   <Button
-                    type='submit'
+                    type='button'
                     variant='outline'
-                    name='intent'
-                    value='activate'
                     size='sm'
                     disabled={isSubmitting || selected.active}
+                    onClick={handleActivate}
                   >
                     {t('admin.ai.parameters.actions.activate', 'Kích hoạt')}
                   </Button>
                   <Button
-                    type='submit'
+                    type='button'
                     variant='outline'
-                    name='intent'
-                    value='copy'
                     size='sm'
                     disabled={isSubmitting}
+                    onClick={handleCopy}
                   >
                     {t('admin.ai.parameters.actions.copy', 'Nhân bản')}
                   </Button>
                 </div>
                 <Button
-                  type='submit'
+                  type='button'
                   variant='destructive'
-                  name='intent'
-                  value='delete'
                   size='sm'
                   disabled={isSubmitting || selected.active}
+                  onClick={handleDelete}
                 >
                   {t('common.delete', 'Xóa')}
                 </Button>
               </div>
-            </Form>
+            </form>
           )}
         </CardContent>
       </Card>

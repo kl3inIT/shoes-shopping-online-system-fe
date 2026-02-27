@@ -27,8 +27,8 @@ import {
   ProductFilters,
   type Product,
 } from '@/features/admin/products';
-import { useAdminShoesAll, type ShoeResponse } from '@/features/home/products';
-import { deleteShoe } from '@/features/home/products/api';
+import { useAdminShoesAll, type ShoeResponse } from '@/features/products';
+import { deleteShoe } from '@/features/products/api';
 import { API_BASE_URL } from '@/features/apiClient';
 
 import { brandOptions, statusOptions } from './data';

@@ -5,7 +5,7 @@ import {
   adminShoesAllQueryKey,
   adminShoesDeletedQueryKey,
   adminShoesNotDeletedQueryKey,
-} from '@/features/home/products';
+} from '@/features/products';
 
 interface CreateShoeArgs {
   payload: CreateShoePayload;

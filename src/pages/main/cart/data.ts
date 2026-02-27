@@ -1,4 +1,4 @@
-import type { CartItemProps } from '@/features/home/cart';
+import type { CartItemProps } from '@/features/cart';
 
 export const mockCartItems: Omit<
   CartItemProps,

@@ -2,7 +2,7 @@ import type {
   OrderCardProps,
   OrderStatus,
   TimelineStep,
-} from '@/features/home/orders';
+} from '@/features/orders';
 
 export const mockOrders: Omit<
   OrderCardProps,
