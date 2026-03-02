@@ -84,6 +84,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: '/admin/analytics',
       icon: IconChartBar,
     },
+    {
+      title: t('admin.nav.ai'),
+      url: '/admin/ai',
+      icon: IconHelp,
+    },
   ];
 
   const navSecondary = [

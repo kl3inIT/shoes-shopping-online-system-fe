@@ -2,6 +2,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 import {
   QrPaymentCard,
   usePaymentInfoQuery,
@@ -25,18 +26,19 @@ export function PaymentQrPage() {
     orderCode: data?.orderCode ?? 'SSOS-OD3423-JSKDF',
   };
 
-  // const stompClient = useContext(WebSocketContext);
-  // useEffect(() => {
-  //   if (!stompClient) return;
+  const stompClient = useContext(WebSocketContext);
 
-  //   const subscription = stompClient.subscribe('/user/queue/orders', (msg) => {
-  //     console.log('QR nhận:', msg.body);
-  //   });
+  useEffect(() => {
+    if (!stompClient) return;
 
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [stompClient]);
+    const subscription = stompClient.subscribe('/user/queue/orders', (msg) => {
+      console.log('QR nhận:', msg.body);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [stompClient]);
 
   return (
     <div className='container mx-auto px-4 py-8'>

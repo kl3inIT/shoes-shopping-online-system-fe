@@ -198,6 +198,20 @@ export const router = createBrowserRouter([
           return { Component };
         },
       },
+      {
+        path: 'ai',
+        lazy: async () => {
+          const [{ AiAdminPage: Component }, { aiParametersLoader }] =
+            await Promise.all([
+              import('@/pages/admin/ai'),
+              import('@/pages/admin/ai/parameters/aiParametersLoader'),
+            ]);
+          return {
+            Component,
+            loader: aiParametersLoader(queryClient),
+          };
+        },
+      },
     ],
   },
 ]);

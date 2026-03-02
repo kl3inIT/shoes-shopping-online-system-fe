@@ -1,5 +1,5 @@
 export type ProductStatus = 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK';
-export type Gender = 'MEN' | 'WOMEN' | 'UNISEX' | 'KIDS';
+export type Gender = 'MEN' | 'WOMEN' | 'UNISEX';
 
 export interface ProductVariant {
   id: string;
@@ -259,7 +259,6 @@ export const genderOptions = [
   { value: 'MEN', label: 'Men' },
   { value: 'WOMEN', label: 'Women' },
   { value: 'UNISEX', label: 'Unisex' },
-  { value: 'KIDS', label: 'Kids' },
 ];
 
 export const statusOptions = [

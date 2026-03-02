@@ -17,17 +17,19 @@ declare module 'axios' {
   }
 }
 
-const getBaseURL = (): string => {
+export const API_BASE_URL = getBaseURL();
+
+function getBaseURL(): string {
   // const envUrl = import.meta.env.VITE_API_BASE_URL;
   // if (envUrl) {
   //   return envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl;
   // }
   return 'http://localhost:8088';
-};
+}
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: getBaseURL(),
-  timeout: 30000,
+  baseURL: API_BASE_URL,
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -42,7 +44,9 @@ apiClient.interceptors.request.use(
     if (getIsAuthReady()) {
       try {
         const token = await getAccessTokenFromProvider();
-        config.headers.Authorization = `Bearer ${token}`;
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       } catch (error) {
         console.warn(
           '[API Client] Failed to get access token, proceeding without token:',
@@ -53,6 +57,22 @@ apiClient.interceptors.request.use(
       console.log(
         `[API Client] Auth not ready, proceeding without token for ${config.method?.toUpperCase()} ${config.url}`
       );
+    }
+
+    // ==== QUAN TRỌNG: xử lý Content-Type ====
+    const isFormData = config.data instanceof FormData;
+
+    if (!config.headers) {
+      config.headers = axios.defaults.headers
+        .common as InternalAxiosRequestConfig['headers'];
+    }
+
+    if (isFormData) {
+      if ('Content-Type' in config.headers) {
+        delete (config.headers as Record<string, unknown>)['Content-Type'];
+      }
+    } else if (!config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json';
     }
 
     (config as unknown as { _metadata?: { startTime: number } })._metadata = {
@@ -103,11 +123,16 @@ apiClient.interceptors.response.use(
     });
 
     if (!error.response) {
-      const networkError = new HttpError(error.config, 0, {
-        detail: i18n.t('http.error.network', 'Không thể kết nối tới máy chủ'),
-        messageKey: 'http.error.network',
+      const isTimeout =
+        error.code === 'ECONNABORTED' || error.message?.includes('timeout');
+      const messageKey = isTimeout
+        ? 'http.error.timeout'
+        : 'http.error.network';
+      const noResponseError = new HttpError(error.config, 0, {
+        detail: i18n.t(messageKey),
+        messageKey,
       });
-      return Promise.reject(networkError);
+      return Promise.reject(noResponseError);
     }
 
     const { status = 0, data } = error.response;
@@ -179,6 +204,10 @@ apiClient.interceptors.response.use(
 
 export function isHttpError(error: unknown): error is HttpError {
   return error instanceof HttpError;
+}
+
+export function isNoResponseError(error: unknown): boolean {
+  return isHttpError(error) && error.status === 0;
 }
 
 export function getErrorMessage(error: unknown): string {

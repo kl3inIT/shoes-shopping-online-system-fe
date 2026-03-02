@@ -457,6 +457,7 @@
   "http": {
     "error": {
       "network": "Unable to connect to the server.",
+      "timeout": "The server is taking too long to respond. Please try again.",
       "unknown": "An unexpected error occurred. Please try again.",
       "400": "Invalid data.",
       "401": "Your session has expired. Please log in again.",
@@ -504,6 +505,7 @@
       "reviews": "Reviews",
       "inventory": "Inventory",
       "analytics": "Analytics",
+      "ai": "AI",
       "settings": "Settings",
       "help": "Help",
       "search": "Search"

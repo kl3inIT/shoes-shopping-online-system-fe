@@ -24,7 +24,7 @@ import {
   useUpdateBrandMutation,
   useDeleteBrandMutation,
   type Brand,
-} from '@/features/admin/brands';
+} from '@/features/brands';
 
 function mapDtoToBrand(dto: {
   id: string;

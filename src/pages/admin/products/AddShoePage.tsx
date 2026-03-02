@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { IconTrash } from '@tabler/icons-react';
+import { IconTrash, IconX, IconPlus } from '@tabler/icons-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,19 +17,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  brandOptions,
-  categoryOptions,
   genderOptions,
   statusOptions,
   type Gender,
   type ProductStatus as ShoeStatus,
 } from './data';
+import { createShoe } from '@/features/admin/products/api';
+import { useBrands, useCategories } from '@/features/products';
+
 interface VariantFormState {
   id: string;
   size: string;
   color: string;
-  price: string;
   stockQuantity: string;
+  images: File[];
+  previewUrls: string[];
 }
 
 interface ShoeFormState {
@@ -45,11 +48,15 @@ interface ShoeFormState {
 export default function AddShoePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: brands = [] } = useBrands();
+  const { data: categories = [] } = useCategories();
 
   const [shoe, setShoe] = useState<ShoeFormState>({
     name: '',
-    brandId: brandOptions[0]?.value ?? '',
-    categoryId: categoryOptions[0]?.value ?? '',
+    brandId: '',
+    categoryId: '',
     gender: 'UNISEX',
     status: 'ACTIVE',
     basePrice: '',
@@ -60,6 +67,85 @@ export default function AddShoePage() {
   const [variants, setVariants] = useState<VariantFormState[]>([
     createEmptyVariant(1),
   ]);
+
+  const [shoeImages, setShoeImages] = useState<File[]>([]);
+  const [shoePreviewUrls, setShoePreviewUrls] = useState<string[]>([]);
+  const mainImageInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Cleanup preview URLs
+  useEffect(() => {
+    return () => {
+      shoePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+      variants.forEach((v) =>
+        v.previewUrls.forEach((url) => URL.revokeObjectURL(url))
+      );
+    };
+  }, []);
+
+  const handleChooseMainImage = () => {
+    mainImageInputRef.current?.click();
+  };
+
+  const handleMainImageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
+    setShoeImages((prev) => [...prev, ...files]);
+    setShoePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+
+    // Reset input
+    if (mainImageInputRef.current) mainImageInputRef.current.value = '';
+  };
+
+  const removeShoeImage = (index: number) => {
+    URL.revokeObjectURL(shoePreviewUrls[index]);
+    setShoeImages((prev) => prev.filter((_, i) => i !== index));
+    setShoePreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleVariantImageChange = (
+    variantId: string,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
+
+    setVariants((prev) =>
+      prev.map((v) =>
+        v.id === variantId
+          ? {
+              ...v,
+              images: [...v.images, ...files],
+              previewUrls: [...v.previewUrls, ...newPreviewUrls],
+            }
+          : v
+      )
+    );
+
+    // Reset input
+    event.target.value = '';
+  };
+
+  const removeVariantImage = (variantId: string, imageIndex: number) => {
+    setVariants((prev) =>
+      prev.map((v) => {
+        if (v.id === variantId) {
+          URL.revokeObjectURL(v.previewUrls[imageIndex]);
+          return {
+            ...v,
+            images: v.images.filter((_, i) => i !== imageIndex),
+            previewUrls: v.previewUrls.filter((_, i) => i !== imageIndex),
+          };
+        }
+        return v;
+      })
+    );
+  };
 
   const handleChange =
     (field: keyof ShoeFormState) =>
@@ -96,9 +182,11 @@ export default function AddShoePage() {
   };
 
   const handleRemoveVariant = (id: string) => {
-    setVariants((prev) =>
-      prev.length > 1 ? prev.filter((v) => v.id !== id) : prev
-    );
+    setVariants((prev) => {
+      const variant = prev.find((v) => v.id === id);
+      variant?.previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      return prev.length > 1 ? prev.filter((v) => v.id !== id) : prev;
+    });
   };
 
   const totalStock = variants.reduce(
@@ -110,27 +198,45 @@ export default function AddShoePage() {
     navigate('/admin/products');
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const payload = {
-      shoe: {
-        ...shoe,
-        quantity: totalStock,
-        price: Number(shoe.basePrice) || 0,
-      },
-      variants: variants.map((v) => ({
-        size: v.size,
-        color: v.color,
-        price: Number(v.price) || 0,
-        quantity: Number(v.stockQuantity) || 0,
-      })),
-    };
+    if (isSubmitting) return;
 
-    // For now we only log the payload – this is a pure UI screen.
-    // Later, this can be wired to the backend create endpoints.
-    // eslint-disable-next-line no-console
-    console.log('Add shoe payload:', payload);
+    if (!shoe.name || !shoe.brandId || !shoe.categoryId || !shoe.basePrice) {
+      toast.error('Vui lòng điền đầy đủ các trường bắt buộc');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        name: shoe.name,
+        description: shoe.description,
+        material: shoe.material,
+        gender: shoe.gender,
+        status: shoe.status,
+        categoryId: shoe.categoryId,
+        brandId: shoe.brandId,
+        price: Number(shoe.basePrice) || 0,
+        variants: variants.map((v) => ({
+          size: v.size,
+          color: v.color,
+          quantity: Number(v.stockQuantity) || 0,
+        })),
+      };
+
+      const variantImagesArray = variants.map((v) => v.images);
+
+      await createShoe(payload, shoeImages, variantImagesArray);
+      toast.success('Tạo sản phẩm thành công!');
+      navigate('/admin/products');
+    } catch (error) {
+      console.error('Failed to create shoe:', error);
+      toast.error('Có lỗi xảy ra khi tạo sản phẩm');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -187,9 +293,9 @@ export default function AddShoePage() {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {brandOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
+                      {brands.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>
+                          {b.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -239,9 +345,9 @@ export default function AddShoePage() {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {categoryOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
+                      {categories.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -329,6 +435,7 @@ export default function AddShoePage() {
               </div>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>
@@ -336,16 +443,52 @@ export default function AddShoePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/40 px-6 py-10 text-center'>
-                <p className='text-sm font-medium'>
-                  {t('admin.products.addPage.imageDropzone.title')}
-                </p>
+              <input
+                ref={mainImageInputRef}
+                type='file'
+                accept='image/*'
+                multiple
+                className='hidden'
+                onChange={handleMainImageChange}
+              />
+
+              <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 mb-4'>
+                {shoePreviewUrls.map((url, index) => (
+                  <div
+                    key={url}
+                    className='group relative aspect-square overflow-hidden rounded-lg border bg-muted'
+                  >
+                    <img
+                      src={url}
+                      alt={`Shoe ${index}`}
+                      className='h-full w-full object-cover'
+                    />
+                    <button
+                      type='button'
+                      onClick={() => removeShoeImage(index)}
+                      className='absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100'
+                    >
+                      <IconX size={14} />
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type='button'
+                  onClick={handleChooseMainImage}
+                  className='flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/40 transition-colors hover:bg-muted/60'
+                >
+                  <IconPlus className='h-6 w-6 text-muted-foreground' />
+                  <span className='text-xs font-medium text-muted-foreground'>
+                    Thêm ảnh
+                  </span>
+                </button>
+              </div>
+
+              <div className='text-center'>
                 <p className='text-xs text-muted-foreground'>
                   {t('admin.products.addPage.imageDropzone.hint')}
                 </p>
-                <Button variant='outline' size='sm'>
-                  {t('admin.products.addPage.imageDropzone.button')}
-                </Button>
               </div>
             </CardContent>
           </Card>
@@ -422,23 +565,6 @@ export default function AddShoePage() {
 
                   <div className='grid gap-4 md:grid-cols-2 mt-4'>
                     <div className='space-y-2'>
-                      <Label htmlFor={`price-${variant.id}`}>
-                        {t(
-                          'admin.products.addPage.variants.fields.price.label'
-                        )}
-                      </Label>
-                      <Input
-                        id={`price-${variant.id}`}
-                        type='number'
-                        min={0}
-                        value={variant.price}
-                        onChange={handleVariantChange(variant.id, 'price')}
-                        placeholder={t(
-                          'admin.products.addPage.variants.fields.price.placeholder'
-                        )}
-                      />
-                    </div>
-                    <div className='space-y-2'>
                       <Label htmlFor={`stock-${variant.id}`}>
                         {t(
                           'admin.products.addPage.variants.fields.stock.label'
@@ -464,16 +590,44 @@ export default function AddShoePage() {
                     <Label>
                       {t('admin.products.addPage.variants.image.label')}
                     </Label>
-                    <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/40 px-4 py-6 text-center'>
-                      <p className='text-xs font-medium'>
-                        {t('admin.products.addPage.variants.image.title')}
-                      </p>
-                      <p className='text-[11px] text-muted-foreground'>
-                        {t('admin.products.addPage.variants.image.hint')}
-                      </p>
-                      <Button variant='outline' size='sm'>
-                        {t('admin.products.addPage.variants.image.button')}
-                      </Button>
+                    <div className='grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'>
+                      {variant.previewUrls.map((url, imgIndex) => (
+                        <div
+                          key={url}
+                          className='group relative aspect-square overflow-hidden rounded-md border bg-muted'
+                        >
+                          <img
+                            src={url}
+                            alt={`Variant ${index} - ${imgIndex}`}
+                            className='h-full w-full object-cover'
+                          />
+                          <button
+                            type='button'
+                            onClick={() =>
+                              removeVariantImage(variant.id, imgIndex)
+                            }
+                            className='absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100'
+                          >
+                            <IconX size={12} />
+                          </button>
+                        </div>
+                      ))}
+
+                      <label className='flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-dashed bg-muted/40 transition-colors hover:bg-muted/60'>
+                        <IconPlus className='h-4 w-4 text-muted-foreground' />
+                        <span className='text-[10px] font-medium text-muted-foreground'>
+                          Ảnh
+                        </span>
+                        <input
+                          type='file'
+                          accept='image/*'
+                          multiple
+                          className='hidden'
+                          onChange={(e) =>
+                            handleVariantImageChange(variant.id, e)
+                          }
+                        />
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -500,7 +654,8 @@ function createEmptyVariant(index: number): VariantFormState {
     id: `variant-${index}-${Date.now()}`,
     size: '',
     color: '',
-    price: '',
     stockQuantity: '',
+    images: [],
+    previewUrls: [],
   };
 }

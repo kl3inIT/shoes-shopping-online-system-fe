@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ChatWithSuggestions } from '@/components/ChatWithSuggestions';
+import { ChatWithSuggestions } from '@/features/ai/component/ChatWithSuggestions';
 import { cn } from '@/lib/utils';
 
 export function FloatingChat() {
@@ -26,7 +26,7 @@ export function FloatingChat() {
           onClick={() => setIsOpen(true)}
           size='lg'
           className={cn(
-            'fixed bottom-4 right-4 z-50 h-16 w-16 rounded-full shadow-2xl',
+            'fixed bottom-4 right-6 z-50 h-16 w-16 rounded-full shadow-2xl',
             'bg-gradient-to-br from-primary to-primary/80',
             'hover:from-primary/90 hover:to-primary/70',
             'hover:scale-110 active:scale-105',
@@ -51,7 +51,7 @@ export function FloatingChat() {
           // Mobile: full screen
           'bottom-0 right-0 h-[calc(100vh-3rem)] w-full rounded-t-2xl border-t border-x',
           // Desktop: fixed size ở góc với rounded corners đẹp hơn
-          'sm:bottom-6 sm:right-6 sm:h-[600px] sm:w-[420px] sm:max-w-[calc(100vw-3rem)] sm:rounded-2xl sm:border',
+          'sm:bottom-6 sm:right-10 sm:h-[600px] sm:w-[420px] sm:max-w-[calc(100vw-3rem)] sm:rounded-2xl sm:border',
           isOpen
             ? 'translate-y-0 opacity-100 pointer-events-auto scale-100'
             : 'translate-y-4 opacity-0 pointer-events-none scale-95'

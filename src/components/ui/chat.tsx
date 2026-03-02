@@ -1,13 +1,8 @@
 'use client';
 
-import {
-  forwardRef,
-  useCallback,
-  useRef,
-  useState,
-  type ReactElement,
-} from 'react';
+import { useCallback, useRef, useState, type ReactElement } from 'react';
 import { ArrowDown, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/utils';
 import { useAutoScroll } from '@/hooks/use-auto-scroll';
@@ -69,6 +64,7 @@ export function Chat({
 
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
+  const { t } = useTranslation();
 
   // Enhanced stop function that marks pending tool calls as cancelled
   const handleStop = useCallback(() => {
@@ -77,9 +73,15 @@ export function Chat({
     if (!setMessages) return;
 
     const latestMessages = [...messagesRef.current];
-    const lastAssistantMessage = [...latestMessages]
-      .reverse()
-      .find((m: Message) => m.role === 'assistant');
+    // Find last assistant message without using Array.prototype.findLast
+    let lastAssistantMessage: Message | undefined;
+    for (let i = latestMessages.length - 1; i >= 0; i -= 1) {
+      const msg = latestMessages[i];
+      if (msg.role === 'assistant') {
+        lastAssistantMessage = msg;
+        break;
+      }
+    }
 
     if (!lastAssistantMessage) return;
 
@@ -145,7 +147,7 @@ export function Chat({
 
     if (needsUpdate) {
       const messageIndex = latestMessages.findIndex(
-        (m) => m.id === lastAssistantMessage.id
+        (m: Message) => m.id === lastAssistantMessage.id
       );
       if (messageIndex !== -1) {
         latestMessages[messageIndex] = updatedMessage;
@@ -195,7 +197,7 @@ export function Chat({
     <ChatContainer className={className}>
       {isEmpty && append && suggestions ? (
         <PromptSuggestions
-          label='Try these prompts ✨'
+          label={t('ai.chat.tryThesePrompts', 'Try these prompts ✨')}
           append={append}
           suggestions={suggestions}
         />
@@ -211,11 +213,7 @@ export function Chat({
         </ChatMessages>
       ) : null}
 
-      <ChatForm
-        className='mt-auto'
-        isPending={isGenerating || isTyping}
-        handleSubmit={handleSubmit}
-      >
+      <ChatForm className='mt-auto' handleSubmit={handleSubmit}>
         {({ files, setFiles }) => (
           <MessageInput
             value={input}
@@ -277,10 +275,13 @@ export function ChatMessages({
   );
 }
 
-export const ChatContainer = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+export const ChatContainer = ({
+  ref,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  ref?: React.RefObject<HTMLDivElement | null>;
+}) => {
   return (
     <div
       ref={ref}
@@ -288,12 +289,11 @@ export const ChatContainer = forwardRef<
       {...props}
     />
   );
-});
+};
 ChatContainer.displayName = 'ChatContainer';
 
 interface ChatFormProps {
   className?: string;
-  isPending: boolean;
   handleSubmit: (
     event?: { preventDefault?: () => void },
     options?: { experimental_attachments?: FileList }
@@ -304,28 +304,31 @@ interface ChatFormProps {
   }) => ReactElement;
 }
 
-export const ChatForm = forwardRef<HTMLFormElement, ChatFormProps>(
-  ({ children, handleSubmit, className }, ref) => {
-    const [files, setFiles] = useState<File[] | null>(null);
+export const ChatForm = ({
+  ref,
+  children,
+  handleSubmit,
+  className,
+}: ChatFormProps & { ref?: React.RefObject<HTMLFormElement | null> }) => {
+  const [files, setFiles] = useState<File[] | null>(null);
 
-    const onSubmit = (event: React.FormEvent) => {
-      if (!files) {
-        handleSubmit(event);
-        return;
-      }
+  const onSubmit = (event: React.FormEvent) => {
+    if (!files) {
+      handleSubmit(event);
+      return;
+    }
 
-      const fileList = createFileList(files);
-      handleSubmit(event, { experimental_attachments: fileList });
-      setFiles(null);
-    };
+    const fileList = createFileList(files);
+    handleSubmit(event, { experimental_attachments: fileList });
+    setFiles(null);
+  };
 
-    return (
-      <form ref={ref} onSubmit={onSubmit} className={className}>
-        {children({ files, setFiles })}
-      </form>
-    );
-  }
-);
+  return (
+    <form ref={ref} onSubmit={onSubmit} className={className}>
+      {children({ files, setFiles })}
+    </form>
+  );
+};
 ChatForm.displayName = 'ChatForm';
 
 function createFileList(files: File[] | FileList): FileList {

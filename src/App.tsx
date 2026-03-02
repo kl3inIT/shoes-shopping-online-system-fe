@@ -8,7 +8,7 @@ export default function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <RouterProvider router={router} />
-      <Toaster />
+      <Toaster richColors closeButton position='top-right' />
     </Suspense>
   );
 }
