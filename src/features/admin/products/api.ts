@@ -1,10 +1,25 @@
 import apiClient from '@/features/apiClient';
 import type {
+  PageResponse,
   ResponseGeneral,
   ShoeCreateRequestDto,
   ShoeResponse,
   ShoeUpdateRequestDto,
 } from '@/features/products';
+
+export async function getAdminShoes(): Promise<ShoeResponse[]> {
+  const response = await apiClient.get<
+    ResponseGeneral<PageResponse<ShoeResponse>>
+  >('/api/shoes', {
+    params: {
+      page: 0,
+      size: 100,
+      sort: 'createdAt,desc',
+    },
+  });
+
+  return response.data.data.content;
+}
 
 export async function createShoe(
   payload: ShoeCreateRequestDto,

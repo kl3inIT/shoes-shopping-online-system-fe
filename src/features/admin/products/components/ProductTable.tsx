@@ -27,6 +27,7 @@ export interface ProductVariant {
   price: number;
   stockQuantity: number;
   status: 'AVAILABLE' | 'OUT_OF_STOCK' | 'DISCONTINUED';
+  imageUrls?: string[];
 }
 
 export interface Product {
@@ -39,6 +40,7 @@ export interface Product {
   material: string;
   description: string;
   imageUrl: string;
+  shoeImageUrls?: string[];
   basePrice: number;
   status: 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK' | 'DRAFT' | 'DISCONTINUED';
   variants: ProductVariant[];
@@ -54,6 +56,7 @@ interface ProductTableProps {
   onView?: (product: Product) => void;
   onEdit?: (product: Product) => void;
   onDelete?: (product: Product) => void;
+  onChangeStatus?: (product: Product) => void;
 }
 
 export function ProductTable({
@@ -61,6 +64,7 @@ export function ProductTable({
   onView,
   onEdit,
   onDelete,
+  onChangeStatus,
 }: ProductTableProps) {
   const { t } = useTranslation();
 
@@ -85,9 +89,17 @@ export function ProductTable({
           </Badge>
         );
       case 'DRAFT':
-        return <Badge variant='outline'>DRAFT</Badge>;
+        return (
+          <Badge variant='outline'>
+            {t('admin.products.status.draft', 'Draft')}
+          </Badge>
+        );
       case 'DISCONTINUED':
-        return <Badge variant='secondary'>DISCONTINUED</Badge>;
+        return (
+          <Badge variant='secondary'>
+            {t('admin.products.status.discontinued', 'Discontinued')}
+          </Badge>
+        );
       default:
         return <Badge>{status}</Badge>;
     }
@@ -115,7 +127,6 @@ export function ProductTable({
               {t('admin.products.table.stock')}
             </TableHead>
             <TableHead>{t('admin.products.table.status')}</TableHead>
-            <TableHead>{'Deleted'}</TableHead>
             <TableHead className='text-right'>
               {t('admin.products.table.actions')}
             </TableHead>
@@ -160,13 +171,6 @@ export function ProductTable({
                 </span>
               </TableCell>
               <TableCell>{getStatusBadge(product.status)}</TableCell>
-              <TableCell>
-                {product.deleted ? (
-                  <Badge variant='destructive'>Deleted</Badge>
-                ) : (
-                  <Badge variant='outline'>Active</Badge>
-                )}
-              </TableCell>
               <TableCell className='text-right'>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -182,6 +186,10 @@ export function ProductTable({
                     <DropdownMenuItem onClick={() => onEdit?.(product)}>
                       <IconEdit className='mr-2 h-4 w-4' />
                       {t('admin.products.actions.edit')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onChangeStatus?.(product)}>
+                      <IconEdit className='mr-2 h-4 w-4' />
+                      {t('admin.products.actions.changeStatus')}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

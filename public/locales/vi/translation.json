@@ -609,7 +609,9 @@
       "status": {
         "active": "Đang bán",
         "inactive": "Ngừng bán",
-        "outOfStock": "Hết hàng"
+        "outOfStock": "Hết hàng",
+        "draft": "Nháp",
+        "discontinued": "Ngừng kinh doanh"
       },
       "table": {
         "image": "Ảnh",
@@ -624,11 +626,25 @@
       "actions": {
         "view": "Xem",
         "edit": "Sửa",
-        "delete": "Xóa"
+        "changeStatus": "Cập nhật trạng thái",
+        "delete": "Ẩn khỏi catalog"
       },
       "deleteDialog": {
-        "title": "Xóa Sản Phẩm?",
-        "description": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Thao tác này không thể hoàn tác."
+        "title": "Ẩn sản phẩm khỏi catalog?",
+        "description": "Sản phẩm \"{{name}}\" sẽ không còn hiển thị với khách hàng nhưng vẫn được giữ lại trong hệ thống."
+      },
+      "statusDialog": {
+        "title": "Cập nhật trạng thái sản phẩm",
+        "description": "Chọn trạng thái mới cho \"{{name}}\".",
+        "statusLabel": "Trạng thái",
+        "tooltip": "Trạng thái quyết định sản phẩm có hiển thị trên catalog và khách hàng có thể mua hay không."
+      },
+      "statusHelp": {
+        "active": "Đang bán: Sản phẩm hiển thị trên catalog và khách có thể mua.",
+        "outOfStock": "Hết hàng: Sản phẩm vẫn hiển thị nhưng tạm thời không thể mua cho đến khi nhập thêm.",
+        "inactive": "Ngừng bán: Sản phẩm ẩn khỏi catalog nhưng vẫn được lưu trong hệ thống.",
+        "draft": "Nháp: Bản nháp nội bộ, không hiển thị cho khách hàng.",
+        "discontinued": "Ngừng kinh doanh: Dừng bán vĩnh viễn và ẩn khỏi catalog."
       }
     },
     "orders": {

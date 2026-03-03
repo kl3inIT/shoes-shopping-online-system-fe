@@ -1,6 +1,6 @@
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { IconTrash, IconX, IconPlus } from '@tabler/icons-react';
 import { toast } from 'sonner';
 
@@ -22,16 +22,18 @@ import {
   type Gender,
   type ProductStatus as ShoeStatus,
 } from './data';
-import { useBrands, useCategories } from '@/features/products';
-import { useCreateShoeMutation } from '@/features/admin/products';
+import { useBrands, useCategories, useShoeById } from '@/features/products';
+import { useUpdateShoeMutation } from '@/features/admin/products';
 
 interface VariantFormState {
   id: string;
   size: string;
   color: string;
   stockQuantity: string;
-  images: File[];
-  previewUrls: string[];
+  existingImageUrls: string[];
+  keepImageUrls: string[];
+  newImages: File[];
+  newPreviewUrls: string[];
 }
 
 interface ShoeFormState {
@@ -45,42 +47,116 @@ interface ShoeFormState {
   description: string;
 }
 
-export default function AddShoePage() {
+export default function EditShoePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams<{ id: string }>();
 
   const { data: brands = [] } = useBrands();
   const { data: categories = [] } = useCategories();
+  const { data: shoeData, isLoading, isError } = useShoeById(id);
 
-  const [shoe, setShoe] = useState<ShoeFormState>({
-    name: '',
-    brandId: '',
-    categoryId: '',
-    gender: 'UNISEX',
-    status: 'ACTIVE',
-    basePrice: '',
-    material: '',
-    description: '',
-  });
-
-  const [variants, setVariants] = useState<VariantFormState[]>([
-    createEmptyVariant(1),
-  ]);
-  const createShoeMutation = useCreateShoeMutation();
-
-  const [shoeImages, setShoeImages] = useState<File[]>([]);
-  const [shoePreviewUrls, setShoePreviewUrls] = useState<string[]>([]);
+  const [shoe, setShoe] = useState<ShoeFormState | null>(null);
+  const [variants, setVariants] = useState<VariantFormState[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shoeExistingImageUrls, setShoeExistingImageUrls] = useState<string[]>(
+    []
+  );
+  const [shoeKeepImageUrls, setShoeKeepImageUrls] = useState<string[]>([]);
+  const [shoeNewImages, setShoeNewImages] = useState<File[]>([]);
+  const [shoeNewPreviewUrls, setShoeNewPreviewUrls] = useState<string[]>([]);
   const mainImageInputRef = useRef<HTMLInputElement | null>(null);
+
+  const updateShoeMutation = useUpdateShoeMutation();
+
+  useEffect(() => {
+    if (!shoeData) return;
+
+    setShoe({
+      name: shoeData.name,
+      brandId: shoeData.brandId,
+      categoryId: shoeData.categoryId,
+      gender: shoeData.gender as Gender,
+      status: shoeData.status as ShoeStatus,
+      basePrice: String(shoeData.price),
+      material: shoeData.material,
+      description: shoeData.description,
+    });
+
+    setShoeExistingImageUrls(shoeData.imageUrls ?? []);
+    setShoeKeepImageUrls(shoeData.imageUrls ?? []);
+
+    setVariants(
+      shoeData.variants.map((v) => ({
+        id: v.id,
+        size: v.size,
+        color: v.color,
+        stockQuantity: String(v.quantity),
+        existingImageUrls: v.imageUrls ?? [],
+        keepImageUrls: v.imageUrls ?? [],
+        newImages: [],
+        newPreviewUrls: [],
+      }))
+    );
+  }, [shoeData]);
 
   useEffect(() => {
     return () => {
-      shoePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+      shoeNewPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
       variants.forEach((v) =>
-        v.previewUrls.forEach((url) => URL.revokeObjectURL(url))
+        v.newPreviewUrls.forEach((url) => URL.revokeObjectURL(url))
       );
     };
-  }, []);
+  }, [shoeNewPreviewUrls, variants]);
+
+  const totalStock = useMemo(
+    () => variants.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0),
+    [variants]
+  );
+
+  const handleChange =
+    (field: keyof ShoeFormState) =>
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = event.target.value;
+
+      setShoe((prev) =>
+        prev
+          ? {
+              ...prev,
+              [field]: value,
+            }
+          : prev
+      );
+    };
+
+  const handleSelectChange =
+    (field: keyof ShoeFormState) => (value: string) => {
+      setShoe((prev) =>
+        prev
+          ? {
+              ...prev,
+              [field]: value,
+            }
+          : prev
+      );
+    };
+
+  const handleVariantChange =
+    (id: string, field: keyof VariantFormState) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      setVariants((prev) =>
+        prev.map((variant) =>
+          variant.id === id ? { ...variant, [field]: value } : variant
+        )
+      );
+    };
+
+  const handleRemoveVariant = (id: string) => {
+    setVariants((prev) =>
+      prev.length > 1 ? prev.filter((v) => v.id !== id) : prev
+    );
+  };
 
   const handleChooseMainImage = () => {
     mainImageInputRef.current?.click();
@@ -93,16 +169,22 @@ export default function AddShoePage() {
     if (files.length === 0) return;
 
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
-    setShoeImages((prev) => [...prev, ...files]);
-    setShoePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+    setShoeNewImages((prev) => [...prev, ...files]);
+    setShoeNewPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
 
     if (mainImageInputRef.current) mainImageInputRef.current.value = '';
   };
 
-  const removeShoeImage = (index: number) => {
-    URL.revokeObjectURL(shoePreviewUrls[index]);
-    setShoeImages((prev) => prev.filter((_, i) => i !== index));
-    setShoePreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  const removeNewShoeImage = (index: number) => {
+    URL.revokeObjectURL(shoeNewPreviewUrls[index]);
+    setShoeNewImages((prev) => prev.filter((_, i) => i !== index));
+    setShoeNewPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const toggleKeepExistingShoeImage = (url: string) => {
+    setShoeKeepImageUrls((prev) =>
+      prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url]
+    );
   };
 
   const handleVariantImageChange = (
@@ -119,8 +201,8 @@ export default function AddShoePage() {
         v.id === variantId
           ? {
               ...v,
-              images: [...v.images, ...files],
-              previewUrls: [...v.previewUrls, ...newPreviewUrls],
+              newImages: [...v.newImages, ...files],
+              newPreviewUrls: [...v.newPreviewUrls, ...newPreviewUrls],
             }
           : v
       )
@@ -129,15 +211,15 @@ export default function AddShoePage() {
     event.target.value = '';
   };
 
-  const removeVariantImage = (variantId: string, imageIndex: number) => {
+  const removeVariantNewImage = (variantId: string, imageIndex: number) => {
     setVariants((prev) =>
       prev.map((v) => {
         if (v.id === variantId) {
-          URL.revokeObjectURL(v.previewUrls[imageIndex]);
+          URL.revokeObjectURL(v.newPreviewUrls[imageIndex]);
           return {
             ...v,
-            images: v.images.filter((_, i) => i !== imageIndex),
-            previewUrls: v.previewUrls.filter((_, i) => i !== imageIndex),
+            newImages: v.newImages.filter((_, i) => i !== imageIndex),
+            newPreviewUrls: v.newPreviewUrls.filter((_, i) => i !== imageIndex),
           };
         }
         return v;
@@ -145,52 +227,20 @@ export default function AddShoePage() {
     );
   };
 
-  const handleChange =
-    (field: keyof ShoeFormState) =>
-    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = event.target.value;
-
-      setShoe((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    };
-
-  const handleSelectChange =
-    (field: keyof ShoeFormState) => (value: string) => {
-      setShoe((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    };
-
-  const handleVariantChange =
-    (id: string, field: keyof VariantFormState) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      setVariants((prev) =>
-        prev.map((variant) =>
-          variant.id === id ? { ...variant, [field]: value } : variant
-        )
-      );
-    };
-
-  const handleAddVariant = () => {
-    setVariants((prev) => [...prev, createEmptyVariant(prev.length + 1)]);
+  const toggleKeepVariantExistingImage = (variantId: string, url: string) => {
+    setVariants((prev) =>
+      prev.map((v) =>
+        v.id === variantId
+          ? {
+              ...v,
+              keepImageUrls: v.keepImageUrls.includes(url)
+                ? v.keepImageUrls.filter((u) => u !== url)
+                : [...v.keepImageUrls, url],
+            }
+          : v
+      )
+    );
   };
-
-  const handleRemoveVariant = (id: string) => {
-    setVariants((prev) => {
-      const variant = prev.find((v) => v.id === id);
-      variant?.previewUrls.forEach((url) => URL.revokeObjectURL(url));
-      return prev.length > 1 ? prev.filter((v) => v.id !== id) : prev;
-    });
-  };
-
-  const totalStock = variants.reduce(
-    (sum, v) => sum + (Number(v.stockQuantity) || 0),
-    0
-  );
 
   const handleCancel = () => {
     navigate('/admin/products');
@@ -199,7 +249,7 @@ export default function AddShoePage() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (isSubmitting) return;
+    if (!shoe || !id || isSubmitting) return;
 
     if (!shoe.name || !shoe.brandId || !shoe.categoryId || !shoe.basePrice) {
       toast.error('Vui lòng điền đầy đủ các trường bắt buộc');
@@ -218,40 +268,74 @@ export default function AddShoePage() {
         brandId: shoe.brandId,
         price: Number(shoe.basePrice) || 0,
         variants: variants.map((v) => ({
+          id: v.id,
           size: v.size,
           color: v.color,
           quantity: Number(v.stockQuantity) || 0,
         })),
+        keepShoeImageUrls: shoeKeepImageUrls,
+        variantImageUpdates: variants.map((v) => ({
+          variantId: v.id,
+          keepImageUrls: v.keepImageUrls,
+        })),
       };
 
-      const variantImagesArray = variants.map((v) => v.images);
-
-      await createShoeMutation.mutateAsync({
+      await updateShoeMutation.mutateAsync({
+        id,
         payload,
-        shoeImages,
-        variantImages: variantImagesArray,
+        shoeImages: shoeNewImages,
+        variantImages: variants.map((v) => v.newImages),
       });
-      toast.success('Tạo sản phẩm thành công!');
+      toast.success('Cập nhật sản phẩm thành công!');
       navigate('/admin/products');
     } catch (error) {
-      console.error('Failed to create shoe:', error);
-      toast.error('Có lỗi xảy ra khi tạo sản phẩm');
+      console.error('Failed to update shoe:', error);
+      toast.error('Có lỗi xảy ra khi cập nhật sản phẩm');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (isLoading || !shoe) {
+    return (
+      <div className='flex flex-1 items-center justify-center'>
+        <p className='text-sm text-muted-foreground'>
+          {t('common.loading', 'Đang tải dữ liệu sản phẩm...')}
+        </p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className='flex flex-1 flex-col items-center justify-center gap-2'>
+        <p className='text-sm text-destructive'>
+          {t(
+            'admin.products.editPage.loadError',
+            'Không thể tải dữ liệu sản phẩm'
+          )}
+        </p>
+        <Button variant='outline' onClick={handleCancel}>
+          {t('common.back', 'Quay lại')}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className='flex flex-col gap-6 px-4 py-4 lg:px-6'>
       <div>
         <p className='text-sm font-medium text-muted-foreground'>
-          {t('admin.products.addPage.breadcrumb')}
+          {t('admin.products.editPage.breadcrumb', 'Sản phẩm / Chỉnh sửa')}
         </p>
         <h1 className='mt-1 text-2xl font-bold'>
-          {t('admin.products.addPage.title')}
+          {t('admin.products.editPage.title', 'Chỉnh sửa sản phẩm')}
         </h1>
         <p className='text-sm text-muted-foreground'>
-          {t('admin.products.addPage.subtitle')}
+          {t(
+            'admin.products.editPage.subtitle',
+            'Cập nhật thông tin chi tiết cho sản phẩm'
+          )}
         </p>
       </div>
 
@@ -454,8 +538,51 @@ export default function AddShoePage() {
                 onChange={handleMainImageChange}
               />
 
-              <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 mb-4'>
-                {shoePreviewUrls.map((url, index) => (
+              {shoeExistingImageUrls.length > 0 && (
+                <div className='mb-4'>
+                  <p className='mb-2 text-sm font-medium'>
+                    {t(
+                      'admin.products.editPage.existingImages',
+                      'Ảnh hiện tại (bỏ chọn để xóa)'
+                    )}
+                  </p>
+                  <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
+                    {shoeExistingImageUrls.map((url) => {
+                      const isKept = shoeKeepImageUrls.includes(url);
+                      return (
+                        <button
+                          key={url}
+                          type='button'
+                          onClick={() => toggleKeepExistingShoeImage(url)}
+                          className={`group relative aspect-square overflow-hidden rounded-lg border ${
+                            isKept
+                              ? 'border-primary'
+                              : 'border-destructive/60 opacity-60'
+                          }`}
+                        >
+                          <img
+                            src={url}
+                            alt='Shoe'
+                            className='h-full w-full object-cover'
+                          />
+                          <span
+                            className={`absolute bottom-1 left-1 right-1 rounded bg-black/50 px-1 text-[10px] font-medium text-white ${
+                              isKept ? '' : 'line-through'
+                            }`}
+                          >
+                            {isKept
+                              ? t('admin.products.editPage.keep', 'Giữ ảnh')
+                              : t('admin.products.editPage.remove', 'Xóa ảnh')}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
+                {shoeNewPreviewUrls.map((url, index) => (
                   <div
                     key={url}
                     className='group relative aspect-square overflow-hidden rounded-lg border bg-muted'
@@ -467,7 +594,7 @@ export default function AddShoePage() {
                     />
                     <button
                       type='button'
-                      onClick={() => removeShoeImage(index)}
+                      onClick={() => removeNewShoeImage(index)}
                       className='absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100'
                     >
                       <IconX size={14} />
@@ -482,15 +609,16 @@ export default function AddShoePage() {
                 >
                   <IconPlus className='h-6 w-6 text-muted-foreground' />
                   <span className='text-xs font-medium text-muted-foreground'>
-                    Thêm ảnh
+                    {t('admin.products.addPage.images.addButton', 'Thêm ảnh')}
                   </span>
                 </button>
               </div>
 
-              <div className='text-center'>
-                <p className='text-xs text-muted-foreground'>
-                  {t('admin.products.addPage.imageDropzone.hint')}
-                </p>
+              <div className='mt-2 text-xs text-muted-foreground'>
+                {t(
+                  'admin.products.addPage.imageDropzone.hint',
+                  'Chọn nhiều ảnh, kéo thả để tải lên'
+                )}
               </div>
             </CardContent>
           </Card>
@@ -505,9 +633,6 @@ export default function AddShoePage() {
                   {t('admin.products.addPage.variants.subtitle')}
                 </p>
               </div>
-              <Button size='sm' type='button' onClick={handleAddVariant}>
-                {t('admin.products.addPage.variants.addButton')}
-              </Button>
             </CardHeader>
             <CardContent className='space-y-6'>
               {variants.map((variant, index) => (
@@ -592,8 +717,49 @@ export default function AddShoePage() {
                     <Label>
                       {t('admin.products.addPage.variants.image.label')}
                     </Label>
+
+                    {variant.existingImageUrls?.length > 0 && (
+                      <div className='mb-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'>
+                        {variant.existingImageUrls.map((url) => {
+                          const isKept = variant.keepImageUrls.includes(url);
+                          return (
+                            <button
+                              key={url}
+                              type='button'
+                              onClick={() =>
+                                toggleKeepVariantExistingImage(variant.id, url)
+                              }
+                              className={`group relative aspect-square overflow-hidden rounded-md border bg-muted ${
+                                isKept
+                                  ? 'border-primary'
+                                  : 'border-destructive/60 opacity-60'
+                              }`}
+                            >
+                              <img
+                                src={url}
+                                alt={`Variant ${index}`}
+                                className='h-full w-full object-cover'
+                              />
+                              <span
+                                className={`absolute bottom-0.5 left-0.5 right-0.5 rounded bg-black/50 px-1 text-[10px] font-medium text-white ${
+                                  isKept ? '' : 'line-through'
+                                }`}
+                              >
+                                {isKept
+                                  ? t('admin.products.editPage.keep', 'Giữ ảnh')
+                                  : t(
+                                      'admin.products.editPage.remove',
+                                      'Xóa ảnh'
+                                    )}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
                     <div className='grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'>
-                      {variant.previewUrls.map((url, imgIndex) => (
+                      {variant.newPreviewUrls.map((url, imgIndex) => (
                         <div
                           key={url}
                           className='group relative aspect-square overflow-hidden rounded-md border bg-muted'
@@ -606,7 +772,7 @@ export default function AddShoePage() {
                           <button
                             type='button'
                             onClick={() =>
-                              removeVariantImage(variant.id, imgIndex)
+                              removeVariantNewImage(variant.id, imgIndex)
                             }
                             className='absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100'
                           >
@@ -618,7 +784,10 @@ export default function AddShoePage() {
                       <label className='flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-dashed bg-muted/40 transition-colors hover:bg-muted/60'>
                         <IconPlus className='h-4 w-4 text-muted-foreground' />
                         <span className='text-[10px] font-medium text-muted-foreground'>
-                          Ảnh
+                          {t(
+                            'admin.products.addPage.variants.image.addButton',
+                            'Ảnh'
+                          )}
                         </span>
                         <input
                           type='file'
@@ -644,20 +813,11 @@ export default function AddShoePage() {
           <Button variant='outline' onClick={handleCancel}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSubmit}>{t('common.save')}</Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {t('common.save')}
+          </Button>
         </div>
       </div>
     </div>
   );
-}
-
-function createEmptyVariant(index: number): VariantFormState {
-  return {
-    id: `variant-${index}-${Date.now()}`,
-    size: '',
-    color: '',
-    stockQuantity: '',
-    images: [],
-    previewUrls: [],
-  };
 }

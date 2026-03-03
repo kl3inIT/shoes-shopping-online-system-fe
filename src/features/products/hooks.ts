@@ -2,7 +2,6 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import {
   shoesQueryOptions,
-  adminShoesAllQueryOptions,
   brandsQueryOptions,
   categoriesQueryOptions,
   shoeByIdQueryOptions,
@@ -13,10 +12,6 @@ export * from './queryOptions';
 
 export function useShoes(): UseQueryResult<ShoeResponse[], Error> {
   return useQuery(shoesQueryOptions());
-}
-
-export function useAdminShoesAll(): UseQueryResult<ShoeResponse[], Error> {
-  return useQuery(adminShoesAllQueryOptions());
 }
 
 export function useBrands(): UseQueryResult<BrandResponse[], Error> {

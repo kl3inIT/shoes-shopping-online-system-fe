@@ -3,7 +3,6 @@ import { queryOptions } from '@tanstack/react-query';
 import {
   getAllBrands,
   getAllCategories,
-  getAdminAllShoes,
   getAllShoes,
   getShoeById,
 } from './api';
@@ -13,21 +12,12 @@ export const brandsQueryKey = ['brands'] as const;
 export const categoriesQueryKey = ['categories'] as const;
 export const shoeByIdQueryKey = (id: string | null) =>
   ['shoes', id ?? ''] as const;
-export const adminShoesAllQueryKey = ['admin-shoes', 'all'] as const;
 
 export const shoesQueryOptions = () =>
   queryOptions<ShoeResponse[], Error>({
     queryKey: ['shoes'] as const,
     queryFn: getAllShoes,
     staleTime: 60_000,
-    refetchOnWindowFocus: false,
-  });
-
-export const adminShoesAllQueryOptions = () =>
-  queryOptions<ShoeResponse[], Error>({
-    queryKey: adminShoesAllQueryKey,
-    queryFn: getAdminAllShoes,
-    staleTime: 30_000,
     refetchOnWindowFocus: false,
   });
 

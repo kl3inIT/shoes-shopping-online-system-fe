@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { IconPlus } from '@tabler/icons-react';
+import { IconInfoCircle, IconPlus } from '@tabler/icons-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +20,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import {
   ProductTable,
@@ -27,9 +40,34 @@ import {
   ProductFilters,
   type Product,
 } from '@/features/admin/products';
-import { useAdminShoesAll, type ShoeResponse } from '@/features/products';
+import {
+  useAdminShoes,
+  useUpdateShoeMutation,
+} from '@/features/admin/products';
+import {
+  getShoeById,
+  type ShoeResponse,
+  type ShoeStatus,
+  type ShoeUpdateRequestDto,
+} from '@/features/products';
 
 import { brandOptions, statusOptions } from './data';
+
+const STATUS_VALUES: ShoeStatus[] = [
+  'ACTIVE',
+  'INACTIVE',
+  'OUT_OF_STOCK',
+  'DRAFT',
+  'DISCONTINUED',
+];
+
+const STATUS_LABEL_KEYS: Record<ShoeStatus, string> = {
+  ACTIVE: 'admin.products.status.active',
+  INACTIVE: 'admin.products.status.inactive',
+  OUT_OF_STOCK: 'admin.products.status.outOfStock',
+  DRAFT: 'admin.products.status.draft',
+  DISCONTINUED: 'admin.products.status.discontinued',
+};
 
 function mapShoeToProduct(shoe: ShoeResponse): Product {
   const firstImageUrl = shoe.imageUrls[0] ?? '';
@@ -50,10 +88,11 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
     material: shoe.material,
     description: shoe.description,
     imageUrl: firstImageUrl,
+    shoeImageUrls: shoe.imageUrls,
     basePrice: shoe.price,
     status: shoe.status as Product['status'],
     deleted: false,
-    variants: shoe.variants.map((variant) => ({
+    variants: shoe.variants.map((variant): Product['variants'][number] => ({
       id: variant.id,
       sku: variant.sku,
       size: variant.size,
@@ -61,6 +100,7 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
       price: shoe.price,
       stockQuantity: variant.quantity,
       status: variant.quantity === 0 ? 'OUT_OF_STOCK' : 'AVAILABLE',
+      imageUrls: variant.imageUrls,
     })),
     reviewCount: 0,
     averageRating: 0,
@@ -72,13 +112,16 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
 export default function AdminProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: shoes = [] } = useAdminShoesAll();
+  const { data: shoes = [] } = useAdminShoes();
+  const updateShoeMutation = useUpdateShoeMutation();
   const products = useMemo(() => shoes.map(mapShoeToProduct), [shoes]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [brandFilter, setBrandFilter] = useState<string>('all');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<ShoeStatus>('ACTIVE');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -126,22 +169,72 @@ export default function AdminProductsPage() {
   };
 
   const handleEdit = (product: Product) => {
-    console.log('Edit product:', product.id);
+    navigate(`/admin/products/${product.id}/edit`);
   };
+
+  const buildUpdatePayloadFromDetail = (
+    shoeDetail: ShoeResponse,
+    newStatus: ShoeStatus
+  ): ShoeUpdateRequestDto => ({
+    name: shoeDetail.name,
+    description: shoeDetail.description,
+    material: shoeDetail.material,
+    gender: shoeDetail.gender,
+    status: newStatus,
+    categoryId: shoeDetail.categoryId,
+    brandId: shoeDetail.brandId,
+    price: shoeDetail.price,
+    variants: shoeDetail.variants.map((v) => ({
+      id: v.id,
+      size: v.size,
+      color: v.color,
+      quantity: v.quantity,
+    })),
+    keepShoeImageUrls: shoeDetail.imageUrls ?? [],
+    variantImageUpdates: shoeDetail.variants.map((v) => ({
+      variantId: v.id,
+      keepImageUrls: v.imageUrls ?? [],
+    })),
+  });
 
   const handleDelete = (product: Product) => {
     setSelectedProduct(product);
     setDeleteDialogOpen(true);
   };
 
+  const handleChangeStatus = (product: Product) => {
+    setSelectedProduct(product);
+    setSelectedStatus(product.status as ShoeStatus);
+    setStatusDialogOpen(true);
+  };
+
+  const confirmStatusUpdate = async () => {
+    if (!selectedProduct) return;
+
+    const shoeDetail = await getShoeById(selectedProduct.id);
+    const payload = buildUpdatePayloadFromDetail(shoeDetail, selectedStatus);
+    await updateShoeMutation.mutateAsync({
+      id: selectedProduct.id,
+      payload,
+    });
+
+    setStatusDialogOpen(false);
+    setSelectedProduct(null);
+  };
+
   const confirmDelete = async () => {
-    if (selectedProduct) {
-      try {
-        console.warn('[AdminProductsPage] delete is not implemented yet');
-      } finally {
-        setDeleteDialogOpen(false);
-        setSelectedProduct(null);
-      }
+    if (!selectedProduct) return;
+
+    try {
+      const shoeDetail = await getShoeById(selectedProduct.id);
+      const payload = buildUpdatePayloadFromDetail(shoeDetail, 'INACTIVE');
+      await updateShoeMutation.mutateAsync({
+        id: selectedProduct.id,
+        payload,
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setSelectedProduct(null);
     }
   };
 
@@ -183,6 +276,7 @@ export default function AdminProductsPage() {
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onChangeStatus={handleChangeStatus}
         />
       </div>
 
@@ -229,6 +323,73 @@ export default function AdminProductsPage() {
           </Pagination>
         </div>
       )}
+
+      <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('admin.products.statusDialog.title')}</DialogTitle>
+            <DialogDescription>
+              {t('admin.products.statusDialog.description', {
+                name: selectedProduct?.name,
+              })}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className='space-y-4'>
+            <div className='flex items-center gap-2'>
+              <p className='text-sm font-medium'>
+                {t('admin.products.statusDialog.statusLabel')}
+              </p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button type='button' className='text-muted-foreground'>
+                      <IconInfoCircle className='h-4 w-4' />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className='max-w-xs'>
+                    <p>{t('admin.products.statusDialog.tooltip')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
+            <Select
+              value={selectedStatus}
+              onValueChange={(value) => setSelectedStatus(value as ShoeStatus)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {STATUS_VALUES.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {t(STATUS_LABEL_KEYS[status])}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className='space-y-1 text-xs text-muted-foreground'>
+              <p>• {t('admin.products.statusHelp.active')}</p>
+              <p>• {t('admin.products.statusHelp.outOfStock')}</p>
+              <p>• {t('admin.products.statusHelp.inactive')}</p>
+              <p>• {t('admin.products.statusHelp.draft')}</p>
+              <p>• {t('admin.products.statusHelp.discontinued')}</p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => setStatusDialogOpen(false)}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button onClick={confirmStatusUpdate}>{t('common.save')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>

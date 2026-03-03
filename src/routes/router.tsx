@@ -150,6 +150,14 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: 'products/:id/edit',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/products/EditShoePage');
+          return { Component };
+        },
+      },
+      {
         path: 'addshoe',
         lazy: async () => {
           const { default: Component } =

@@ -86,15 +86,6 @@ export async function getAllShoes(): Promise<ShoeResponse[]> {
   return page.content;
 }
 
-export async function getAdminAllShoes(): Promise<ShoeResponse[]> {
-  const page = await searchShoes({
-    page: 0,
-    size: 100,
-    sort: 'createdAt,desc',
-  });
-  return page.content;
-}
-
 export async function getShoeById(id: string): Promise<ShoeResponse> {
   const response = await apiClient.get<ResponseGeneral<ShoeResponse>>(
     `${SHOES_ENDPOINT}/${id}`
