@@ -7,7 +7,7 @@ import { router } from './routes/router';
 export default function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <RouterProvider router={router} />
+      <RouterProvider router={router} fallbackElement={<div>Loading...</div>} />
       <Toaster richColors closeButton position='top-right' />
     </Suspense>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconPlus } from '@tabler/icons-react';
@@ -28,16 +28,11 @@ import {
   type Product,
 } from '@/features/admin/products';
 import { useAdminShoesAll, type ShoeResponse } from '@/features/products';
-import { deleteShoe } from '@/features/products/api';
-import { API_BASE_URL } from '@/features/apiClient';
 
 import { brandOptions, statusOptions } from './data';
 
 function mapShoeToProduct(shoe: ShoeResponse): Product {
-  const firstImageKey = shoe.imageUrls[0];
-  const firstImageUrl = firstImageKey
-    ? `${API_BASE_URL}/api/files/${firstImageKey}`
-    : '';
+  const firstImageUrl = shoe.imageUrls[0] ?? '';
 
   return {
     id: shoe.id,
@@ -57,7 +52,7 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
     imageUrl: firstImageUrl,
     basePrice: shoe.price,
     status: shoe.status as Product['status'],
-    deleted: shoe.deleted,
+    deleted: false,
     variants: shoe.variants.map((variant) => ({
       id: variant.id,
       sku: variant.sku,
@@ -77,8 +72,8 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
 export default function AdminProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: shoes } = useAdminShoesAll();
-  const [products, setProducts] = useState<Product[]>([]);
+  const { data: shoes = [] } = useAdminShoesAll();
+  const products = useMemo(() => shoes.map(mapShoeToProduct), [shoes]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [brandFilter, setBrandFilter] = useState<string>('all');
@@ -87,14 +82,6 @@ export default function AdminProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  useEffect(() => {
-    if (!shoes) return;
-
-    const mappedProducts = shoes.map(mapShoeToProduct);
-    setProducts(mappedProducts);
-  }, [shoes]);
-
-  // Filter & sort products (newest first)
   const filteredProducts = useMemo(() => {
     const result = products.filter((product) => {
       const matchesSearch =
@@ -150,8 +137,7 @@ export default function AdminProductsPage() {
   const confirmDelete = async () => {
     if (selectedProduct) {
       try {
-        await deleteShoe(selectedProduct.id);
-        setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id));
+        console.warn('[AdminProductsPage] delete is not implemented yet');
       } finally {
         setDeleteDialogOpen(false);
         setSelectedProduct(null);
@@ -161,7 +147,6 @@ export default function AdminProductsPage() {
 
   return (
     <div className='flex flex-col gap-4 py-4'>
-      {/* Header */}
       <div className='flex items-center justify-between px-4 lg:px-6'>
         <div>
           <h1 className='text-2xl font-bold'>{t('admin.products.title')}</h1>
@@ -175,12 +160,10 @@ export default function AdminProductsPage() {
         </Button>
       </div>
 
-      {/* Stats Cards */}
       <div className='px-4 lg:px-6'>
         <ProductStatsCards {...stats} />
       </div>
 
-      {/* Filters */}
       <div className='px-4 lg:px-6'>
         <ProductFilters
           searchQuery={searchQuery}
@@ -194,7 +177,6 @@ export default function AdminProductsPage() {
         />
       </div>
 
-      {/* Table */}
       <div className='px-4 lg:px-6'>
         <ProductTable
           products={paginatedProducts}
@@ -248,7 +230,6 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>

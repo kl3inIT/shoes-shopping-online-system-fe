@@ -40,7 +40,7 @@ export interface Product {
   description: string;
   imageUrl: string;
   basePrice: number;
-  status: 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK';
+  status: 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK' | 'DRAFT' | 'DISCONTINUED';
   variants: ProductVariant[];
   reviewCount: number;
   averageRating: number;
@@ -84,6 +84,10 @@ export function ProductTable({
             {t('admin.products.status.outOfStock')}
           </Badge>
         );
+      case 'DRAFT':
+        return <Badge variant='outline'>DRAFT</Badge>;
+      case 'DISCONTINUED':
+        return <Badge variant='secondary'>DISCONTINUED</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -121,11 +125,15 @@ export function ProductTable({
           {products.map((product) => (
             <TableRow key={product.id}>
               <TableCell>
-                <img
-                  src={product.imageUrl}
-                  alt={product.name}
-                  className='h-12 w-12 rounded-md object-cover'
-                />
+                {product.imageUrl ? (
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className='h-12 w-12 rounded-md object-cover'
+                  />
+                ) : (
+                  <div className='h-12 w-12 rounded-md bg-muted' />
+                )}
               </TableCell>
               <TableCell>
                 <div>

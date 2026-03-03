@@ -36,6 +36,8 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
+const isDev = import.meta.env.DEV;
+
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     if (config.skipAuth) {
@@ -53,7 +55,7 @@ apiClient.interceptors.request.use(
           error
         );
       }
-    } else {
+    } else if (isDev) {
       console.log(
         `[API Client] Auth not ready, proceeding without token for ${config.method?.toUpperCase()} ${config.url}`
       );
@@ -75,15 +77,20 @@ apiClient.interceptors.request.use(
       config.headers['Content-Type'] = 'application/json';
     }
 
-    (config as unknown as { _metadata?: { startTime: number } })._metadata = {
-      startTime: Date.now(),
-    };
+    if (isDev) {
+      (config as unknown as { _metadata?: { startTime: number } })._metadata = {
+        startTime: Date.now(),
+      };
 
-    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
-      baseURL: config.baseURL,
-      params: config.params as unknown,
-      data: config.data as unknown,
-    });
+      console.log(
+        `[API Request] ${config.method?.toUpperCase()} ${config.url}`,
+        {
+          baseURL: config.baseURL,
+          params: config.params as unknown,
+          data: config.data as unknown,
+        }
+      );
+    }
 
     return config;
   },
@@ -95,32 +102,36 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
-    const config = response.config as unknown as {
-      _metadata?: { startTime?: number };
-    };
-    const duration = config._metadata?.startTime
-      ? Date.now() - config._metadata.startTime
-      : undefined;
+    if (isDev) {
+      const config = response.config as unknown as {
+        _metadata?: { startTime?: number };
+      };
+      const duration = config._metadata?.startTime
+        ? Date.now() - config._metadata.startTime
+        : undefined;
 
-    console.log(
-      `[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} ${response.status}`,
-      {
-        status: response.status,
-        duration: duration ? `${duration}ms` : undefined,
-        data: response.data as unknown,
-      }
-    );
+      console.log(
+        `[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} ${response.status}`,
+        {
+          status: response.status,
+          duration: duration ? `${duration}ms` : undefined,
+          data: response.data as unknown,
+        }
+      );
+    }
 
     return response;
   },
   async (error: AxiosError<ProblemDetailPayload>) => {
-    console.error('[API Response Error]', {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      url: error.config?.url,
-      method: error.config?.method,
-      data: error.response?.data,
-    });
+    if (isDev) {
+      console.error('[API Response Error]', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url,
+        method: error.config?.method,
+        data: error.response?.data,
+      });
+    }
 
     if (!error.response) {
       const isTimeout =
@@ -160,17 +171,21 @@ apiClient.interceptors.response.use(
         originalRequest._retry = true;
 
         try {
-          console.log(
-            '[API Client] 401 received, attempting to get fresh token...'
-          );
+          if (isDev) {
+            console.log(
+              '[API Client] 401 received, attempting to get fresh token...'
+            );
+          }
           const freshToken = await getAccessTokenFromProvider();
 
           if (freshToken) {
             originalRequest.headers.Authorization = `Bearer ${freshToken}`;
 
-            console.log(
-              '[API Client] Fresh token obtained, retrying request...'
-            );
+            if (isDev) {
+              console.log(
+                '[API Client] Fresh token obtained, retrying request...'
+              );
+            }
 
             return apiClient(originalRequest);
           } else {

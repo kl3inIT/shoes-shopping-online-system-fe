@@ -22,8 +22,8 @@ import {
   type Gender,
   type ProductStatus as ShoeStatus,
 } from './data';
-import { createShoe } from '@/features/admin/products/api';
 import { useBrands, useCategories } from '@/features/products';
+import { createShoe } from '@/features/admin/products';
 
 interface VariantFormState {
   id: string;
@@ -72,7 +72,6 @@ export default function AddShoePage() {
   const [shoePreviewUrls, setShoePreviewUrls] = useState<string[]>([]);
   const mainImageInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Cleanup preview URLs
   useEffect(() => {
     return () => {
       shoePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
@@ -96,7 +95,6 @@ export default function AddShoePage() {
     setShoeImages((prev) => [...prev, ...files]);
     setShoePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
 
-    // Reset input
     if (mainImageInputRef.current) mainImageInputRef.current.value = '';
   };
 
@@ -127,7 +125,6 @@ export default function AddShoePage() {
       )
     );
 
-    // Reset input
     event.target.value = '';
   };
 
