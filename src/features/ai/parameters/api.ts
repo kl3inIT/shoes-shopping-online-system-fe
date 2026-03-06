@@ -8,7 +8,8 @@ import type {
   UpdateAiParameterRequest,
 } from './types';
 
-const BASE_PATH = '/api/v1/ai-parameters';
+/** Base path không kết thúc bằng / để tránh request bị Spring xử lý nhầm là static resource. */
+const BASE_PATH = '/api/v1/ai-parameters'.replace(/\/+$/, '');
 
 export async function listAiParameters(
   type?: AiTargetType
