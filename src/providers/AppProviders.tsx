@@ -11,7 +11,6 @@ import { i18n } from '@/i18n';
 
 import { ThemeProvider } from './ThemeProvider';
 import { AuthProvider } from './AuthProvider';
-import { WebSocketProvider } from './WebSocketProvider';
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
