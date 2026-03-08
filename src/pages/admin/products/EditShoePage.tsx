@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import {
   DndContext,
   PointerSensor,
@@ -99,7 +99,9 @@ function SortableImageItem({
 export default function EditShoePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
+  const backTo = (location.state as { from?: string } | null)?.from;
 
   const { data: brands = [] } = useBrands();
   const { data: categories = [] } = useCategories();
@@ -408,7 +410,7 @@ export default function EditShoePage() {
     };
 
   const handleCancel = () => {
-    navigate('/admin/products');
+    navigate(backTo || '/admin/products');
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -452,7 +454,7 @@ export default function EditShoePage() {
         variantImages: variants.map((v) => v.newImages),
       });
       toast.success('Cập nhật sản phẩm thành công!');
-      navigate('/admin/products');
+      navigate(backTo || `/admin/products/${id}`);
     } catch (error) {
       console.error('Failed to update shoe:', error);
       toast.error('Có lỗi xảy ra khi cập nhật sản phẩm');
