@@ -41,12 +41,12 @@ const queryClient = new QueryClient({
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
-    <WebSocketProvider>
-      <ThemeProvider defaultTheme='system'>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>{children}</AuthProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
-    </WebSocketProvider>
+    // <WebSocketProvider>
+    <ThemeProvider defaultTheme='system'>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>{children}</AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+    // </WebSocketProvider>
   );
 }

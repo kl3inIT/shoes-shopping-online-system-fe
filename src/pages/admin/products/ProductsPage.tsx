@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconInfoCircle, IconPlus } from '@tabler/icons-react';
@@ -46,12 +46,14 @@ import {
 } from '@/features/admin/products';
 import {
   getShoeById,
+  useCategories,
   type ShoeResponse,
   type ShoeStatus,
   type ShoeUpdateRequestDto,
 } from '@/features/products';
 
-import { brandOptions, statusOptions } from './data';
+import { useQueryBrands } from '@/features/brands';
+import { statusOptions } from './data';
 
 const STATUS_VALUES: ShoeStatus[] = [
   'ACTIVE',
@@ -113,11 +115,14 @@ export default function AdminProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: shoes = [] } = useAdminShoes();
+  const { data: brands = [] } = useQueryBrands();
+  const { data: categories = [] } = useCategories();
   const updateShoeMutation = useUpdateShoeMutation();
   const products = useMemo(() => shoes.map(mapShoeToProduct), [shoes]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [brandFilter, setBrandFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -134,21 +139,47 @@ export default function AdminProductsPage() {
         statusFilter === 'all' || product.status === statusFilter;
       const matchesBrand =
         brandFilter === 'all' || product.brand.id === brandFilter;
-      return matchesSearch && matchesStatus && matchesBrand;
+      const matchesCategory =
+        categoryFilter === 'all' || product.category.id === categoryFilter;
+      return matchesSearch && matchesStatus && matchesBrand && matchesCategory;
     });
 
     return result.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [products, searchQuery, statusFilter, brandFilter]);
+  }, [products, searchQuery, statusFilter, brandFilter, categoryFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, brandFilter, categoryFilter]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
 
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     return filteredProducts.slice(start, start + pageSize);
   }, [filteredProducts, currentPage, pageSize]);
+
+  const brandOptions = useMemo(
+    () =>
+      brands
+        .map((b) => ({ value: b.id, label: b.name }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    [brands]
+  );
+
+  const categoryOptions = useMemo(
+    () =>
+      categories
+        .map((c) => ({ value: c.id, label: c.name }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    [categories]
+  );
 
   const getTotalStock = (product: Product) => {
     return product.variants.reduce((sum, v) => sum + v.stockQuantity, 0);
@@ -189,11 +220,6 @@ export default function AdminProductsPage() {
       size: v.size,
       color: v.color,
       quantity: v.quantity,
-    })),
-    keepShoeImageUrls: shoeDetail.imageUrls ?? [],
-    variantImageUpdates: shoeDetail.variants.map((v) => ({
-      variantId: v.id,
-      keepImageUrls: v.imageUrls ?? [],
     })),
   });
 
@@ -265,8 +291,11 @@ export default function AdminProductsPage() {
           onStatusChange={setStatusFilter}
           brandFilter={brandFilter}
           onBrandChange={setBrandFilter}
+          categoryFilter={categoryFilter}
+          onCategoryChange={setCategoryFilter}
           statusOptions={statusOptions}
           brandOptions={brandOptions}
+          categoryOptions={categoryOptions}
         />
       </div>
 

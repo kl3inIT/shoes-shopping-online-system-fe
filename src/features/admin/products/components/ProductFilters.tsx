@@ -22,8 +22,11 @@ interface ProductFiltersProps {
   onStatusChange: (value: string) => void;
   brandFilter: string;
   onBrandChange: (value: string) => void;
+  categoryFilter: string;
+  onCategoryChange: (value: string) => void;
   statusOptions: FilterOption[];
   brandOptions: FilterOption[];
+  categoryOptions: FilterOption[];
 }
 
 export function ProductFilters({
@@ -33,8 +36,11 @@ export function ProductFilters({
   onStatusChange,
   brandFilter,
   onBrandChange,
+  categoryFilter,
+  onCategoryChange,
   statusOptions,
   brandOptions,
+  categoryOptions,
 }: ProductFiltersProps) {
   const { t } = useTranslation();
 
@@ -69,6 +75,23 @@ export function ProductFilters({
         <SelectContent>
           <SelectItem value='all'>{t('admin.products.allBrands')}</SelectItem>
           {brandOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select value={categoryFilter} onValueChange={onCategoryChange}>
+        <SelectTrigger className='w-[180px]'>
+          <SelectValue
+            placeholder={t('admin.products.filterCategory', 'Category')}
+          />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value='all'>
+            {t('admin.products.allCategories', 'All Categories')}
+          </SelectItem>
+          {categoryOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
