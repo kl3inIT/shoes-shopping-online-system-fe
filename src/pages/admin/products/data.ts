@@ -1,4 +1,9 @@
-export type ProductStatus = 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK';
+export type ProductStatus =
+  | 'ACTIVE'
+  | 'INACTIVE'
+  | 'OUT_OF_STOCK'
+  | 'DRAFT'
+  | 'DISCONTINUED';
 export type Gender = 'MEN' | 'WOMEN' | 'UNISEX';
 
 export interface ProductVariant {
@@ -36,210 +41,6 @@ export interface Product {
   updatedAt: string;
 }
 
-/** UUID của giày (id 1..8) - khớp với bảng shoes trong DB */
-const shoeIds: Record<string, string> = {
-  '1': '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
-  '2': '1b2c3d4e-5f60-4b7c-8d9e-0f1a2b3c4d5e',
-  '3': '2c3d4e5f-6071-4c8d-9e0f-1a2b3c4d5e6f',
-  '4': '3d4e5f60-7182-4d9e-0f1a-2b3c4d5e6f70',
-  '5': '4e5f6071-8293-4e0f-1a2b-3c4d5e6f7081',
-  '6': '5f607182-9394-4f1a-2b3c-4d5e6f708192',
-  '7': 'a4f9ef2f-6d2b-4bb6-8b7f-1c2d5f0d7a11',
-  '8': 'b7a1f3c4-2f8e-4b5e-9b1e-3a0c1d2e3f44',
-};
-
-export const mockProducts: Product[] = [
-  {
-    id: shoeIds['1'],
-    name: 'Nike Air Max 270',
-    slug: 'nike-air-max-270',
-    brand: { id: '1', name: 'Nike' },
-    category: { id: '1', name: 'Running' },
-    gender: 'MEN',
-    material: 'Mesh, Synthetic',
-    description:
-      'The Nike Air Max 270 delivers visible cushioning under every step.',
-    imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-    basePrice: 150,
-    status: 'ACTIVE',
-    variants: [
-      {
-        id: 'v1',
-        sku: 'NAM270-BLK-40',
-        size: '40',
-        color: 'Black',
-        price: 150,
-        stockQuantity: 25,
-        status: 'AVAILABLE',
-      },
-      {
-        id: 'v2',
-        sku: 'NAM270-BLK-41',
-        size: '41',
-        color: 'Black',
-        price: 150,
-        stockQuantity: 18,
-        status: 'AVAILABLE',
-      },
-      {
-        id: 'v3',
-        sku: 'NAM270-WHT-40',
-        size: '40',
-        color: 'White',
-        price: 150,
-        stockQuantity: 0,
-        status: 'OUT_OF_STOCK',
-      },
-    ],
-    reviewCount: 124,
-    averageRating: 4.5,
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-20T15:30:00Z',
-  },
-  {
-    id: shoeIds['2'],
-    name: 'Adidas Ultraboost 22',
-    slug: 'adidas-ultraboost-22',
-    brand: { id: '2', name: 'Adidas' },
-    category: { id: '1', name: 'Running' },
-    gender: 'UNISEX',
-    material: 'Primeknit, Boost',
-    description: 'Experience incredible energy return with the Ultraboost 22.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
-    basePrice: 190,
-    status: 'ACTIVE',
-    variants: [
-      {
-        id: 'v4',
-        sku: 'AUB22-BLK-39',
-        size: '39',
-        color: 'Black',
-        price: 190,
-        stockQuantity: 30,
-        status: 'AVAILABLE',
-      },
-      {
-        id: 'v5',
-        sku: 'AUB22-BLK-40',
-        size: '40',
-        color: 'Black',
-        price: 190,
-        stockQuantity: 22,
-        status: 'AVAILABLE',
-      },
-    ],
-    reviewCount: 89,
-    averageRating: 4.8,
-    createdAt: '2024-01-10T09:00:00Z',
-    updatedAt: '2024-01-18T11:00:00Z',
-  },
-  {
-    id: shoeIds['3'],
-    name: 'Puma RS-X',
-    slug: 'puma-rs-x',
-    brand: { id: '3', name: 'Puma' },
-    category: { id: '2', name: 'Casual' },
-    gender: 'UNISEX',
-    material: 'Mesh, Leather',
-    description: 'Bold design meets comfort with the Puma RS-X.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1608379743498-fa39e1ca79b2?w=400',
-    basePrice: 110,
-    status: 'INACTIVE',
-    variants: [
-      {
-        id: 'v6',
-        sku: 'PRSX-WHT-42',
-        size: '42',
-        color: 'White',
-        price: 110,
-        stockQuantity: 15,
-        status: 'AVAILABLE',
-      },
-    ],
-    reviewCount: 45,
-    averageRating: 4.2,
-    createdAt: '2024-01-05T14:00:00Z',
-    updatedAt: '2024-01-12T09:30:00Z',
-  },
-  {
-    id: shoeIds['4'],
-    name: 'New Balance 990v5',
-    slug: 'new-balance-990v5',
-    brand: { id: '4', name: 'New Balance' },
-    category: { id: '1', name: 'Running' },
-    gender: 'MEN',
-    material: 'Pigskin, Mesh',
-    description: 'Made in USA. Premium craftsmanship meets performance.',
-    imageUrl: 'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400',
-    basePrice: 185,
-    status: 'ACTIVE',
-    variants: [
-      {
-        id: 'v7',
-        sku: 'NB990-GRY-43',
-        size: '43',
-        color: 'Grey',
-        price: 185,
-        stockQuantity: 8,
-        status: 'AVAILABLE',
-      },
-      {
-        id: 'v8',
-        sku: 'NB990-GRY-44',
-        size: '44',
-        color: 'Grey',
-        price: 185,
-        stockQuantity: 12,
-        status: 'AVAILABLE',
-      },
-    ],
-    reviewCount: 67,
-    averageRating: 4.7,
-    createdAt: '2024-01-08T08:00:00Z',
-    updatedAt: '2024-01-15T16:00:00Z',
-  },
-  {
-    id: shoeIds['5'],
-    name: 'Jordan 1 Retro High',
-    slug: 'jordan-1-retro-high',
-    brand: { id: '5', name: 'Jordan' },
-    category: { id: '3', name: 'Basketball' },
-    gender: 'UNISEX',
-    material: 'Full-grain Leather',
-    description: 'The shoe that started it all. Iconic style since 1985.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1597045566677-8cf032ed6634?w=400',
-    basePrice: 170,
-    status: 'ACTIVE',
-    variants: [
-      {
-        id: 'v9',
-        sku: 'J1RH-RED-41',
-        size: '41',
-        color: 'Red/Black',
-        price: 170,
-        stockQuantity: 5,
-        status: 'AVAILABLE',
-      },
-      {
-        id: 'v10',
-        sku: 'J1RH-RED-42',
-        size: '42',
-        color: 'Red/Black',
-        price: 170,
-        stockQuantity: 0,
-        status: 'OUT_OF_STOCK',
-      },
-    ],
-    reviewCount: 203,
-    averageRating: 4.9,
-    createdAt: '2024-01-02T12:00:00Z',
-    updatedAt: '2024-01-22T10:00:00Z',
-  },
-];
-
 export const brandOptions = [
   { value: '1', label: 'Nike' },
   { value: '2', label: 'Adidas' },
@@ -265,4 +66,6 @@ export const statusOptions = [
   { value: 'ACTIVE', label: 'Active' },
   { value: 'INACTIVE', label: 'Inactive' },
   { value: 'OUT_OF_STOCK', label: 'Out of Stock' },
+  { value: 'DRAFT', label: 'Draft' },
+  { value: 'DISCONTINUED', label: 'Discontinued' },
 ];
