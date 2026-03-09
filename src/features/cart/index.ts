@@ -1,11 +1,6 @@
 export * from './components';
 export * from './hooks';
-export {
-  getCart,
-  addToCart,
-  getShoeVariants,
-  mapCartItemDtoToProps,
-} from './api';
+export { getCart, addToCart, mapCartItemDtoToProps } from './api';
 export type {
   CartResponseDto,
   CartItemDto,

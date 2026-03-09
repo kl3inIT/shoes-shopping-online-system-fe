@@ -150,6 +150,22 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: 'products/:id',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/products/ProductDetailPage');
+          return { Component };
+        },
+      },
+      {
+        path: 'products/:id/edit',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/products/EditShoePage');
+          return { Component };
+        },
+      },
+      {
         path: 'addshoe',
         lazy: async () => {
           const { default: Component } =
@@ -195,6 +211,20 @@ export const router = createBrowserRouter([
           const { default: Component } =
             await import('@/pages/admin/reviews/ReviewsPage');
           return { Component };
+        },
+      },
+      {
+        path: 'ai',
+        lazy: async () => {
+          const [{ AiAdminPage: Component }, { aiParametersLoader }] =
+            await Promise.all([
+              import('@/pages/admin/ai'),
+              import('@/pages/admin/ai/parameters/aiParametersLoader'),
+            ]);
+          return {
+            Component,
+            loader: aiParametersLoader(queryClient),
+          };
         },
       },
     ],

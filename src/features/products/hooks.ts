@@ -2,9 +2,6 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import {
   shoesQueryOptions,
-  adminShoesAllQueryOptions,
-  adminShoesDeletedQueryOptions,
-  adminShoesNotDeletedQueryOptions,
   brandsQueryOptions,
   categoriesQueryOptions,
   shoeByIdQueryOptions,
@@ -17,21 +14,6 @@ export * from './queryOptions';
 
 export function useShoes(): UseQueryResult<ShoeResponse[], Error> {
   return useQuery(shoesQueryOptions());
-}
-
-export function useAdminShoesAll(): UseQueryResult<ShoeResponse[], Error> {
-  return useQuery(adminShoesAllQueryOptions());
-}
-
-export function useAdminShoesDeleted(): UseQueryResult<ShoeResponse[], Error> {
-  return useQuery(adminShoesDeletedQueryOptions());
-}
-
-export function useAdminShoesNotDeleted(): UseQueryResult<
-  ShoeResponse[],
-  Error
-> {
-  return useQuery(adminShoesNotDeletedQueryOptions());
 }
 
 export function useBrands(): UseQueryResult<BrandResponse[], Error> {

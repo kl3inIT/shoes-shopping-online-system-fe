@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState, type ReactElement } from 'react';
 import { ArrowDown, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/utils';
 import { useAutoScroll } from '@/hooks/use-auto-scroll';
@@ -63,6 +64,7 @@ export function Chat({
 
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
+  const { t } = useTranslation();
 
   // Enhanced stop function that marks pending tool calls as cancelled
   const handleStop = useCallback(() => {
@@ -71,9 +73,15 @@ export function Chat({
     if (!setMessages) return;
 
     const latestMessages = [...messagesRef.current];
-    const lastAssistantMessage = [...latestMessages]
-      .reverse()
-      .find((m: Message) => m.role === 'assistant');
+    // Find last assistant message without using Array.prototype.findLast
+    let lastAssistantMessage: Message | undefined;
+    for (let i = latestMessages.length - 1; i >= 0; i -= 1) {
+      const msg = latestMessages[i];
+      if (msg.role === 'assistant') {
+        lastAssistantMessage = msg;
+        break;
+      }
+    }
 
     if (!lastAssistantMessage) return;
 
@@ -139,7 +147,7 @@ export function Chat({
 
     if (needsUpdate) {
       const messageIndex = latestMessages.findIndex(
-        (m) => m.id === lastAssistantMessage.id
+        (m: Message) => m.id === lastAssistantMessage.id
       );
       if (messageIndex !== -1) {
         latestMessages[messageIndex] = updatedMessage;
@@ -189,7 +197,7 @@ export function Chat({
     <ChatContainer className={className}>
       {isEmpty && append && suggestions ? (
         <PromptSuggestions
-          label='Try these prompts ✨'
+          label={t('ai.chat.tryThesePrompts', 'Try these prompts ✨')}
           append={append}
           suggestions={suggestions}
         />
@@ -205,11 +213,7 @@ export function Chat({
         </ChatMessages>
       ) : null}
 
-      <ChatForm
-        className='mt-auto'
-        isPending={isGenerating || isTyping}
-        handleSubmit={handleSubmit}
-      >
+      <ChatForm className='mt-auto' handleSubmit={handleSubmit}>
         {({ files, setFiles }) => (
           <MessageInput
             value={input}
@@ -290,7 +294,6 @@ ChatContainer.displayName = 'ChatContainer';
 
 interface ChatFormProps {
   className?: string;
-  isPending: boolean;
   handleSubmit: (
     event?: { preventDefault?: () => void },
     options?: { experimental_attachments?: FileList }

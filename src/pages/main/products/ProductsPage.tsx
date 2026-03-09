@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { SlidersHorizontal, X } from 'lucide-react';
@@ -77,9 +77,8 @@ export default function ProductsPage() {
       price: shoe.price,
       image:
         shoe.imageUrls && shoe.imageUrls.length > 0
-          ? (resolveImageUrl(shoe.imageUrls[0]) ??
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400')
-          : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', // fallback
+          ? (resolveImageUrl(shoe.imageUrls[0]) ?? '')
+          : '',
       brand: shoe.brandName,
       brandSlug: shoe.brandSlug,
       rating: 0, // Backend doesn't provide rating yet
@@ -147,7 +146,26 @@ export default function ProductsPage() {
   );
 
   // Client-side Paginate
-  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedProducts.length / itemsPerPage)
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    searchValue,
+    selectedSort,
+    selectedBrands,
+    selectedSizes,
+    selectedCategories,
+    selectedPriceRange,
+  ]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
   const paginatedProducts = sortedProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage

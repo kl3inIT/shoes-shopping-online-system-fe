@@ -1,9 +1,9 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import {
-  getAllShoes,
   getAllBrands,
   getAllCategories,
+  getAllShoes,
   getShoeById,
   getAdminShoesAll,
   getAdminShoesDeleted,
@@ -28,8 +28,6 @@ export const brandsQueryKey = ['brands'] as const;
 export const categoriesQueryKey = ['categories'] as const;
 export const shoeByIdQueryKey = (id: string | null) =>
   ['shoes', id ?? ''] as const;
-
-// ===== Catalog & Admin Shoe Queries =====
 
 export const shoesQueryOptions = () =>
   queryOptions<ShoeResponse[], Error>({
@@ -102,8 +100,6 @@ export const categoriesQueryOptions = () =>
     queryKey: categoriesQueryKey,
     queryFn: getAllCategories,
   });
-
-// ===== Shoe detail =====
 
 export const shoeByIdQueryOptions = (id: string | null) =>
   queryOptions<ShoeResponse, Error>({

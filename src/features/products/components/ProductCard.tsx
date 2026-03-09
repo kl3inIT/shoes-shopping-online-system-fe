@@ -1,4 +1,13 @@
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { formatCurrency } from '@/lib/utils';
+import { Heart, ShoppingCart } from 'lucide-react';
 
 export interface ProductCardProps {
   id: string;
@@ -21,48 +30,100 @@ export function ProductCard({
   price,
   originalPrice,
   image,
+  brand,
   isSale,
+  rating,
+  onAddToCart,
+  onAddToWishlist,
   onClick,
 }: ProductCardProps) {
-  const hasDiscount =
-    typeof originalPrice === 'number' && originalPrice > price;
-  const discount = hasDiscount
+  const discount = originalPrice
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
 
   return (
-    <div className='group cursor-pointer' onClick={() => onClick?.(id)}>
-      <div className='relative aspect-[4/5] overflow-hidden bg-muted'>
-        <img
-          src={image}
-          alt={name}
-          className='h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105'
-        />
-        {isSale && discount > 0 && (
-          <span className='absolute right-3 top-3 bg-black/80 px-2 py-0.5 text-[11px] font-medium text-white'>
-            -{discount}%
-          </span>
+    <Card
+      className='group cursor-pointer overflow-hidden transition-all hover:shadow-lg'
+      onClick={() => onClick?.(id)}
+    >
+      <div className='relative aspect-square overflow-hidden bg-muted'>
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            className='h-full w-full object-cover transition-transform group-hover:scale-105'
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        ) : (
+          <div className='flex h-full w-full items-center justify-center text-sm text-muted-foreground'>
+            Chưa có ảnh
+          </div>
         )}
+        <div className='absolute left-2 top-2 flex flex-col gap-1'>
+          {isSale && discount > 0 && (
+            <Badge variant='destructive'>-{discount}%</Badge>
+          )}
+        </div>
+        <div className='absolute right-2 top-2 flex flex-col gap-1 opacity-0 transition-opacity group-hover:opacity-100'>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size='icon'
+                variant='secondary'
+                className='h-8 w-8'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToWishlist?.(id);
+                }}
+              >
+                <Heart className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Add to Wishlist</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size='icon'
+                variant='secondary'
+                className='h-8 w-8'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToCart?.(id);
+                }}
+              >
+                <ShoppingCart className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Add to Cart</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
-
-      <div className='pb-1 pt-3'>
-        <h3 className='line-clamp-2 text-[13px] leading-snug text-foreground'>
-          {name}
-        </h3>
-        <div className='mt-1 flex items-baseline gap-2'>
-          <span
-            className={`text-[13px] font-medium ${hasDiscount ? 'text-red-500' : 'text-foreground'}`}
-          >
-            {formatCurrency(price)}
-          </span>
-          {hasDiscount && (
-            <span className='text-[12px] text-muted-foreground line-through'>
+      <CardContent className='p-4'>
+        <p className='text-xs text-muted-foreground'>{brand}</p>
+        <h3 className='mt-1 line-clamp-2 font-medium'>{name}</h3>
+        {rating !== undefined && (
+          <div className='mt-1 flex items-center gap-1'>
+            <span className='text-yellow-500'>★</span>
+            <span className='text-sm text-muted-foreground'>
+              {rating.toFixed(1)}
+            </span>
+          </div>
+        )}
+      </CardContent>
+      <CardFooter className='p-4 pt-0'>
+        <div className='flex items-center gap-2'>
+          <span className='text-lg font-bold'>{formatCurrency(price)}</span>
+          {originalPrice && originalPrice > price && (
+            <span className='text-sm text-muted-foreground line-through'>
               {formatCurrency(originalPrice)}
             </span>
           )}
         </div>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }
 

@@ -10,6 +10,13 @@ export interface ShoeVariantResponse {
   updatedAt: string;
 }
 
+export type ShoeStatus =
+  | 'ACTIVE'
+  | 'INACTIVE'
+  | 'OUT_OF_STOCK'
+  | 'DRAFT'
+  | 'DISCONTINUED';
+
 export interface ShoeResponse {
   id: string;
   name: string;
@@ -17,7 +24,7 @@ export interface ShoeResponse {
   slug: string;
   material: string;
   gender: string;
-  status: string;
+  status: ShoeStatus;
   categoryId: string;
   categoryName: string;
   categorySlug: string;
@@ -29,12 +36,11 @@ export interface ShoeResponse {
   variants: ShoeVariantResponse[];
   createdAt: string;
   updatedAt: string;
-  deleted: boolean;
 }
 
 export interface ResponseGeneral<T> {
+  status: number;
   message: string;
-  code: string;
   data: T;
   timestamp: string;
 }
@@ -45,6 +51,36 @@ export interface PageResponse<T> {
   totalPages: number;
   size: number;
   number: number;
+}
+
+export interface ShoeVariantRequestDto {
+  id?: string | null;
+  size: string;
+  color: string;
+  quantity: number;
+  active?: boolean | null;
+}
+
+export interface ShoeCreateRequestDto {
+  name: string;
+  description: string;
+  material: string;
+  gender: string;
+  status: ShoeStatus;
+  categoryId: string;
+  brandId: string;
+  price: number;
+  variants: ShoeVariantRequestDto[];
+}
+
+export interface ShoeVariantImageUpdateRequestDto {
+  variantId: string;
+  keepImageUrls?: string[] | null;
+}
+
+export interface ShoeUpdateRequestDto extends ShoeCreateRequestDto {
+  keepShoeImageUrls?: string[] | null;
+  variantImageUpdates?: ShoeVariantImageUpdateRequestDto[] | null;
 }
 
 export interface BrandResponse {

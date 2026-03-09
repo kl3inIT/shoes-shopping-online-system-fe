@@ -15,8 +15,8 @@ import {
 } from '@/features/products';
 import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
 import { useAddToWishlistMutation } from '@/features/wishlist';
-import { FloatingChat } from '@/components/FloatingChat';
 import { resolveImageUrl } from '@/lib/image';
+import { FloatingChat } from '@/features/ai/component/FloatingChat';
 
 type HomeProduct = ProductCardProps & { createdAt: string };
 
