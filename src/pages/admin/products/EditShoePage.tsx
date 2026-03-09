@@ -1,6 +1,21 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
+import {
+  DndContext,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { IconTrash, IconX, IconPlus } from '@tabler/icons-react';
 import { toast } from 'sonner';
 
@@ -47,10 +62,46 @@ interface ShoeFormState {
   description: string;
 }
 
+function SortableImageItem({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={isDragging ? 'z-10 opacity-80' : ''}
+      {...attributes}
+      {...listeners}
+    >
+      <div className='relative'>{children}</div>
+    </div>
+  );
+}
+
 export default function EditShoePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
+  const backTo = (location.state as { from?: string } | null)?.from;
 
   const { data: brands = [] } = useBrands();
   const { data: categories = [] } = useCategories();
@@ -181,9 +232,61 @@ export default function EditShoePage() {
     setShoeNewPreviewUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const toggleKeepExistingShoeImage = (url: string) => {
-    setShoeKeepImageUrls((prev) =>
-      prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url]
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 6 },
+    })
+  );
+
+  const removeExistingShoeImage = (url: string) => {
+    setShoeExistingImageUrls((prev) => prev.filter((u) => u !== url));
+    setShoeKeepImageUrls((prev) => prev.filter((u) => u !== url));
+  };
+
+  const handleShoeImagesDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+
+    const items = [
+      ...shoeExistingImageUrls.map((url) => ({
+        id: `existing:${url}`,
+        type: 'existing' as const,
+        value: url,
+      })),
+      ...shoeNewPreviewUrls.map((url) => ({
+        id: `new:${url}`,
+        type: 'new' as const,
+        value: url,
+      })),
+    ];
+
+    const oldIndex = items.findIndex((item) => item.id === String(active.id));
+    const newIndex = items.findIndex((item) => item.id === String(over.id));
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const reordered = arrayMove(items, oldIndex, newIndex);
+    const reorderedExisting = reordered
+      .filter((item) => item.type === 'existing')
+      .map((item) => item.value);
+    const reorderedNew = reordered
+      .filter((item) => item.type === 'new')
+      .map((item) => item.value);
+
+    setShoeExistingImageUrls(reorderedExisting);
+    setShoeKeepImageUrls((prevKeep) =>
+      reorderedExisting.filter((url) => prevKeep.includes(url))
+    );
+
+    const newImageByPreview = new Map(
+      shoeNewPreviewUrls.map((preview, index) => [
+        preview,
+        shoeNewImages[index],
+      ])
+    );
+    setShoeNewPreviewUrls(reorderedNew);
+    setShoeNewImages(
+      reorderedNew
+        .map((preview) => newImageByPreview.get(preview))
+        .filter((file): file is File => Boolean(file))
     );
   };
 
@@ -211,39 +314,103 @@ export default function EditShoePage() {
     event.target.value = '';
   };
 
-  const removeVariantNewImage = (variantId: string, imageIndex: number) => {
+  const removeVariantNewImageByUrl = (
+    variantId: string,
+    previewUrl: string
+  ) => {
     setVariants((prev) =>
       prev.map((v) => {
-        if (v.id === variantId) {
-          URL.revokeObjectURL(v.newPreviewUrls[imageIndex]);
-          return {
-            ...v,
-            newImages: v.newImages.filter((_, i) => i !== imageIndex),
-            newPreviewUrls: v.newPreviewUrls.filter((_, i) => i !== imageIndex),
-          };
-        }
-        return v;
+        if (v.id !== variantId) return v;
+
+        const imageIndex = v.newPreviewUrls.indexOf(previewUrl);
+        if (imageIndex < 0) return v;
+
+        URL.revokeObjectURL(v.newPreviewUrls[imageIndex]);
+        return {
+          ...v,
+          newImages: v.newImages.filter((_, i) => i !== imageIndex),
+          newPreviewUrls: v.newPreviewUrls.filter((_, i) => i !== imageIndex),
+        };
       })
     );
   };
 
-  const toggleKeepVariantExistingImage = (variantId: string, url: string) => {
+  const removeVariantExistingImage = (variantId: string, url: string) => {
     setVariants((prev) =>
       prev.map((v) =>
         v.id === variantId
           ? {
               ...v,
-              keepImageUrls: v.keepImageUrls.includes(url)
-                ? v.keepImageUrls.filter((u) => u !== url)
-                : [...v.keepImageUrls, url],
+              existingImageUrls: v.existingImageUrls.filter((u) => u !== url),
+              keepImageUrls: v.keepImageUrls.filter((u) => u !== url),
             }
           : v
       )
     );
   };
 
+  const handleVariantImagesDragEnd =
+    (variantId: string) =>
+    ({ active, over }: DragEndEvent) => {
+      if (!over || active.id === over.id) return;
+
+      setVariants((prev) =>
+        prev.map((v) => {
+          if (v.id !== variantId) return v;
+
+          const items = [
+            ...v.existingImageUrls.map((url) => ({
+              id: `existing:${url}`,
+              type: 'existing' as const,
+              value: url,
+            })),
+            ...v.newPreviewUrls.map((url) => ({
+              id: `new:${url}`,
+              type: 'new' as const,
+              value: url,
+            })),
+          ];
+
+          const oldIndex = items.findIndex(
+            (item) => item.id === String(active.id)
+          );
+          const newIndex = items.findIndex(
+            (item) => item.id === String(over.id)
+          );
+          if (oldIndex < 0 || newIndex < 0) return v;
+
+          const reordered = arrayMove(items, oldIndex, newIndex);
+          const reorderedExisting = reordered
+            .filter((item) => item.type === 'existing')
+            .map((item) => item.value);
+          const reorderedNew = reordered
+            .filter((item) => item.type === 'new')
+            .map((item) => item.value);
+
+          const newImageByPreview = new Map(
+            v.newPreviewUrls.map((preview, index) => [
+              preview,
+              v.newImages[index],
+            ])
+          );
+
+          return {
+            ...v,
+            existingImageUrls: reorderedExisting,
+            keepImageUrls: reorderedExisting.filter((url) =>
+              v.keepImageUrls.includes(url)
+            ),
+            newPreviewUrls: reorderedNew,
+            newImages: reorderedNew
+              .map((preview) => newImageByPreview.get(preview))
+              .filter((file): file is File => Boolean(file)),
+          };
+        })
+      );
+    };
+
   const handleCancel = () => {
-    navigate('/admin/products');
+    navigate(backTo || '/admin/products');
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -287,7 +454,7 @@ export default function EditShoePage() {
         variantImages: variants.map((v) => v.newImages),
       });
       toast.success('Cập nhật sản phẩm thành công!');
-      navigate('/admin/products');
+      navigate(backTo || `/admin/products/${id}`);
     } catch (error) {
       console.error('Failed to update shoe:', error);
       toast.error('Có lỗi xảy ra khi cập nhật sản phẩm');
@@ -538,81 +705,105 @@ export default function EditShoePage() {
                 onChange={handleMainImageChange}
               />
 
-              {shoeExistingImageUrls.length > 0 && (
-                <div className='mb-4'>
-                  <p className='mb-2 text-sm font-medium'>
-                    {t(
-                      'admin.products.editPage.existingImages',
-                      'Ảnh hiện tại (bỏ chọn để xóa)'
-                    )}
-                  </p>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleShoeImagesDragEnd}
+              >
+                <SortableContext
+                  items={[
+                    ...shoeExistingImageUrls.map((url) => `existing:${url}`),
+                    ...shoeNewPreviewUrls.map((url) => `new:${url}`),
+                  ]}
+                  strategy={rectSortingStrategy}
+                >
                   <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
-                    {shoeExistingImageUrls.map((url) => {
-                      const isKept = shoeKeepImageUrls.includes(url);
+                    {shoeExistingImageUrls.map((url, index) => {
+                      const isPrimary = index === 0;
+
                       return (
-                        <button
-                          key={url}
-                          type='button'
-                          onClick={() => toggleKeepExistingShoeImage(url)}
-                          className={`group relative aspect-square overflow-hidden rounded-lg border ${
-                            isKept
-                              ? 'border-primary'
-                              : 'border-destructive/60 opacity-60'
-                          }`}
+                        <SortableImageItem
+                          key={`existing:${url}`}
+                          id={`existing:${url}`}
                         >
-                          <img
-                            src={url}
-                            alt='Shoe'
-                            className='h-full w-full object-cover'
-                          />
-                          <span
-                            className={`absolute bottom-1 left-1 right-1 rounded bg-black/50 px-1 text-[10px] font-medium text-white ${
-                              isKept ? '' : 'line-through'
-                            }`}
-                          >
-                            {isKept
-                              ? t('admin.products.editPage.keep', 'Giữ ảnh')
-                              : t('admin.products.editPage.remove', 'Xóa ảnh')}
-                          </span>
-                        </button>
+                          <div className='group relative aspect-square overflow-hidden rounded-lg border border-primary bg-muted'>
+                            <img
+                              src={url}
+                              alt='Shoe existing'
+                              className='h-full w-full object-cover'
+                            />
+
+                            {isPrimary && (
+                              <span className='absolute left-1 top-1 rounded bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground'>
+                                Ảnh chính
+                              </span>
+                            )}
+
+                            <button
+                              type='button'
+                              onClick={() => removeExistingShoeImage(url)}
+                              className='absolute right-1 top-1 z-20 flex h-6 w-6 items-center justify-center rounded bg-destructive text-white'
+                            >
+                              <IconX size={14} />
+                            </button>
+                          </div>
+                        </SortableImageItem>
                       );
                     })}
-                  </div>
-                </div>
-              )}
 
-              <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
-                {shoeNewPreviewUrls.map((url, index) => (
-                  <div
-                    key={url}
-                    className='group relative aspect-square overflow-hidden rounded-lg border bg-muted'
-                  >
-                    <img
-                      src={url}
-                      alt={`Shoe ${index}`}
-                      className='h-full w-full object-cover'
-                    />
+                    {shoeNewPreviewUrls.map((url) => {
+                      const mergedIndex =
+                        shoeExistingImageUrls.length +
+                        shoeNewPreviewUrls.indexOf(url);
+                      const isPrimary = mergedIndex === 0;
+
+                      return (
+                        <SortableImageItem key={`new:${url}`} id={`new:${url}`}>
+                          <div className='group relative aspect-square overflow-hidden rounded-lg border bg-muted'>
+                            <img
+                              src={url}
+                              alt='Shoe new'
+                              className='h-full w-full object-cover'
+                            />
+
+                            {isPrimary && (
+                              <span className='absolute left-1 top-1 rounded bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground'>
+                                Ảnh chính
+                              </span>
+                            )}
+
+                            <button
+                              type='button'
+                              onClick={() =>
+                                removeNewShoeImage(
+                                  shoeNewPreviewUrls.indexOf(url)
+                                )
+                              }
+                              className='absolute right-1 top-1 z-20 flex h-6 w-6 items-center justify-center rounded bg-destructive text-white'
+                            >
+                              <IconX size={14} />
+                            </button>
+                          </div>
+                        </SortableImageItem>
+                      );
+                    })}
+
                     <button
                       type='button'
-                      onClick={() => removeNewShoeImage(index)}
-                      className='absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100'
+                      onClick={handleChooseMainImage}
+                      className='flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/40 transition-colors hover:bg-muted/60'
                     >
-                      <IconX size={14} />
+                      <IconPlus className='h-6 w-6 text-muted-foreground' />
+                      <span className='text-xs font-medium text-muted-foreground'>
+                        {t(
+                          'admin.products.addPage.images.addButton',
+                          'Thêm ảnh'
+                        )}
+                      </span>
                     </button>
                   </div>
-                ))}
-
-                <button
-                  type='button'
-                  onClick={handleChooseMainImage}
-                  className='flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/40 transition-colors hover:bg-muted/60'
-                >
-                  <IconPlus className='h-6 w-6 text-muted-foreground' />
-                  <span className='text-xs font-medium text-muted-foreground'>
-                    {t('admin.products.addPage.images.addButton', 'Thêm ảnh')}
-                  </span>
-                </button>
-              </div>
+                </SortableContext>
+              </DndContext>
 
               <div className='mt-2 text-xs text-muted-foreground'>
                 {t(
@@ -718,88 +909,121 @@ export default function EditShoePage() {
                       {t('admin.products.addPage.variants.image.label')}
                     </Label>
 
-                    {variant.existingImageUrls?.length > 0 && (
-                      <div className='mb-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'>
-                        {variant.existingImageUrls.map((url) => {
-                          const isKept = variant.keepImageUrls.includes(url);
-                          return (
-                            <button
-                              key={url}
-                              type='button'
-                              onClick={() =>
-                                toggleKeepVariantExistingImage(variant.id, url)
-                              }
-                              className={`group relative aspect-square overflow-hidden rounded-md border bg-muted ${
-                                isKept
-                                  ? 'border-primary'
-                                  : 'border-destructive/60 opacity-60'
-                              }`}
-                            >
-                              <img
-                                src={url}
-                                alt={`Variant ${index}`}
-                                className='h-full w-full object-cover'
-                              />
-                              <span
-                                className={`absolute bottom-0.5 left-0.5 right-0.5 rounded bg-black/50 px-1 text-[10px] font-medium text-white ${
-                                  isKept ? '' : 'line-through'
-                                }`}
-                              >
-                                {isKept
-                                  ? t('admin.products.editPage.keep', 'Giữ ảnh')
-                                  : t(
-                                      'admin.products.editPage.remove',
-                                      'Xóa ảnh'
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleVariantImagesDragEnd(variant.id)}
+                    >
+                      <SortableContext
+                        items={[
+                          ...variant.existingImageUrls.map(
+                            (url) => `existing:${url}`
+                          ),
+                          ...variant.newPreviewUrls.map((url) => `new:${url}`),
+                        ]}
+                        strategy={rectSortingStrategy}
+                      >
+                        <div className='grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'>
+                          {variant.existingImageUrls.map(
+                            (url, existingIndex) => {
+                              const isPrimary = existingIndex === 0;
+                              return (
+                                <SortableImageItem
+                                  key={`existing:${url}`}
+                                  id={`existing:${url}`}
+                                >
+                                  <div className='group relative aspect-square overflow-hidden rounded-md border border-primary bg-muted'>
+                                    <img
+                                      src={url}
+                                      alt={`Variant ${index} existing`}
+                                      className='h-full w-full object-cover'
+                                    />
+
+                                    {isPrimary && (
+                                      <span className='absolute left-0.5 top-0.5 rounded bg-primary px-1 py-0.5 text-[10px] font-semibold text-primary-foreground'>
+                                        Ảnh chính
+                                      </span>
                                     )}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
 
-                    <div className='grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'>
-                      {variant.newPreviewUrls.map((url, imgIndex) => (
-                        <div
-                          key={url}
-                          className='group relative aspect-square overflow-hidden rounded-md border bg-muted'
-                        >
-                          <img
-                            src={url}
-                            alt={`Variant ${index} - ${imgIndex}`}
-                            className='h-full w-full object-cover'
-                          />
-                          <button
-                            type='button'
-                            onClick={() =>
-                              removeVariantNewImage(variant.id, imgIndex)
+                                    <button
+                                      type='button'
+                                      onClick={() =>
+                                        removeVariantExistingImage(
+                                          variant.id,
+                                          url
+                                        )
+                                      }
+                                      className='absolute right-0.5 top-0.5 z-20 flex h-5 w-5 items-center justify-center rounded bg-destructive text-white'
+                                    >
+                                      <IconX size={12} />
+                                    </button>
+                                  </div>
+                                </SortableImageItem>
+                              );
                             }
-                            className='absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100'
-                          >
-                            <IconX size={12} />
-                          </button>
-                        </div>
-                      ))}
-
-                      <label className='flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-dashed bg-muted/40 transition-colors hover:bg-muted/60'>
-                        <IconPlus className='h-4 w-4 text-muted-foreground' />
-                        <span className='text-[10px] font-medium text-muted-foreground'>
-                          {t(
-                            'admin.products.addPage.variants.image.addButton',
-                            'Ảnh'
                           )}
-                        </span>
-                        <input
-                          type='file'
-                          accept='image/*'
-                          multiple
-                          className='hidden'
-                          onChange={(e) =>
-                            handleVariantImageChange(variant.id, e)
-                          }
-                        />
-                      </label>
-                    </div>
+
+                          {variant.newPreviewUrls.map((url) => {
+                            const mergedIndex =
+                              variant.existingImageUrls.length +
+                              variant.newPreviewUrls.indexOf(url);
+                            const isPrimary = mergedIndex === 0;
+                            return (
+                              <SortableImageItem
+                                key={`new:${url}`}
+                                id={`new:${url}`}
+                              >
+                                <div className='group relative aspect-square overflow-hidden rounded-md border bg-muted'>
+                                  <img
+                                    src={url}
+                                    alt={`Variant ${index} new`}
+                                    className='h-full w-full object-cover'
+                                  />
+
+                                  {isPrimary && (
+                                    <span className='absolute left-0.5 top-0.5 rounded bg-primary px-1 py-0.5 text-[10px] font-semibold text-primary-foreground'>
+                                      Ảnh chính
+                                    </span>
+                                  )}
+
+                                  <button
+                                    type='button'
+                                    onClick={() =>
+                                      removeVariantNewImageByUrl(
+                                        variant.id,
+                                        url
+                                      )
+                                    }
+                                    className='absolute right-0.5 top-0.5 z-20 flex h-5 w-5 items-center justify-center rounded bg-destructive text-white'
+                                  >
+                                    <IconX size={12} />
+                                  </button>
+                                </div>
+                              </SortableImageItem>
+                            );
+                          })}
+
+                          <label className='flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-dashed bg-muted/40 transition-colors hover:bg-muted/60'>
+                            <IconPlus className='h-4 w-4 text-muted-foreground' />
+                            <span className='text-[10px] font-medium text-muted-foreground'>
+                              {t(
+                                'admin.products.addPage.variants.image.addButton',
+                                'Ảnh'
+                              )}
+                            </span>
+                            <input
+                              type='file'
+                              accept='image/*'
+                              multiple
+                              className='hidden'
+                              onChange={(e) =>
+                                handleVariantImageChange(variant.id, e)
+                              }
+                            />
+                          </label>
+                        </div>
+                      </SortableContext>
+                    </DndContext>
                   </div>
                 </div>
               ))}

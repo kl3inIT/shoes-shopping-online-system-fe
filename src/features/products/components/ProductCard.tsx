@@ -47,11 +47,20 @@ export function ProductCard({
       onClick={() => onClick?.(id)}
     >
       <div className='relative aspect-square overflow-hidden bg-muted'>
-        <img
-          src={image}
-          alt={name}
-          className='h-full w-full object-cover transition-transform group-hover:scale-105'
-        />
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            className='h-full w-full object-cover transition-transform group-hover:scale-105'
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        ) : (
+          <div className='flex h-full w-full items-center justify-center text-sm text-muted-foreground'>
+            Chưa có ảnh
+          </div>
+        )}
         <div className='absolute left-2 top-2 flex flex-col gap-1'>
           {isSale && discount > 0 && (
             <Badge variant='destructive'>-{discount}%</Badge>

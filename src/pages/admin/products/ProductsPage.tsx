@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconInfoCircle, IconPlus } from '@tabler/icons-react';
@@ -46,12 +46,14 @@ import {
 } from '@/features/admin/products';
 import {
   getShoeById,
+  useCategories,
   type ShoeResponse,
   type ShoeStatus,
   type ShoeUpdateRequestDto,
 } from '@/features/products';
 
-import { brandOptions, statusOptions } from './data';
+import { useQueryBrands } from '@/features/brands';
+import { statusOptions } from './data';
 
 const STATUS_VALUES: ShoeStatus[] = [
   'ACTIVE',
@@ -113,46 +115,80 @@ export default function AdminProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: shoes = [] } = useAdminShoes();
+  const { data: brands = [] } = useQueryBrands();
+  const { data: categories = [] } = useCategories();
   const updateShoeMutation = useUpdateShoeMutation();
+
   const products = useMemo(() => shoes.map(mapShoeToProduct), [shoes]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [brandFilter, setBrandFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<ShoeStatus>('ACTIVE');
+
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
   const filteredProducts = useMemo(() => {
     const result = products.filter((product) => {
+      const q = searchQuery.toLowerCase();
       const matchesSearch =
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.slug.toLowerCase().includes(searchQuery.toLowerCase());
+        product.name.toLowerCase().includes(q) ||
+        product.slug.toLowerCase().includes(q);
       const matchesStatus =
         statusFilter === 'all' || product.status === statusFilter;
       const matchesBrand =
         brandFilter === 'all' || product.brand.id === brandFilter;
-      return matchesSearch && matchesStatus && matchesBrand;
+      const matchesCategory =
+        categoryFilter === 'all' || product.category.id === categoryFilter;
+
+      return matchesSearch && matchesStatus && matchesBrand && matchesCategory;
     });
 
     return result.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [products, searchQuery, statusFilter, brandFilter]);
+  }, [products, searchQuery, statusFilter, brandFilter, categoryFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, brandFilter, categoryFilter]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
 
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     return filteredProducts.slice(start, start + pageSize);
-  }, [filteredProducts, currentPage, pageSize]);
+  }, [filteredProducts, currentPage]);
 
-  const getTotalStock = (product: Product) => {
-    return product.variants.reduce((sum, v) => sum + v.stockQuantity, 0);
-  };
+  const brandOptions = useMemo(
+    () =>
+      brands
+        .map((b) => ({ value: b.id, label: b.name }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    [brands]
+  );
+
+  const categoryOptions = useMemo(
+    () =>
+      categories
+        .map((c) => ({ value: c.id, label: c.name }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    [categories]
+  );
+
+  const getTotalStock = (product: Product) =>
+    product.variants.reduce((sum, v) => sum + v.stockQuantity, 0);
 
   const stats = {
     total: filteredProducts.length,
@@ -165,11 +201,13 @@ export default function AdminProductsPage() {
   };
 
   const handleView = (product: Product) => {
-    console.log('View product:', product.id);
+    navigate(`/admin/products/${product.id}`);
   };
 
   const handleEdit = (product: Product) => {
-    navigate(`/admin/products/${product.id}/edit`);
+    navigate(`/admin/products/${product.id}/edit`, {
+      state: { from: '/admin/products' },
+    });
   };
 
   const buildUpdatePayloadFromDetail = (
@@ -190,11 +228,6 @@ export default function AdminProductsPage() {
       color: v.color,
       quantity: v.quantity,
     })),
-    keepShoeImageUrls: shoeDetail.imageUrls ?? [],
-    variantImageUpdates: shoeDetail.variants.map((v) => ({
-      variantId: v.id,
-      keepImageUrls: v.imageUrls ?? [],
-    })),
   });
 
   const handleDelete = (product: Product) => {
@@ -213,6 +246,7 @@ export default function AdminProductsPage() {
 
     const shoeDetail = await getShoeById(selectedProduct.id);
     const payload = buildUpdatePayloadFromDetail(shoeDetail, selectedStatus);
+
     await updateShoeMutation.mutateAsync({
       id: selectedProduct.id,
       payload,
@@ -228,6 +262,7 @@ export default function AdminProductsPage() {
     try {
       const shoeDetail = await getShoeById(selectedProduct.id);
       const payload = buildUpdatePayloadFromDetail(shoeDetail, 'INACTIVE');
+
       await updateShoeMutation.mutateAsync({
         id: selectedProduct.id,
         payload,
@@ -265,8 +300,11 @@ export default function AdminProductsPage() {
           onStatusChange={setStatusFilter}
           brandFilter={brandFilter}
           onBrandChange={setBrandFilter}
+          categoryFilter={categoryFilter}
+          onCategoryChange={setCategoryFilter}
           statusOptions={statusOptions}
           brandOptions={brandOptions}
+          categoryOptions={categoryOptions}
         />
       </div>
 
