@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { ProductCard } from '@/features/products';
 import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
 import { useAddToWishlistMutation } from '@/features/wishlist';
-import { FloatingChat } from '@/components/FloatingChat';
+import { FloatingChat } from '@/features/ai/component/FloatingChat';
 
 import {
   heroContent,
