@@ -8,6 +8,8 @@ import {
   brandsQueryOptions,
   categoriesQueryOptions,
   shoeByIdQueryOptions,
+  bestSellersQueryOptions,
+  newArrivalsQueryOptions,
 } from './queryOptions';
 import type { ShoeResponse, BrandResponse, CategoryResponse } from './types';
 
@@ -42,4 +44,16 @@ export function useCategories(): UseQueryResult<CategoryResponse[], Error> {
 
 export function useShoeById(id?: string): UseQueryResult<ShoeResponse, Error> {
   return useQuery(shoeByIdQueryOptions(id ?? null));
+}
+
+export function useBestSellers(
+  limit = 5
+): UseQueryResult<ShoeResponse[], Error> {
+  return useQuery(bestSellersQueryOptions(limit));
+}
+
+export function useNewArrivals(
+  limit = 5
+): UseQueryResult<ShoeResponse[], Error> {
+  return useQuery(newArrivalsQueryOptions(limit));
 }
