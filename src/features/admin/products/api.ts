@@ -1,66 +1,80 @@
 import apiClient from '@/features/apiClient';
-import type { ResponseGeneral } from '@/features/products';
+import type {
+  PageResponse,
+  ResponseGeneral,
+  ShoeCreateRequestDto,
+  ShoeResponse,
+  ShoeUpdateRequestDto,
+} from '@/features/products';
 
-export async function uploadShoeImage(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const res = await apiClient.post('/api/files/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
+export async function getAdminShoes(): Promise<ShoeResponse[]> {
+  const response = await apiClient.get<
+    ResponseGeneral<PageResponse<ShoeResponse>>
+  >('/api/shoes', {
+    params: {
+      page: 0,
+      size: 100,
+      sort: 'createdAt,desc',
     },
   });
 
-  return res.data as string;
-}
-
-export interface CreateShoePayloadVariant {
-  size: string;
-  color: string;
-  quantity: number;
-}
-
-export interface CreateShoePayload {
-  name: string;
-  description: string;
-  material: string;
-  gender: string;
-  status: string;
-  categoryId: string;
-  brandId: string;
-  price: number;
-  variants: CreateShoePayloadVariant[];
+  return response.data.data.content;
 }
 
 export async function createShoe(
-  payload: CreateShoePayload,
+  payload: ShoeCreateRequestDto,
   shoeImages?: File[],
   variantImages?: File[][]
-): Promise<ResponseGeneral<unknown>> {
+): Promise<ResponseGeneral<ShoeResponse>> {
   const formData = new FormData();
+  formData.append(
+    'request',
+    new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  );
 
-  formData.append('request', JSON.stringify(payload));
+  formData.append(
+    'request',
+    new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  );
 
-  if (shoeImages && shoeImages.length > 0) {
-    shoeImages.forEach((file) => {
-      formData.append('shoeImages', file);
+  shoeImages?.forEach((file) => formData.append('shoeImages', file));
+
+  variantImages?.forEach((variantFiles, index) => {
+    variantFiles?.forEach((file) => {
+      formData.append(`variantImages${index}`, file);
     });
-  }
+  });
 
-  if (variantImages && variantImages.length > 0) {
-    variantImages.forEach((variantFiles, index) => {
-      if (variantFiles && variantFiles.length > 0) {
-        variantFiles.forEach((file) => {
-          formData.append(`variantImages${index}`, file);
-        });
-      }
-    });
-  }
-
-  const response = await apiClient.post<ResponseGeneral<unknown>>(
+  const response = await apiClient.post<ResponseGeneral<ShoeResponse>>(
     '/api/shoes',
     formData
   );
+  return response.data;
+}
 
+export async function updateShoe(
+  id: string,
+  payload: ShoeUpdateRequestDto,
+  shoeImages?: File[],
+  variantImages?: File[][]
+): Promise<ResponseGeneral<ShoeResponse>> {
+  const formData = new FormData();
+  formData.append(
+    'request',
+    new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  );
+
+  shoeImages?.forEach((file) => formData.append('shoeImages', file));
+
+  variantImages?.forEach((variantFiles, index) => {
+    variantFiles?.forEach((file) => {
+      formData.append(`variantImages${index}`, file);
+    });
+  });
+
+  const response = await apiClient.put<ResponseGeneral<ShoeResponse>>(
+    `/api/shoes/${id}`,
+    formData
+  );
   return response.data;
 }

@@ -22,8 +22,8 @@ import {
   type Gender,
   type ProductStatus as ShoeStatus,
 } from './data';
-import { createShoe } from '@/features/admin/products/api';
 import { useBrands, useCategories } from '@/features/products';
+import { useCreateShoeMutation } from '@/features/admin/products';
 
 interface VariantFormState {
   id: string;
@@ -67,12 +67,12 @@ export default function AddShoePage() {
   const [variants, setVariants] = useState<VariantFormState[]>([
     createEmptyVariant(1),
   ]);
+  const createShoeMutation = useCreateShoeMutation();
 
   const [shoeImages, setShoeImages] = useState<File[]>([]);
   const [shoePreviewUrls, setShoePreviewUrls] = useState<string[]>([]);
   const mainImageInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Cleanup preview URLs
   useEffect(() => {
     return () => {
       shoePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
@@ -96,7 +96,6 @@ export default function AddShoePage() {
     setShoeImages((prev) => [...prev, ...files]);
     setShoePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
 
-    // Reset input
     if (mainImageInputRef.current) mainImageInputRef.current.value = '';
   };
 
@@ -127,7 +126,6 @@ export default function AddShoePage() {
       )
     );
 
-    // Reset input
     event.target.value = '';
   };
 
@@ -228,7 +226,11 @@ export default function AddShoePage() {
 
       const variantImagesArray = variants.map((v) => v.images);
 
-      await createShoe(payload, shoeImages, variantImagesArray);
+      await createShoeMutation.mutateAsync({
+        payload,
+        shoeImages,
+        variantImages: variantImagesArray,
+      });
       toast.success('Tạo sản phẩm thành công!');
       navigate('/admin/products');
     } catch (error) {
