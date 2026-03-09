@@ -20,10 +20,10 @@ declare module 'axios' {
 export const API_BASE_URL = getBaseURL();
 
 function getBaseURL(): string {
-  // const envUrl = import.meta.env.VITE_API_BASE_URL;
-  // if (envUrl) {
-  //   return envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl;
-  // }
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl) {
+    return envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl;
+  }
   return 'http://localhost:8088';
 }
 
