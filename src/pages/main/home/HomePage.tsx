@@ -41,10 +41,10 @@ const HERO_IMAGE =
   'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=1920&q=80';
 
 const services = [
-  { icon: Truck, label: 'Free Shipping', sub: 'Orders over $100' },
-  { icon: Shield, label: '100% Authentic', sub: 'Genuine products' },
-  { icon: RefreshCw, label: 'Easy Returns', sub: '30-day returns' },
-  { icon: Headphones, label: '24/7 Support', sub: 'Always here for you' },
+  { icon: Truck, key: 'freeShipping' },
+  { icon: Shield, key: 'authentic' },
+  { icon: RefreshCw, key: 'easyReturns' },
+  { icon: Headphones, key: 'support' },
 ] as const;
 
 export default function HomePage() {
@@ -126,13 +126,15 @@ export default function HomePage() {
           {services.map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.label} className='flex items-center gap-3 px-6 py-5'>
+              <div key={s.key} className='flex items-center gap-3 px-6 py-5'>
                 <Icon className='h-5 w-5 shrink-0 text-muted-foreground' />
                 <div>
                   <p className='text-xs font-medium text-foreground'>
-                    {s.label}
+                    {t(`home.features.${s.key}.title`)}
                   </p>
-                  <p className='text-[11px] text-muted-foreground'>{s.sub}</p>
+                  <p className='text-[11px] text-muted-foreground'>
+                    {t(`home.features.${s.key}.description`)}
+                  </p>
                 </div>
               </div>
             );

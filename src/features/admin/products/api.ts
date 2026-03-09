@@ -39,7 +39,10 @@ export async function createShoe(
 ): Promise<ResponseGeneral<unknown>> {
   const formData = new FormData();
 
-  formData.append('request', JSON.stringify(payload));
+  formData.append(
+    'request',
+    new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  );
 
   if (shoeImages && shoeImages.length > 0) {
     shoeImages.forEach((file) => {
