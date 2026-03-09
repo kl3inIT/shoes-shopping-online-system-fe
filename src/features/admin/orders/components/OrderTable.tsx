@@ -88,9 +88,6 @@ export function OrderTable({
             <TableHead>{t('admin.orders.table.orderNumber')}</TableHead>
             <TableHead>{t('admin.orders.table.customer')}</TableHead>
             <TableHead className='text-right'>
-              {t('admin.orders.table.items')}
-            </TableHead>
-            <TableHead className='text-right'>
               {t('admin.orders.table.total')}
             </TableHead>
             <TableHead>{t('admin.orders.table.status')}</TableHead>
@@ -112,7 +109,6 @@ export function OrderTable({
                   </p>
                 </div>
               </TableCell>
-              <TableCell className='text-right'>{order.itemCount}</TableCell>
               <TableCell className='text-right'>
                 {order.totalAmount.toLocaleString('vi-VN', {
                   style: 'currency',

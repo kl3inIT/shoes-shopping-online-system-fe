@@ -101,6 +101,7 @@
   "productDetail": {
     "backToProducts": "Quay lại danh sách",
     "selectSize": "Chọn Size",
+    "selectColor": "Màu sắc",
     "pleaseSelectSize": "Vui lòng chọn size",
     "quantity": "Số lượng",
     "addToCart": "Thêm Vào Giỏ",
@@ -164,15 +165,23 @@
   "wishlist": {
     "title": "Danh Sách Yêu Thích",
     "subtitle": "Lưu những sản phẩm bạn yêu thích để quay lại sau",
+    "savedItems": "Sản phẩm đã lưu",
     "itemCount": "{{count}} sản phẩm trong danh sách yêu thích",
     "empty": {
       "title": "Danh sách yêu thích trống",
       "description": "Lưu sản phẩm yêu thích bằng cách nhấn vào biểu tượng trái tim"
     },
     "continueShopping": "Tiếp Tục Mua Sắm",
+    "shareList": "Chia sẻ danh sách",
+    "dateAddedNewest": "Ngày thêm (mới nhất)",
+    "dateAddedOldest": "Ngày thêm (cũ nhất)",
+    "loadError": "Không tải được danh sách yêu thích",
     "addToCart": "Thêm Vào Giỏ",
     "viewDetails": "Xem Chi Tiết",
-    "addedOn": "Đã thêm vào {{date}}"
+    "soldOut": "Hết hàng",
+    "removeFromWishlist": "Xóa khỏi danh sách yêu thích",
+    "addedOn": "Đã thêm vào {{date}}",
+    "added": "Đã thêm {{date}}"
   },
   "checkout": {
     "title": "Thanh Toán",
@@ -413,8 +422,11 @@
     "confirm": "Xác nhận",
     "save": "Lưu",
     "delete": "Xóa",
+    "deleting": "Đang xóa...",
     "edit": "Sửa",
     "loading": "Đang tải...",
+    "loadError": "Không tải được dữ liệu",
+    "uploading": "Đang tải lên...",
     "error": "Lỗi",
     "success": "Thành công"
   },
@@ -445,6 +457,7 @@
   "http": {
     "error": {
       "network": "Không thể kết nối tới máy chủ",
+      "timeout": "Máy chủ phản hồi quá chậm. Vui lòng thử lại.",
       "unknown": "Đã xảy ra lỗi, vui lòng thử lại",
       "400": "Dữ liệu không hợp lệ",
       "401": "Phiên đăng nhập đã hết hạn",
@@ -492,6 +505,7 @@
       "reviews": "Đánh giá",
       "inventory": "Kho hàng",
       "analytics": "Phân tích",
+      "ai": "AI",
       "settings": "Cài đặt",
       "help": "Trợ giúp",
       "search": "Tìm kiếm"
@@ -755,6 +769,9 @@
         "country": "Quốc gia",
         "selectCountry": "Chọn quốc gia",
         "logoUrl": "URL Logo",
+        "uploadLogo": "Tải lên",
+        "logoPreviewHint": "Xem trước – ảnh chỉ tải lên MinIO khi bấm Lưu",
+        "noImage": "Không có ảnh",
         "description": "Mô tả"
       }
     },

@@ -1,5 +1,5 @@
 export type ProductStatus = 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK';
-export type Gender = 'MEN' | 'WOMEN' | 'UNISEX' | 'KIDS';
+export type Gender = 'MEN' | 'WOMEN' | 'UNISEX';
 
 export interface ProductVariant {
   id: string;
@@ -36,9 +36,21 @@ export interface Product {
   updatedAt: string;
 }
 
+/** UUID của giày (id 1..8) - khớp với bảng shoes trong DB */
+const shoeIds: Record<string, string> = {
+  '1': '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
+  '2': '1b2c3d4e-5f60-4b7c-8d9e-0f1a2b3c4d5e',
+  '3': '2c3d4e5f-6071-4c8d-9e0f-1a2b3c4d5e6f',
+  '4': '3d4e5f60-7182-4d9e-0f1a-2b3c4d5e6f70',
+  '5': '4e5f6071-8293-4e0f-1a2b-3c4d5e6f7081',
+  '6': '5f607182-9394-4f1a-2b3c-4d5e6f708192',
+  '7': 'a4f9ef2f-6d2b-4bb6-8b7f-1c2d5f0d7a11',
+  '8': 'b7a1f3c4-2f8e-4b5e-9b1e-3a0c1d2e3f44',
+};
+
 export const mockProducts: Product[] = [
   {
-    id: '1',
+    id: shoeIds['1'],
     name: 'Nike Air Max 270',
     slug: 'nike-air-max-270',
     brand: { id: '1', name: 'Nike' },
@@ -85,7 +97,7 @@ export const mockProducts: Product[] = [
     updatedAt: '2024-01-20T15:30:00Z',
   },
   {
-    id: '2',
+    id: shoeIds['2'],
     name: 'Adidas Ultraboost 22',
     slug: 'adidas-ultraboost-22',
     brand: { id: '2', name: 'Adidas' },
@@ -123,7 +135,7 @@ export const mockProducts: Product[] = [
     updatedAt: '2024-01-18T11:00:00Z',
   },
   {
-    id: '3',
+    id: shoeIds['3'],
     name: 'Puma RS-X',
     slug: 'puma-rs-x',
     brand: { id: '3', name: 'Puma' },
@@ -152,7 +164,7 @@ export const mockProducts: Product[] = [
     updatedAt: '2024-01-12T09:30:00Z',
   },
   {
-    id: '4',
+    id: shoeIds['4'],
     name: 'New Balance 990v5',
     slug: 'new-balance-990v5',
     brand: { id: '4', name: 'New Balance' },
@@ -189,7 +201,7 @@ export const mockProducts: Product[] = [
     updatedAt: '2024-01-15T16:00:00Z',
   },
   {
-    id: '5',
+    id: shoeIds['5'],
     name: 'Jordan 1 Retro High',
     slug: 'jordan-1-retro-high',
     brand: { id: '5', name: 'Jordan' },
@@ -247,7 +259,6 @@ export const genderOptions = [
   { value: 'MEN', label: 'Men' },
   { value: 'WOMEN', label: 'Women' },
   { value: 'UNISEX', label: 'Unisex' },
-  { value: 'KIDS', label: 'Kids' },
 ];
 
 export const statusOptions = [

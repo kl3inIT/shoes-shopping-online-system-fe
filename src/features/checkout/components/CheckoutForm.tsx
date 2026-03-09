@@ -9,17 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-export interface ShippingAddress {
-  fullName: string;
-  phone: string;
-  email: string;
-  address: string;
-  city: string;
-  district: string;
-  ward: string;
-  note?: string;
-}
+import type { ShippingAddress } from '../types';
 
 export interface CheckoutFormProps {
   address: ShippingAddress;
@@ -39,6 +29,14 @@ export function CheckoutForm({
   errors = {},
 }: CheckoutFormProps) {
   const handleChange = (field: keyof ShippingAddress, value: string) => {
+    if (field === 'city') {
+      onChange({ ...address, city: value, district: '', ward: '' });
+      return;
+    }
+    if (field === 'district') {
+      onChange({ ...address, district: value, ward: '' });
+      return;
+    }
     onChange({ ...address, [field]: value });
   };
 
@@ -75,21 +73,6 @@ export function CheckoutForm({
               <p className='text-xs text-destructive'>{errors.phone}</p>
             )}
           </div>
-        </div>
-
-        <div className='space-y-2'>
-          <Label htmlFor='email'>Email *</Label>
-          <Input
-            id='email'
-            type='email'
-            placeholder='Enter your email'
-            value={address.email}
-            onChange={(e) => handleChange('email', e.target.value)}
-            className={errors.email ? 'border-destructive' : ''}
-          />
-          {errors.email && (
-            <p className='text-xs text-destructive'>{errors.email}</p>
-          )}
         </div>
 
         <div className='grid gap-4 sm:grid-cols-3'>

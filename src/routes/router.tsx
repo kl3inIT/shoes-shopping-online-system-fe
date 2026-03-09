@@ -4,6 +4,7 @@ import { AdminLayout } from '@/layouts/admin/AdminLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RootErrorBoundary } from '@/routes/RootErrorBoundary';
 import { queryClient } from '@/features/queryClient';
+import { useVietnamAddressOptions } from '@/features';
 
 export const router = createBrowserRouter([
   {
@@ -52,32 +53,16 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: 'payment/qr',
+        path: 'payment/qr/:orderId',
         lazy: async () => {
           const { default: Component } =
             await import('@/pages/main/qr/PaymentQrPage');
           return { Component };
         },
       },
-      // Protected routes - Yêu cầu đăng nhập
       {
         element: <ProtectedRoute />,
         children: [
-          {
-            path: 'profile/:keycloakId',
-            lazy: async () => {
-              const [{ default: Component }, { profileLoader }] =
-                await Promise.all([
-                  import('@/pages/main/profile/ProfilePage'),
-                  import('@/pages/main/profile/profileLoader'),
-                ]);
-              return {
-                Component,
-                loader: profileLoader(queryClient),
-              };
-            },
-            errorElement: <RootErrorBoundary />,
-          },
           {
             path: 'cart',
             lazy: async () => {
@@ -93,6 +78,21 @@ export const router = createBrowserRouter([
                 await import('@/pages/main/wishlist/WishlistPage');
               return { Component };
             },
+          },
+          {
+            path: 'profile/:keycloakId',
+            lazy: async () => {
+              const [{ default: Component }, { profileLoader }] =
+                await Promise.all([
+                  import('@/pages/main/profile/ProfilePage'),
+                  import('@/pages/main/profile/profileLoader'),
+                ]);
+              return {
+                Component,
+                loader: profileLoader(queryClient),
+              };
+            },
+            errorElement: <RootErrorBoundary />,
           },
           {
             path: 'checkout',
@@ -196,6 +196,20 @@ export const router = createBrowserRouter([
           const { default: Component } =
             await import('@/pages/admin/reviews/ReviewsPage');
           return { Component };
+        },
+      },
+      {
+        path: 'ai',
+        lazy: async () => {
+          const [{ AiAdminPage: Component }, { aiParametersLoader }] =
+            await Promise.all([
+              import('@/pages/admin/ai'),
+              import('@/pages/admin/ai/parameters/aiParametersLoader'),
+            ]);
+          return {
+            Component,
+            loader: aiParametersLoader(queryClient),
+          };
         },
       },
     ],

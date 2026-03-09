@@ -1,23 +1,30 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { WishlistGrid } from '@/features/wishlist';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { mockWishlistItems } from './data';
+import {
+  WishlistGrid,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+  mapWishlistDtoToItemProps,
+} from '@/features/wishlist';
 
 export function WishlistPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [items, setItems] = useState(mockWishlistItems);
+  const [sortByDateAsc, setSortByDateAsc] = useState(true);
 
-  const handleAddToCart = (productId: string) => {
-    console.log('Add to cart from wishlist:', productId);
-    // TODO: Implement add to cart logic
+  const filterParams = {
+    sortBy: 'createdAt' as const,
+    sortOrder: (sortByDateAsc ? 'desc' : 'asc') as 'desc' | 'asc',
   };
 
-  const handleRemove = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const { data, isPending, isError, error } = useQueryWishlist(filterParams);
+  const removeMutation = useRemoveFromWishlistMutation();
+
+  const items = data?.map(mapWishlistDtoToItemProps) ?? [];
+
+  const handleRemove = (shoeId: string) => {
+    removeMutation.mutate(shoeId);
   };
 
   const handleItemClick = (productId: string) => {
@@ -28,25 +35,40 @@ export function WishlistPage() {
     navigate('/products');
   };
 
+  if (isPending) {
+    return (
+      <div className='container mx-auto flex justify-center px-4 py-16'>
+        <div className='h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent' />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className='container mx-auto px-4 py-16 text-center'>
+        <p className='text-destructive'>
+          {error instanceof Error ? error.message : t('wishlist.loadError')}
+        </p>
+        <button
+          type='button'
+          className='mt-4 text-sm underline'
+          onClick={() => navigate('/products')}
+        >
+          {t('wishlist.continueShopping')}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className='container mx-auto px-4 py-8'>
-      {/* Header */}
-      <div className='mb-8'>
-        <Button variant='ghost' className='mb-2' onClick={() => navigate(-1)}>
-          <ArrowLeft className='mr-2 h-4 w-4' />
-          {t('common.back')}
-        </Button>
-        <h1 className='text-3xl font-bold'>{t('wishlist.title')}</h1>
-        <p className='text-muted-foreground'>{t('wishlist.subtitle')}</p>
-      </div>
-
-      {/* Wishlist Grid */}
       <WishlistGrid
         items={items}
-        onAddToCart={handleAddToCart}
         onRemove={handleRemove}
         onItemClick={handleItemClick}
         onContinueShopping={handleContinueShopping}
+        sortByDateAsc={sortByDateAsc}
+        onToggleSort={() => setSortByDateAsc((v) => !v)}
       />
     </div>
   );

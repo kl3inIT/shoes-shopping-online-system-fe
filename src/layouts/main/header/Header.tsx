@@ -2,8 +2,8 @@ import { Menu, X, ShoppingCart, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from 'react-oidc-context';
-
+import { useQueryCart } from '@/features/cart';
+import { useQueryWishlist } from '@/features/wishlist';
 import { LanguageToggle } from '@/components/language-toggle';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
@@ -21,14 +21,14 @@ export function Header() {
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
-  const auth = useAuth();
   const navigate = useNavigate();
 
   const isMenuOpen = isMobile && mobileMenuOpen;
 
-  // Mock cart count - replace with real data later
-  const cartItemCount = 3;
-  const wishlistCount = 2;
+  const { data: cartData } = useQueryCart();
+  const { data: wishlistData } = useQueryWishlist();
+  const cartItemCount = cartData?.totalQuantity ?? 0;
+  const wishlistCount = wishlistData?.length ?? 0;
 
   const mainNavigation = [
     { to: '/', label: t('nav.home') },
@@ -36,21 +36,8 @@ export function Header() {
     { to: '/about', label: t('nav.about', { defaultValue: 'About' }) },
   ];
 
-  const handleCartClick = () => {
-    if (auth.isAuthenticated) {
-      navigate('/cart');
-    } else {
-      auth.signinRedirect();
-    }
-  };
-
-  const handleWishlistClick = () => {
-    if (auth.isAuthenticated) {
-      navigate('/wishlist');
-    } else {
-      auth.signinRedirect();
-    }
-  };
+  const handleCartClick = () => navigate('/cart');
+  const handleWishlistClick = () => navigate('/wishlist');
 
   return (
     <header className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>

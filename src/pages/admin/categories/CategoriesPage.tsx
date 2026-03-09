@@ -27,7 +27,7 @@ import {
   updateCategory,
   deleteCategory,
 } from '@/features/admin/categories/api';
-import { getErrorMessage } from '@/features/apiClient';
+import { getErrorMessage, isNoResponseError } from '@/features/apiClient';
 
 export default function AdminCategoriesPage() {
   const { t } = useTranslation();
@@ -54,9 +54,13 @@ export default function AdminCategoriesPage() {
     try {
       const data = await getCategories();
       setCategories(data);
-    } catch {
+    } catch (error) {
       setCategories([]);
-      toast.error(t('admin.categories.fetchError', 'Không thể tải danh sách'));
+      if (!isNoResponseError(error)) {
+        toast.error(
+          t('admin.categories.fetchError', 'Không thể tải danh sách')
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -106,12 +110,14 @@ export default function AdminCategoriesPage() {
     setDeleting(true);
     try {
       await deleteCategory(selectedCategory.id);
+      setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
       toast.success(t('admin.categories.deleteSuccess', 'Đã xóa danh mục'));
       setDeleteDialogOpen(false);
       setSelectedCategory(null);
-      void fetchCategories();
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      if (!isNoResponseError(error)) {
+        toast.error(getErrorMessage(error));
+      }
     } finally {
       setDeleting(false);
     }
@@ -127,18 +133,24 @@ export default function AdminCategoriesPage() {
     setSaving(true);
     try {
       if (isCreating) {
-        await createCategory(formData);
+        const created = await createCategory(formData);
+        // Update local state to avoid refetch/reload the table
+        setCategories((prev) => [created, ...prev]);
         toast.success(t('admin.categories.createSuccess', 'Đã tạo danh mục'));
       } else if (selectedCategory) {
-        await updateCategory(selectedCategory.id, formData);
+        const updated = await updateCategory(selectedCategory.id, formData);
+        setCategories((prev) =>
+          prev.map((c) => (c.id === updated.id ? updated : c))
+        );
         toast.success(
           t('admin.categories.updateSuccess', 'Đã cập nhật danh mục')
         );
       }
       setEditDialogOpen(false);
-      void fetchCategories();
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      if (!isNoResponseError(error)) {
+        toast.error(getErrorMessage(error));
+      }
     } finally {
       setSaving(false);
     }

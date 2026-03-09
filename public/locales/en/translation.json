@@ -101,6 +101,7 @@
   "productDetail": {
     "backToProducts": "Back to Products",
     "selectSize": "Select Size",
+    "selectColor": "Color",
     "pleaseSelectSize": "Please select a size",
     "quantity": "Quantity",
     "addToCart": "Add to Cart",
@@ -164,15 +165,23 @@
   "wishlist": {
     "title": "My Wishlist",
     "subtitle": "Save items you love and come back to them later",
+    "savedItems": "Saved Items",
     "itemCount": "{{count}} item(s) in your wishlist",
     "empty": {
       "title": "Your wishlist is empty",
       "description": "Save items you love by clicking the heart icon"
     },
     "continueShopping": "Continue Shopping",
+    "shareList": "Share List",
+    "dateAddedNewest": "Date Added (newest)",
+    "dateAddedOldest": "Date Added (oldest)",
+    "loadError": "Failed to load wishlist",
     "addToCart": "Add to Cart",
     "viewDetails": "View Details",
-    "addedOn": "Added on {{date}}"
+    "soldOut": "Sold Out",
+    "removeFromWishlist": "Remove from wishlist",
+    "addedOn": "Added on {{date}}",
+    "added": "Added {{date}}"
   },
   "checkout": {
     "title": "Checkout",
@@ -413,8 +422,11 @@
     "confirm": "Confirm",
     "save": "Save",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "loading": "Loading...",
+    "loadError": "Failed to load data",
+    "uploading": "Uploading...",
     "error": "Error",
     "success": "Success"
   },
@@ -445,6 +457,7 @@
   "http": {
     "error": {
       "network": "Unable to connect to the server.",
+      "timeout": "The server is taking too long to respond. Please try again.",
       "unknown": "An unexpected error occurred. Please try again.",
       "400": "Invalid data.",
       "401": "Your session has expired. Please log in again.",
@@ -492,6 +505,7 @@
       "reviews": "Reviews",
       "inventory": "Inventory",
       "analytics": "Analytics",
+      "ai": "AI",
       "settings": "Settings",
       "help": "Help",
       "search": "Search"
@@ -755,6 +769,9 @@
         "country": "Country",
         "selectCountry": "Select country",
         "logoUrl": "Logo URL",
+        "uploadLogo": "Upload",
+        "logoPreviewHint": "Preview – file will be uploaded when you Save",
+        "noImage": "No image",
         "description": "Description"
       }
     },

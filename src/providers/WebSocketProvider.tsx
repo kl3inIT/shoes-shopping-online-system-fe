@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  type ReactNode,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, use, type ReactNode, useEffect, useState } from 'react';
 // eslint-disable-next-line import/no-duplicates
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
@@ -26,17 +20,15 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const [client, setClient] = useState<Client | null>(null);
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS('http://localhost:8088/ws');
 
     const stompClient = new Client({
-      webSocketFactory: () => socket as any,
+      webSocketFactory: () => socket,
       reconnectDelay: 5000,
       onConnect: () => {
-        // eslint-disable-next-line no-console
         console.log('WebSocket connected');
       },
       onDisconnect: () => {
-        // eslint-disable-next-line no-console
         console.log('WebSocket disconnected');
       },
     });
@@ -51,13 +43,9 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     };
   }, []);
 
-  return (
-    <WebSocketContext.Provider value={client}>
-      {children}
-    </WebSocketContext.Provider>
-  );
+  return <WebSocketContext value={client}>{children}</WebSocketContext>;
 }
 
 export function useWebSocketClient() {
-  return useContext(WebSocketContext);
+  return use(WebSocketContext);
 }

@@ -21,22 +21,41 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
-import { ProductGrid, ProductFilter } from '@/features/products';
-import { useIsMobile } from '@/hooks/useMobile';
-
 import {
-  mockProducts,
-  brandOptions,
-  sizeOptions,
-  categoryOptions,
-  sortOptions,
-  priceRange,
-} from './data';
+  ProductGrid,
+  ProductFilter,
+  useShoes,
+  useBrands,
+  useCategories,
+  type ShoeResponse,
+  type BrandResponse,
+  type CategoryResponse,
+} from '@/features/products';
+import { useIsMobile } from '@/hooks/useMobile';
+import { resolveImageUrl } from '@/lib/image';
+
+import { sizeOptions, sortOptions, priceRange } from './data';
+
+type MappedProduct = {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  brand: string;
+  brandSlug: string;
+  categorySlug: string;
+  createdAt: string;
+  rating: number;
+};
 
 export default function ProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  const { data: shoesData = [], isLoading, error } = useShoes();
+  const { data: brands = [] } = useBrands();
+  const { data: categories = [] } = useCategories();
 
   // Filter states
   const [searchValue, setSearchValue] = useState('');
@@ -46,12 +65,31 @@ export default function ProductsPage() {
   const [selectedPriceRange, setSelectedPriceRange] = useState(priceRange);
   const [selectedSort, setSelectedSort] = useState('newest');
 
-  // Pagination
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
+  // Map ShoeResponse to view model for filters + ProductGrid
+  const mappedProducts: MappedProduct[] = shoesData.map(
+    (shoe: ShoeResponse) => ({
+      id: shoe.id,
+      name: shoe.name,
+      price: shoe.price,
+      image:
+        shoe.imageUrls && shoe.imageUrls.length > 0
+          ? (resolveImageUrl(shoe.imageUrls[0]) ??
+            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400')
+          : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', // fallback
+      brand: shoe.brandName,
+      brandSlug: shoe.brandSlug,
+      rating: 0, // Backend doesn't provide rating yet
+      categorySlug: shoe.categorySlug,
+      createdAt: shoe.createdAt,
+    })
+  );
+
   // Filter products based on search and filters
-  const filteredProducts = mockProducts.filter((product) => {
+  const filteredProducts = mappedProducts.filter((product: MappedProduct) => {
     // Search filter
     if (
       searchValue &&
@@ -64,7 +102,15 @@ export default function ProductsPage() {
     // Brand filter
     if (
       selectedBrands.length > 0 &&
-      !selectedBrands.includes(product.brand.toLowerCase().replace(' ', '-'))
+      !selectedBrands.includes(product.brandSlug)
+    ) {
+      return false;
+    }
+
+    // Category filter
+    if (
+      selectedCategories.length > 0 &&
+      !selectedCategories.includes(product.categorySlug)
     ) {
       return false;
     }
@@ -81,25 +127,44 @@ export default function ProductsPage() {
   });
 
   // Sort products
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (selectedSort) {
-      case 'price-asc':
-        return a.price - b.price;
-      case 'price-desc':
-        return b.price - a.price;
-      case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
-      default:
-        return 0;
+  const sortedProducts = [...filteredProducts].sort(
+    (a: MappedProduct, b: MappedProduct) => {
+      switch (selectedSort) {
+        case 'newest':
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case 'price-asc':
+          return a.price - b.price;
+        case 'price-desc':
+          return b.price - a.price;
+        case 'rating':
+          return b.rating - a.rating;
+        default:
+          return 0;
+      }
     }
-  });
+  );
 
-  // Paginate
+  // Client-side Paginate
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
   const paginatedProducts = sortedProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Dynamic filter options from backend data
+  const dynamicBrandOptions = brands.map((b: BrandResponse) => ({
+    value: b.slug,
+    label: b.name,
+    count: 0,
+  }));
+
+  const dynamicCategoryOptions = categories.map((c: CategoryResponse) => ({
+    value: c.slug,
+    label: c.name,
+    count: 0,
+  }));
 
   const handleProductClick = (id: string) => {
     navigate(`/products/${id}`);
@@ -107,13 +172,30 @@ export default function ProductsPage() {
 
   const handleAddToCart = (id: string) => {
     console.log('Add to cart:', id);
-    // TODO: Implement add to cart
   };
 
   const handleAddToWishlist = (id: string) => {
     console.log('Add to wishlist:', id);
-    // TODO: Implement add to wishlist
   };
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 items-center justify-center'>
+        <div className='h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className='flex h-96 flex-col items-center justify-center gap-4'>
+        <p className='text-destructive'>
+          Error loading products. Please try again later.
+        </p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </div>
+    );
+  }
 
   const handleClearFilters = () => {
     setSearchValue('');
@@ -137,13 +219,13 @@ export default function ProductsPage() {
     <ProductFilter
       searchValue={searchValue}
       onSearchChange={setSearchValue}
-      brands={brandOptions}
+      brands={dynamicBrandOptions}
       selectedBrands={selectedBrands}
       onBrandsChange={setSelectedBrands}
       sizes={sizeOptions}
       selectedSizes={selectedSizes}
       onSizesChange={setSelectedSizes}
-      categories={categoryOptions}
+      categories={dynamicCategoryOptions}
       selectedCategories={selectedCategories}
       onCategoriesChange={setSelectedCategories}
       priceRange={priceRange}
@@ -242,17 +324,19 @@ export default function ProductsPage() {
                     />
                   </PaginationItem>
 
-                  {Array.from({ length: totalPages }).map((_, i) => (
-                    <PaginationItem key={i + 1}>
-                      <PaginationLink
-                        onClick={() => setCurrentPage(i + 1)}
-                        isActive={currentPage === i + 1}
-                        className='cursor-pointer'
-                      >
-                        {i + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(
+                    (page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(page)}
+                          isActive={currentPage === page}
+                          className='cursor-pointer'
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
 
                   <PaginationItem>
                     <PaginationNext

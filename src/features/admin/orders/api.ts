@@ -7,7 +7,7 @@ export async function getOrders(
 ): Promise<OrderPageResponse> {
   const response = await apiClient.get<ApiSuccessResponse<OrderPageResponse>>(
     '/api/orders/admin',
-    { params, skipAuth: true }
+    { params }
   );
   return response.data.data;
 }
