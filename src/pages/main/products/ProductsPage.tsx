@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { SlidersHorizontal, X } from 'lucide-react';
 
@@ -34,7 +34,7 @@ import {
 import { useIsMobile } from '@/hooks/useMobile';
 import { resolveImageUrl } from '@/lib/image';
 
-import { sizeOptions, sortOptions, priceRange } from './data';
+import { sortOptions, priceRange } from './data';
 
 type MappedProduct = {
   id: string;
@@ -44,30 +44,87 @@ type MappedProduct = {
   brand: string;
   brandSlug: string;
   categorySlug: string;
+  gender: string;
   createdAt: string;
   rating: number;
+  variants: ShoeResponse['variants'];
+};
+
+type FilterState = {
+  q?: string;
+  brands?: string[];
+  sizes?: string[];
+  categories?: string[];
+  genders?: string[];
+  min?: number;
+  max?: number;
+  sort?: string;
 };
 
 export default function ProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useIsMobile();
+
+  const parseListParam = (value: string | null) =>
+    value ? value.split(',').filter(Boolean) : [];
+
+  const parseNumberParam = (value: string | null) => {
+    if (!value) {
+      return undefined;
+    }
+
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  };
+
+  const parseFilterState = (): FilterState => {
+    const params = new URLSearchParams(location.search);
+
+    return {
+      q: params.get('q') ?? undefined,
+      brands: parseListParam(params.get('brands')),
+      sizes: parseListParam(params.get('sizes')),
+      categories: parseListParam(params.get('categories')),
+      genders: parseListParam(params.get('genders')),
+      min: parseNumberParam(params.get('min')),
+      max: parseNumberParam(params.get('max')),
+      sort: params.get('sort') ?? undefined,
+    };
+  };
+
+  const initialFilters = parseFilterState();
 
   const { data: shoesData = [], isLoading, error } = useShoes();
   const { data: brands = [] } = useBrands();
   const { data: categories = [] } = useCategories();
 
   // Filter states
-  const [searchValue, setSearchValue] = useState('');
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedPriceRange, setSelectedPriceRange] = useState(priceRange);
-  const [selectedSort, setSelectedSort] = useState('newest');
+  const [searchValue, setSearchValue] = useState(initialFilters.q ?? '');
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(
+    initialFilters.brands ?? []
+  );
+  const [selectedSizes, setSelectedSizes] = useState<string[]>(
+    initialFilters.sizes ?? []
+  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialFilters.categories ?? []
+  );
+  const [selectedGenders, setSelectedGenders] = useState<string[]>(
+    initialFilters.genders ?? []
+  );
+  const [selectedPriceRange, setSelectedPriceRange] = useState({
+    min: initialFilters.min ?? priceRange.min,
+    max: initialFilters.max ?? priceRange.max,
+  });
+  const [selectedSort, setSelectedSort] = useState(
+    initialFilters.sort ?? 'newest'
+  );
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
 
   // Map ShoeResponse to view model for filters + ProductGrid
   const mappedProducts: MappedProduct[] = shoesData.map(
@@ -83,7 +140,9 @@ export default function ProductsPage() {
       brandSlug: shoe.brandSlug,
       rating: 0, // Backend doesn't provide rating yet
       categorySlug: shoe.categorySlug,
+      gender: shoe.gender,
       createdAt: shoe.createdAt,
+      variants: shoe.variants ?? [],
     })
   );
 
@@ -110,6 +169,22 @@ export default function ProductsPage() {
     if (
       selectedCategories.length > 0 &&
       !selectedCategories.includes(product.categorySlug)
+    ) {
+      return false;
+    }
+
+    // Size filter
+    if (selectedSizes.length > 0) {
+      const availableSizes = product.variants.map((variant) => variant.size);
+      if (!selectedSizes.some((size) => availableSizes.includes(size))) {
+        return false;
+      }
+    }
+
+    // Gender filter
+    if (
+      selectedGenders.length > 0 &&
+      !selectedGenders.includes(product.gender)
     ) {
       return false;
     }
@@ -172,17 +247,84 @@ export default function ProductsPage() {
   );
 
   // Dynamic filter options from backend data
-  const dynamicBrandOptions = brands.map((b: BrandResponse) => ({
-    value: b.slug,
-    label: b.name,
-    count: 0,
+  const productSizeCounts = mappedProducts.reduce((acc, product) => {
+    product.variants.forEach((variant) => {
+      if (!variant.size) {
+        return;
+      }
+      acc.set(variant.size, (acc.get(variant.size) ?? 0) + variant.quantity);
+    });
+    return acc;
+  }, new Map<string, number>());
+
+  const dynamicSizeOptions = Array.from(productSizeCounts.entries())
+    .map(([size, count]) => ({
+      value: size,
+      label: size,
+      count,
+    }))
+    .sort((a, b) => Number(a.value) - Number(b.value));
+
+  const dynamicBrandOptions = brands.map((b: BrandResponse) => {
+    const count = mappedProducts.filter(
+      (product) => product.brandSlug === b.slug
+    ).length;
+
+    return {
+      value: b.slug,
+      label: b.name,
+      count,
+    };
+  });
+
+  const dynamicCategoryOptions = categories.map((c: CategoryResponse) => {
+    const count = mappedProducts.filter(
+      (product) => product.categorySlug === c.slug
+    ).length;
+
+    return {
+      value: c.slug,
+      label: c.name,
+      count,
+    };
+  });
+
+  const dynamicGenderOptions = Array.from(
+    mappedProducts.reduce((acc, product) => {
+      if (!product.gender) {
+        return acc;
+      }
+      acc.set(product.gender, (acc.get(product.gender) ?? 0) + 1);
+      return acc;
+    }, new Map<string, number>())
+  ).map(([gender, count]) => ({
+    value: gender,
+    label: gender,
+    count,
   }));
 
-  const dynamicCategoryOptions = categories.map((c: CategoryResponse) => ({
-    value: c.slug,
-    label: c.name,
-    count: 0,
-  }));
+  const dynamicPriceRange = mappedProducts.reduce(
+    (range, product) => ({
+      min: Math.min(range.min, product.price),
+      max: Math.max(range.max, product.price),
+    }),
+    { min: priceRange.min, max: priceRange.max }
+  );
+
+  useEffect(() => {
+    if (!selectedPriceRange) {
+      return;
+    }
+
+    if (
+      selectedPriceRange.min === dynamicPriceRange.min &&
+      selectedPriceRange.max === dynamicPriceRange.max
+    ) {
+      return;
+    }
+
+    setSelectedPriceRange(dynamicPriceRange);
+  }, [dynamicPriceRange, selectedPriceRange]);
 
   const handleProductClick = (id: string) => {
     navigate(`/products/${id}`);
@@ -220,7 +362,8 @@ export default function ProductsPage() {
     setSelectedBrands([]);
     setSelectedSizes([]);
     setSelectedCategories([]);
-    setSelectedPriceRange(priceRange);
+    setSelectedGenders([]);
+    setSelectedPriceRange(dynamicPriceRange);
     setSelectedSort('newest');
     setCurrentPage(1);
   };
@@ -230,23 +373,28 @@ export default function ProductsPage() {
     selectedBrands.length > 0 ||
     selectedSizes.length > 0 ||
     selectedCategories.length > 0 ||
-    selectedPriceRange.min !== priceRange.min ||
-    selectedPriceRange.max !== priceRange.max;
+    selectedGenders.length > 0 ||
+    selectedPriceRange.min !== dynamicPriceRange.min ||
+    selectedPriceRange.max !== dynamicPriceRange.max;
 
   const FilterSidebar = () => (
     <ProductFilter
       searchValue={searchValue}
       onSearchChange={setSearchValue}
+      onSearchSubmit={(value) => setSearchValue(value)}
       brands={dynamicBrandOptions}
       selectedBrands={selectedBrands}
       onBrandsChange={setSelectedBrands}
-      sizes={sizeOptions}
-      selectedSizes={selectedSizes}
-      onSizesChange={setSelectedSizes}
       categories={dynamicCategoryOptions}
       selectedCategories={selectedCategories}
       onCategoriesChange={setSelectedCategories}
-      priceRange={priceRange}
+      sizes={dynamicSizeOptions}
+      selectedSizes={selectedSizes}
+      onSizesChange={setSelectedSizes}
+      genders={dynamicGenderOptions}
+      selectedGenders={selectedGenders}
+      onGendersChange={setSelectedGenders}
+      priceRange={dynamicPriceRange}
       selectedPriceRange={selectedPriceRange}
       onPriceRangeChange={setSelectedPriceRange}
       sortOptions={sortOptions}

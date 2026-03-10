@@ -35,6 +35,9 @@ export const shoesQueryOptions = () =>
     queryFn: getAllShoes,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
+    meta: {
+      suppressErrorToast: true,
+    },
   });
 
 export const adminShoesAllQueryOptions = () =>
@@ -93,12 +96,18 @@ export const brandsQueryOptions = () =>
   queryOptions<BrandResponse[], Error>({
     queryKey: brandsQueryKey,
     queryFn: getAllBrands,
+    meta: {
+      suppressErrorToast: true,
+    },
   });
 
 export const categoriesQueryOptions = () =>
   queryOptions<CategoryResponse[], Error>({
     queryKey: categoriesQueryKey,
     queryFn: getAllCategories,
+    meta: {
+      suppressErrorToast: true,
+    },
   });
 
 export const shoeByIdQueryOptions = (id: string | null) =>
