@@ -54,6 +54,7 @@ export interface ProductFilterProps {
 
 export function ProductFilter({
   searchValue = '',
+  onSearchChange,
   onSearchSubmit,
   maxSearchLength = 100,
   brands = [],
