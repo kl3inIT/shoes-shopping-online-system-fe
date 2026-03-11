@@ -118,6 +118,9 @@ export default function ProductsPage() {
     min: initialFilters.min ?? priceRange.min,
     max: initialFilters.max ?? priceRange.max,
   });
+  const [hasAdjustedPriceRange, setHasAdjustedPriceRange] = useState(
+    initialFilters.min !== undefined || initialFilters.max !== undefined
+  );
   const [selectedSort, setSelectedSort] = useState(
     initialFilters.sort ?? 'newest'
   );
@@ -312,7 +315,7 @@ export default function ProductsPage() {
   );
 
   useEffect(() => {
-    if (!selectedPriceRange) {
+    if (!selectedPriceRange || hasAdjustedPriceRange) {
       return;
     }
 
@@ -324,7 +327,7 @@ export default function ProductsPage() {
     }
 
     setSelectedPriceRange(dynamicPriceRange);
-  }, [dynamicPriceRange, selectedPriceRange]);
+  }, [dynamicPriceRange, selectedPriceRange, hasAdjustedPriceRange]);
 
   const handleProductClick = (id: string) => {
     navigate(`/products/${id}`);
@@ -364,6 +367,7 @@ export default function ProductsPage() {
     setSelectedCategories([]);
     setSelectedGenders([]);
     setSelectedPriceRange(dynamicPriceRange);
+    setHasAdjustedPriceRange(false);
     setSelectedSort('newest');
     setCurrentPage(1);
   };
@@ -396,7 +400,10 @@ export default function ProductsPage() {
       onGendersChange={setSelectedGenders}
       priceRange={dynamicPriceRange}
       selectedPriceRange={selectedPriceRange}
-      onPriceRangeChange={setSelectedPriceRange}
+      onPriceRangeChange={(range) => {
+        setSelectedPriceRange(range);
+        setHasAdjustedPriceRange(true);
+      }}
       sortOptions={sortOptions}
       selectedSort={selectedSort}
       onSortChange={setSelectedSort}

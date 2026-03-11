@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -79,10 +79,77 @@ export function ProductFilter({
 }: ProductFilterProps) {
   const { t } = useTranslation();
   const [localSearchValue, setLocalSearchValue] = useState<string>(searchValue);
+  const [priceInput, setPriceInput] = useState({ min: '', max: '' });
+  const [openFilters, setOpenFilters] = useState<string[]>([
+    'brands',
+    'categories',
+    'sizes',
+    'genders',
+    'price',
+  ]);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const [activeSlider, setActiveSlider] = useState<'min' | 'max' | null>(null);
+
+  useEffect(() => {
+    if (!activeSlider) {
+      return;
+    }
+
+    const handlePointerUp = () => setActiveSlider(null);
+    window.addEventListener('pointerup', handlePointerUp);
+
+    return () => window.removeEventListener('pointerup', handlePointerUp);
+  }, [activeSlider]);
 
   useEffect(() => {
     setLocalSearchValue(searchValue);
   }, [searchValue]);
+
+  const applyPriceRange = (nextMin: number, nextMax: number) => {
+    if (!priceRange) {
+      return;
+    }
+
+    const minValue = Math.max(priceRange.min, Math.min(nextMin, nextMax));
+    const maxValue = Math.min(priceRange.max, Math.max(nextMin, nextMax));
+
+    onPriceRangeChange?.({ min: minValue, max: maxValue });
+  };
+
+  const syncPriceInput = (minValue: number, maxValue: number) => {
+    setPriceInput({ min: String(minValue), max: String(maxValue) });
+  };
+
+  useEffect(() => {
+    if (!priceRange) {
+      return;
+    }
+
+    const nextMin = selectedPriceRange?.min ?? priceRange.min;
+    const nextMax = selectedPriceRange?.max ?? priceRange.max;
+    syncPriceInput(nextMin, nextMax);
+  }, [priceRange, selectedPriceRange]);
+
+  const currentMinValue = priceRange
+    ? Number(priceInput.min || priceRange.min)
+    : 0;
+  const currentMaxValue = priceRange
+    ? Number(priceInput.max || priceRange.max)
+    : 0;
+  const priceRangeSpan = priceRange ? priceRange.max - priceRange.min : 0;
+  const minPercent = priceRangeSpan
+    ? ((currentMinValue - priceRange!.min) / priceRangeSpan) * 100
+    : 0;
+  const maxPercent = priceRangeSpan
+    ? ((currentMaxValue - priceRange!.min) / priceRangeSpan) * 100
+    : 0;
+  const formatVnd = (value: number) => value.toLocaleString('vi-VN');
+  const displayMinValue = priceInput.min
+    ? formatVnd(Number(priceInput.min))
+    : '';
+  const displayMaxValue = priceInput.max
+    ? formatVnd(Number(priceInput.max))
+    : '';
 
   const hasActiveFilters =
     selectedBrands.length > 0 ||
@@ -156,7 +223,8 @@ export function ProductFilter({
       {/* Filter Accordion */}
       <Accordion
         type='multiple'
-        defaultValue={['brands', 'categories', 'sizes', 'genders']}
+        value={openFilters}
+        onValueChange={(value) => setOpenFilters(value)}
       >
         {/* Brands */}
         {brands.length > 0 && (
@@ -333,32 +401,224 @@ export function ProductFilter({
               {t('products.filter.priceRange')}
             </AccordionTrigger>
             <AccordionContent>
-              <div className='flex items-center gap-2'>
-                <Input
-                  type='number'
-                  placeholder='Min'
-                  value={selectedPriceRange?.min ?? priceRange.min}
-                  onChange={(e) =>
-                    onPriceRangeChange?.({
-                      min: Number(e.target.value),
-                      max: selectedPriceRange?.max ?? priceRange.max,
-                    })
-                  }
-                  className='w-24'
-                />
-                <span>-</span>
-                <Input
-                  type='number'
-                  placeholder='Max'
-                  value={selectedPriceRange?.max ?? priceRange.max}
-                  onChange={(e) =>
-                    onPriceRangeChange?.({
-                      min: selectedPriceRange?.min ?? priceRange.min,
-                      max: Number(e.target.value),
-                    })
-                  }
-                  className='w-24'
-                />
+              <div className='flex flex-col gap-3'>
+                <div className='flex items-center gap-2'>
+                  <Input
+                    type='text'
+                    inputMode='numeric'
+                    placeholder='Min'
+                    value={displayMinValue}
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      setPriceInput((prev) => ({
+                        ...prev,
+                        min: rawValue,
+                      }));
+                    }}
+                    onBlur={() => {
+                      const parsedMin = Number(priceInput.min);
+                      const minValue = Number.isFinite(parsedMin)
+                        ? parsedMin
+                        : priceRange.min;
+                      const maxValue =
+                        selectedPriceRange?.max ?? priceRange.max;
+                      applyPriceRange(minValue, maxValue);
+                      syncPriceInput(
+                        Math.max(priceRange.min, Math.min(minValue, maxValue)),
+                        Math.min(priceRange.max, Math.max(minValue, maxValue))
+                      );
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const parsedMin = Number(priceInput.min);
+                        const minValue = Number.isFinite(parsedMin)
+                          ? parsedMin
+                          : priceRange.min;
+                        const maxValue =
+                          selectedPriceRange?.max ?? priceRange.max;
+                        applyPriceRange(minValue, maxValue);
+                        syncPriceInput(
+                          Math.max(
+                            priceRange.min,
+                            Math.min(minValue, maxValue)
+                          ),
+                          Math.min(priceRange.max, Math.max(minValue, maxValue))
+                        );
+                        (e.currentTarget as HTMLInputElement).blur();
+                      }
+                    }}
+                    className='w-28 text-right tabular-nums pr-2 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-muted-foreground/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                  />
+                  <span>-</span>
+                  <Input
+                    type='text'
+                    inputMode='numeric'
+                    placeholder='Max'
+                    value={displayMaxValue}
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      setPriceInput((prev) => ({
+                        ...prev,
+                        max: rawValue,
+                      }));
+                    }}
+                    onBlur={() => {
+                      const parsedMax = Number(priceInput.max);
+                      const maxValue = Number.isFinite(parsedMax)
+                        ? parsedMax
+                        : priceRange.max;
+                      const minValue =
+                        selectedPriceRange?.min ?? priceRange.min;
+                      applyPriceRange(minValue, maxValue);
+                      syncPriceInput(
+                        Math.max(priceRange.min, Math.min(minValue, maxValue)),
+                        Math.min(priceRange.max, Math.max(minValue, maxValue))
+                      );
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const parsedMax = Number(priceInput.max);
+                        const maxValue = Number.isFinite(parsedMax)
+                          ? parsedMax
+                          : priceRange.max;
+                        const minValue =
+                          selectedPriceRange?.min ?? priceRange.min;
+                        applyPriceRange(minValue, maxValue);
+                        syncPriceInput(
+                          Math.max(
+                            priceRange.min,
+                            Math.min(minValue, maxValue)
+                          ),
+                          Math.min(priceRange.max, Math.max(minValue, maxValue))
+                        );
+                        (e.currentTarget as HTMLInputElement).blur();
+                      }
+                    }}
+                    className='w-28 text-right tabular-nums pr-2 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-muted-foreground/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                  />
+                </div>
+                <div className='space-y-2'>
+                  <div className='flex items-center justify-between text-xs text-muted-foreground'>
+                    <span>{formatVnd(currentMinValue)}</span>
+                    <span>{formatVnd(currentMaxValue)}</span>
+                  </div>
+                  <div className='relative h-5' ref={sliderRef}>
+                    <div className='absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-muted' />
+                    <div
+                      className='absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-primary'
+                      style={{
+                        left: `${minPercent}%`,
+                        right: `${100 - maxPercent}%`,
+                      }}
+                    />
+                    <div
+                      className='absolute inset-0 cursor-pointer'
+                      onPointerDown={(event) => {
+                        if (!priceRange) {
+                          return;
+                        }
+
+                        event.currentTarget.setPointerCapture(event.pointerId);
+
+                        const bounds =
+                          sliderRef.current?.getBoundingClientRect();
+                        if (!bounds) {
+                          return;
+                        }
+
+                        const ratio = Math.min(
+                          1,
+                          Math.max(
+                            0,
+                            (event.clientX - bounds.left) / bounds.width
+                          )
+                        );
+                        const value = Math.round(
+                          priceRange.min +
+                            ratio * (priceRange.max - priceRange.min)
+                        );
+
+                        const currentMin = currentMinValue;
+                        const currentMax = currentMaxValue;
+                        const nextActive =
+                          Math.abs(value - currentMin) <=
+                          Math.abs(value - currentMax)
+                            ? 'min'
+                            : 'max';
+
+                        setActiveSlider(nextActive);
+
+                        if (nextActive === 'min') {
+                          const nextMin = Math.min(value, currentMax);
+                          setPriceInput((prev) => ({
+                            ...prev,
+                            min: String(nextMin),
+                          }));
+                          applyPriceRange(nextMin, currentMax);
+                        } else {
+                          const nextMax = Math.max(value, currentMin);
+                          setPriceInput((prev) => ({
+                            ...prev,
+                            max: String(nextMax),
+                          }));
+                          applyPriceRange(currentMin, nextMax);
+                        }
+                      }}
+                      onPointerMove={(event) => {
+                        if (!activeSlider || !priceRange) {
+                          return;
+                        }
+
+                        const bounds =
+                          sliderRef.current?.getBoundingClientRect();
+                        if (!bounds) {
+                          return;
+                        }
+
+                        const ratio = Math.min(
+                          1,
+                          Math.max(
+                            0,
+                            (event.clientX - bounds.left) / bounds.width
+                          )
+                        );
+                        const value = Math.round(
+                          priceRange.min +
+                            ratio * (priceRange.max - priceRange.min)
+                        );
+
+                        const currentMin = currentMinValue;
+                        const currentMax = currentMaxValue;
+
+                        if (activeSlider === 'min') {
+                          const nextMin = Math.min(value, currentMax);
+                          setPriceInput((prev) => ({
+                            ...prev,
+                            min: String(nextMin),
+                          }));
+                          applyPriceRange(nextMin, currentMax);
+                        } else {
+                          const nextMax = Math.max(value, currentMin);
+                          setPriceInput((prev) => ({
+                            ...prev,
+                            max: String(nextMax),
+                          }));
+                          applyPriceRange(currentMin, nextMax);
+                        }
+                      }}
+                      onPointerUp={() => setActiveSlider(null)}
+                      onPointerCancel={() => setActiveSlider(null)}
+                    />
+                    <div
+                      className='absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary bg-background'
+                      style={{ left: `${minPercent}%` }}
+                    />
+                    <div
+                      className='absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary bg-background'
+                      style={{ left: `${maxPercent}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -374,7 +634,7 @@ export function ProductFilter({
           className='w-full'
         >
           <X className='mr-2 h-4 w-4' />
-          Clear all filters
+          {t('products.clearFilters')}
         </Button>
       )}
     </div>
