@@ -520,28 +520,6 @@
       "504": "The service is temporarily unavailable."
     }
   },
-  "profile": {
-    "title": "Your Profile",
-    "subtitle": "Account information from the system",
-    "common": {
-      "notAvailable": "N/A"
-    },
-    "personalInfo": {
-      "title": "Personal Information",
-      "description": "Basic information from the system",
-      "username": "Username",
-      "email": "Email",
-      "phone": "Phone Number",
-      "dateOfBirth": "Date of Birth",
-      "avatar": "Avatar",
-      "lastSeen": "Last Seen"
-    },
-    "accountInfo": {
-      "title": "Account Information",
-      "description": "Identifier ID from Keycloak",
-      "keycloakId": "Keycloak ID"
-    }
-  },
   "admin": {
     "nav": {
       "dashboard": "Dashboard",

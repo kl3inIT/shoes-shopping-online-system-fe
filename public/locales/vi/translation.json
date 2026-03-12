@@ -520,28 +520,6 @@
       "504": "Dịch vụ tạm thời không khả dụng"
     }
   },
-  "profile": {
-    "title": "Hồ sơ của bạn",
-    "subtitle": "Thông tin tài khoản từ hệ thống",
-    "common": {
-      "notAvailable": "N/A"
-    },
-    "personalInfo": {
-      "title": "Thông tin cá nhân",
-      "description": "Thông tin cơ bản từ hệ thống",
-      "username": "Tên người dùng",
-      "email": "Email",
-      "phone": "Số điện thoại",
-      "dateOfBirth": "Ngày sinh",
-      "avatar": "Ảnh đại diện",
-      "lastSeen": "Lần cuối truy cập"
-    },
-    "accountInfo": {
-      "title": "Thông tin tài khoản",
-      "description": "ID định danh từ Keycloak",
-      "keycloakId": "Keycloak ID"
-    }
-  },
   "admin": {
     "nav": {
       "dashboard": "Tổng quan",
