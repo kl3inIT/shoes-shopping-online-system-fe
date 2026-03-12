@@ -7,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useAutoScroll } from '@/hooks/use-auto-scroll';
 import { Button } from '@/components/ui/button';
-import { type Message } from '@/components/ui/chat-message';
+import {
+  type Message,
+  type ToolInvocation,
+} from '@/components/ui/chat-message';
 import { CopyButton } from '@/components/ui/copy-button';
 import { MessageInput } from '@/components/ui/message-input';
 import { MessageList } from '@/components/ui/message-list';
@@ -28,7 +31,7 @@ interface ChatPropsBase {
     messageId: string,
     rating: 'thumbs-up' | 'thumbs-down'
   ) => void;
-  setMessages?: (messages: any[]) => void;
+  setMessages?: (messages: Message[]) => void;
   transcribeAudio?: (blob: Blob) => Promise<string>;
 }
 
@@ -63,8 +66,9 @@ export function Chat({
   const isTyping = lastMessage?.role === 'user';
 
   const messagesRef = useRef(messages);
-  messagesRef.current = messages;
   const { t } = useTranslation();
+
+  messagesRef.current = messages;
 
   // Enhanced stop function that marks pending tool calls as cancelled
   const handleStop = useCallback(() => {
@@ -90,7 +94,7 @@ export function Chat({
 
     if (lastAssistantMessage.toolInvocations) {
       const updatedToolInvocations = lastAssistantMessage.toolInvocations.map(
-        (toolInvocation: any) => {
+        (toolInvocation: ToolInvocation) => {
           if (toolInvocation.state === 'call') {
             needsUpdate = true;
             return {
@@ -115,7 +119,7 @@ export function Chat({
     }
 
     if (lastAssistantMessage.parts && lastAssistantMessage.parts.length > 0) {
-      const updatedParts = lastAssistantMessage.parts.map((part: any) => {
+      const updatedParts = lastAssistantMessage.parts.map((part) => {
         if (
           part.type === 'tool-invocation' &&
           part.toolInvocation &&
