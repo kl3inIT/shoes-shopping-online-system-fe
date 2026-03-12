@@ -116,8 +116,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   }
 
   const displayName = getDisplayName(auth);
-  const keycloakId = auth.user.profile.sub as string | undefined;
-  const profilePath = keycloakId ? `/profile/${keycloakId}` : '/';
+  const profilePath = '/profile';
 
   return mobile ? (
     <>

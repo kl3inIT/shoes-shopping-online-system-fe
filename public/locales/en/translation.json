@@ -21,6 +21,48 @@
       "redirectSubtitle": "You will be redirected back here after logging in"
     }
   },
+  "profile": {
+    "title": "My account",
+    "subtitle": "Manage your personal details and shipping address.",
+    "lastSeen": "Recently active",
+    "section": {
+      "profile": "Profile",
+      "profileDesc": "Contact and delivery information.",
+      "summary": "Summary",
+      "summaryDesc": "Key details"
+    },
+    "fields": {
+      "username": "Username",
+      "email": "Email",
+      "phone": "Phone number",
+      "dateOfBirth": "Date of birth",
+      "address": "Address"
+    },
+    "actions": {
+      "edit": "Edit profile",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saving": "Saving..."
+    },
+    "common": {
+      "notProvided": "Not provided"
+    },
+    "validation": {
+      "phone": "Invalid phone number",
+      "dateOfBirth": "Invalid date of birth",
+      "dateOfBirthFuture": "Date of birth cannot be in the future",
+      "address": "Address is too short"
+    },
+    "update": {
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile"
+    },
+    "avatar": {
+      "change": "Change avatar",
+      "uploaded": "Avatar uploaded",
+      "uploadError": "Failed to upload avatar"
+    }
+  },
   "home": {
     "hero": {
       "badge": "New Collection 2024",

@@ -21,6 +21,48 @@
       "redirectSubtitle": "Bạn sẽ quay lại trang này sau khi đăng nhập"
     }
   },
+  "profile": {
+    "title": "Tài khoản của tôi",
+    "subtitle": "Quản lý thông tin cá nhân và địa chỉ giao hàng.",
+    "lastSeen": "Hoạt động gần đây",
+    "section": {
+      "profile": "Hồ sơ",
+      "profileDesc": "Thông tin dùng để liên hệ và giao hàng.",
+      "summary": "Tóm tắt",
+      "summaryDesc": "Thông tin chính"
+    },
+    "fields": {
+      "username": "Tên người dùng",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "dateOfBirth": "Ngày sinh",
+      "address": "Địa chỉ"
+    },
+    "actions": {
+      "edit": "Chỉnh sửa",
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "saving": "Đang lưu..."
+    },
+    "common": {
+      "notProvided": "Chưa cung cấp"
+    },
+    "validation": {
+      "phone": "Số điện thoại không hợp lệ",
+      "dateOfBirth": "Ngày sinh không hợp lệ",
+      "dateOfBirthFuture": "Ngày sinh không thể ở tương lai",
+      "address": "Địa chỉ quá ngắn"
+    },
+    "update": {
+      "success": "Cập nhật hồ sơ thành công",
+      "error": "Cập nhật hồ sơ thất bại"
+    },
+    "avatar": {
+      "change": "Đổi ảnh",
+      "uploaded": "Đã tải ảnh lên",
+      "uploadError": "Tải ảnh lên thất bại"
+    }
+  },
   "home": {
     "hero": {
       "badge": "Bộ sưu tập mới 2024",
