@@ -42,7 +42,6 @@ const ImageFilePreview = ({
       exit={{ opacity: 0, y: '100%' }}
     >
       <div className='flex w-full items-center space-x-2'>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt={`Attachment ${file.name}`}
           className='grid h-10 w-10 shrink-0 place-items-center rounded-sm border bg-muted object-cover'

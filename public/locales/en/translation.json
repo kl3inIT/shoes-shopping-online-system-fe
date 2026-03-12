@@ -38,6 +38,15 @@
       "dateOfBirth": "Date of birth",
       "address": "Address"
     },
+    "address": {
+      "province": "Province / City",
+      "district": "District",
+      "ward": "Ward / Commune",
+      "selectProvince": "Select province/city",
+      "selectDistrict": "Select district",
+      "selectWard": "Select ward/commune",
+      "streetPlaceholder": "House number, street name..."
+    },
     "actions": {
       "edit": "Edit profile",
       "cancel": "Cancel",

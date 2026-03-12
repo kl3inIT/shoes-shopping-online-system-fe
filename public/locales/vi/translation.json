@@ -38,6 +38,15 @@
       "dateOfBirth": "Ngày sinh",
       "address": "Địa chỉ"
     },
+    "address": {
+      "province": "Tỉnh / Thành phố",
+      "district": "Quận / Huyện",
+      "ward": "Phường / Xã",
+      "selectProvince": "Chọn tỉnh/thành",
+      "selectDistrict": "Chọn quận/huyện",
+      "selectWard": "Chọn phường/xã",
+      "streetPlaceholder": "Số nhà, tên đường..."
+    },
     "actions": {
       "edit": "Chỉnh sửa",
       "cancel": "Hủy",

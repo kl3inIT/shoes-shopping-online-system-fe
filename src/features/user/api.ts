@@ -17,3 +17,13 @@ export async function updateMyProfile(
   const response = await apiClient.patch<UserResponseDto>(`/users/me`, payload);
   return response.data.data;
 }
+
+export async function uploadMyAvatar(file: File): Promise<User> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await apiClient.post<UserResponseDto>(
+    `/users/me/avatar`,
+    formData
+  );
+  return response.data.data;
+}

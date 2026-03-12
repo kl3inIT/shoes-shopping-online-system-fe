@@ -61,6 +61,105 @@ type FilterState = {
   sort?: string;
 };
 
+type FilterSidebarProps = {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+  onSearchSubmit: (value: string) => void;
+  dynamicBrandOptions: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+  selectedBrands: string[];
+  onBrandsChange: (brands: string[]) => void;
+  dynamicCategoryOptions: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+  selectedCategories: string[];
+  onCategoriesChange: (categories: string[]) => void;
+  dynamicSizeOptions: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+  selectedSizes: string[];
+  onSizesChange: (sizes: string[]) => void;
+  dynamicGenderOptions: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+  selectedGenders: string[];
+  onGendersChange: (genders: string[]) => void;
+  dynamicPriceRange: {
+    min: number;
+    max: number;
+  };
+  selectedPriceRange: {
+    min: number;
+    max: number;
+  };
+  onPriceRangeChange: (range: { min: number; max: number }) => void;
+  sortOptions: typeof sortOptions;
+  selectedSort: string;
+  onSortChange: (sort: string) => void;
+  onClearFilters: () => void;
+};
+
+function FilterSidebar({
+  searchValue,
+  onSearchChange,
+  onSearchSubmit,
+  dynamicBrandOptions,
+  selectedBrands,
+  onBrandsChange,
+  dynamicCategoryOptions,
+  selectedCategories,
+  onCategoriesChange,
+  dynamicSizeOptions,
+  selectedSizes,
+  onSizesChange,
+  dynamicGenderOptions,
+  selectedGenders,
+  onGendersChange,
+  dynamicPriceRange,
+  selectedPriceRange,
+  onPriceRangeChange,
+  sortOptions: filterSortOptions,
+  selectedSort,
+  onSortChange,
+  onClearFilters,
+}: FilterSidebarProps) {
+  return (
+    <ProductFilter
+      searchValue={searchValue}
+      onSearchChange={onSearchChange}
+      onSearchSubmit={onSearchSubmit}
+      brands={dynamicBrandOptions}
+      selectedBrands={selectedBrands}
+      onBrandsChange={onBrandsChange}
+      categories={dynamicCategoryOptions}
+      selectedCategories={selectedCategories}
+      onCategoriesChange={onCategoriesChange}
+      sizes={dynamicSizeOptions}
+      selectedSizes={selectedSizes}
+      onSizesChange={onSizesChange}
+      genders={dynamicGenderOptions}
+      selectedGenders={selectedGenders}
+      onGendersChange={onGendersChange}
+      priceRange={dynamicPriceRange}
+      selectedPriceRange={selectedPriceRange}
+      onPriceRangeChange={onPriceRangeChange}
+      sortOptions={filterSortOptions}
+      selectedSort={selectedSort}
+      onSortChange={onSortChange}
+      onClearFilters={onClearFilters}
+    />
+  );
+}
+
 export default function ProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -381,36 +480,6 @@ export default function ProductsPage() {
     selectedPriceRange.min !== dynamicPriceRange.min ||
     selectedPriceRange.max !== dynamicPriceRange.max;
 
-  const FilterSidebar = () => (
-    <ProductFilter
-      searchValue={searchValue}
-      onSearchChange={setSearchValue}
-      onSearchSubmit={(value) => setSearchValue(value)}
-      brands={dynamicBrandOptions}
-      selectedBrands={selectedBrands}
-      onBrandsChange={setSelectedBrands}
-      categories={dynamicCategoryOptions}
-      selectedCategories={selectedCategories}
-      onCategoriesChange={setSelectedCategories}
-      sizes={dynamicSizeOptions}
-      selectedSizes={selectedSizes}
-      onSizesChange={setSelectedSizes}
-      genders={dynamicGenderOptions}
-      selectedGenders={selectedGenders}
-      onGendersChange={setSelectedGenders}
-      priceRange={dynamicPriceRange}
-      selectedPriceRange={selectedPriceRange}
-      onPriceRangeChange={(range) => {
-        setSelectedPriceRange(range);
-        setHasAdjustedPriceRange(true);
-      }}
-      sortOptions={sortOptions}
-      selectedSort={selectedSort}
-      onSortChange={setSelectedSort}
-      onClearFilters={handleClearFilters}
-    />
-  );
-
   return (
     <div className='space-y-6'>
       {/* Page Header */}
@@ -453,7 +522,33 @@ export default function ProductsPage() {
                   <SheetTitle>{t('products.filters')}</SheetTitle>
                 </SheetHeader>
                 <div className='mt-6'>
-                  <FilterSidebar />
+                  <FilterSidebar
+                    searchValue={searchValue}
+                    onSearchChange={setSearchValue}
+                    onSearchSubmit={(value) => setSearchValue(value)}
+                    dynamicBrandOptions={dynamicBrandOptions}
+                    selectedBrands={selectedBrands}
+                    onBrandsChange={setSelectedBrands}
+                    dynamicCategoryOptions={dynamicCategoryOptions}
+                    selectedCategories={selectedCategories}
+                    onCategoriesChange={setSelectedCategories}
+                    dynamicSizeOptions={dynamicSizeOptions}
+                    selectedSizes={selectedSizes}
+                    onSizesChange={setSelectedSizes}
+                    dynamicGenderOptions={dynamicGenderOptions}
+                    selectedGenders={selectedGenders}
+                    onGendersChange={setSelectedGenders}
+                    dynamicPriceRange={dynamicPriceRange}
+                    selectedPriceRange={selectedPriceRange}
+                    onPriceRangeChange={(range) => {
+                      setSelectedPriceRange(range);
+                      setHasAdjustedPriceRange(true);
+                    }}
+                    sortOptions={sortOptions}
+                    selectedSort={selectedSort}
+                    onSortChange={setSelectedSort}
+                    onClearFilters={handleClearFilters}
+                  />
                 </div>
               </SheetContent>
             </Sheet>
@@ -467,7 +562,33 @@ export default function ProductsPage() {
           <aside className='lg:col-span-1'>
             <div className='sticky top-20 rounded-lg border p-4'>
               <h2 className='mb-4 font-semibold'>{t('products.filters')}</h2>
-              <FilterSidebar />
+              <FilterSidebar
+                searchValue={searchValue}
+                onSearchChange={setSearchValue}
+                onSearchSubmit={(value) => setSearchValue(value)}
+                dynamicBrandOptions={dynamicBrandOptions}
+                selectedBrands={selectedBrands}
+                onBrandsChange={setSelectedBrands}
+                dynamicCategoryOptions={dynamicCategoryOptions}
+                selectedCategories={selectedCategories}
+                onCategoriesChange={setSelectedCategories}
+                dynamicSizeOptions={dynamicSizeOptions}
+                selectedSizes={selectedSizes}
+                onSizesChange={setSelectedSizes}
+                dynamicGenderOptions={dynamicGenderOptions}
+                selectedGenders={selectedGenders}
+                onGendersChange={setSelectedGenders}
+                dynamicPriceRange={dynamicPriceRange}
+                selectedPriceRange={selectedPriceRange}
+                onPriceRangeChange={(range) => {
+                  setSelectedPriceRange(range);
+                  setHasAdjustedPriceRange(true);
+                }}
+                sortOptions={sortOptions}
+                selectedSort={selectedSort}
+                onSortChange={setSelectedSort}
+                onClearFilters={handleClearFilters}
+              />
             </div>
           </aside>
         )}
