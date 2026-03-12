@@ -32,6 +32,7 @@ export function PaymentQrPage() {
     if (!stompClient) return;
 
     const subscription = stompClient.subscribe('/topic/orders', (msg) => {
+      navigate('/orders');
       console.log('QR nhận:', msg.body);
     });
 
