@@ -17,11 +17,14 @@ import {
 } from '@/features/reviews';
 import { Separator } from '@/components/ui/separator';
 import { useAddToCartMutation } from '@/features/cart';
-import { useAddToWishlistMutation } from '@/features/wishlist';
+import {
+  useAddToWishlistMutation,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+} from '@/features/wishlist';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { resolveImageUrl } from '@/lib/image';
-import { toast } from 'sonner';
 
 export function ShoeDetailPage() {
   const { t } = useTranslation();
@@ -39,6 +42,8 @@ export function ShoeDetailPage() {
   const markHelpfulMutation = useMarkReviewHelpfulMutation(id);
   const addToCartMutation = useAddToCartMutation();
   const addToWishlistMutation = useAddToWishlistMutation();
+  const removeFromWishlistMutation = useRemoveFromWishlistMutation();
+  const { data: wishlistData = [] } = useQueryWishlist();
   const reviews =
     reviewsData?.items?.map((r) => ({
       id: r.id,
@@ -115,6 +120,7 @@ export function ShoeDetailPage() {
     variants,
     rating: reviewsData?.avgRating ?? 0,
     reviewCount: reviewsData?.reviewCount ?? 0,
+    isInWishlist: wishlistData.some((w) => w.shoeId === shoe.id),
     specifications: [
       { label: 'Material', value: shoe.material },
       { label: 'Gender', value: shoe.gender },
@@ -124,21 +130,24 @@ export function ShoeDetailPage() {
   };
 
   const handleAddToCart = (
-    productId: string,
-    size: string,
-    color: string,
+    variantId: string,
+    _size: string,
+    _color: string,
     quantity: number
   ) => {
     addToCartMutation.mutate({
-      shoeId: productId,
-      size,
-      color,
+      shoeVariantId: variantId,
       quantity,
     });
   };
 
   const handleAddToWishlist = (productId: string) => {
-    addToWishlistMutation.mutate(productId);
+    const isInWishlist = wishlistData.some((w) => w.shoeId === productId);
+    if (isInWishlist) {
+      removeFromWishlistMutation.mutate(productId);
+    } else {
+      addToWishlistMutation.mutate(productId);
+    }
   };
 
   const handleShare = (productId: string) => {

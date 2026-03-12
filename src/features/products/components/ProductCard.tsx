@@ -21,6 +21,7 @@ export interface ProductCardProps {
   isSale?: boolean;
   rating?: number;
   reviewCount?: number;
+  isInWishlist?: boolean;
   onAddToCart?: (id: string) => void;
   onAddToWishlist?: (id: string) => void;
   onClick?: (id: string) => void;
@@ -36,6 +37,7 @@ export function ProductCard({
   isSale,
   rating,
   reviewCount,
+  isInWishlist,
   onAddToCart,
   onAddToWishlist,
   onClick,
@@ -82,10 +84,18 @@ export function ProductCard({
                   onAddToWishlist?.(id);
                 }}
               >
-                <Heart className='h-4 w-4' />
+                <Heart
+                  className={`h-4 w-4 ${
+                    isInWishlist ? 'fill-red-500 text-red-500' : ''
+                  }`}
+                />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Add to Wishlist</TooltipContent>
+            <TooltipContent>
+              {isInWishlist
+                ? t('wishlist.removeFromWishlist')
+                : t('products.addToWishlist')}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -101,7 +111,7 @@ export function ProductCard({
                 <ShoppingCart className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Add to Cart</TooltipContent>
+            <TooltipContent>{t('products.addToCart')}</TooltipContent>
           </Tooltip>
         </div>
       </div>

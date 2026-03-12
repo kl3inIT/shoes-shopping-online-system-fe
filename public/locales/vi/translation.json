@@ -163,6 +163,7 @@
     "quantity": "Số lượng",
     "addToCart": "Thêm Vào Giỏ",
     "wishlist": "Yêu Thích",
+    "addedToWishlist": "Đã yêu thích",
     "description": "Mô tả",
     "specifications": "Thông số",
     "noSpecifications": "Không có thông số.",
@@ -187,7 +188,8 @@
     },
     "new": "Mới",
     "inStock": "Còn hàng",
-    "outOfStock": "Hết hàng"
+    "outOfStock": "Hết hàng",
+    "inStockCount": "Còn lại: {{count}} sản phẩm"
   },
   "reviews": {
     "count_one": "{{count}} đánh giá",

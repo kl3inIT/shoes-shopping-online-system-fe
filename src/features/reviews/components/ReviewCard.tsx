@@ -41,7 +41,7 @@ export function ReviewCard({
 }: ReviewCardProps) {
   const [isHelpful, setIsHelpful] = useState(initialHelpful ?? false);
   const auth = useAuth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const initials = author.name
     .split(' ')
     .map((n) => n[0])
@@ -64,7 +64,7 @@ export function ReviewCard({
               {isVerifiedPurchase && (
                 <Badge variant='secondary' className='gap-1'>
                   <CheckCircle className='h-3 w-3' />
-                  Verified Purchase
+                  {t('productDetail.reviews.verifiedPurchase')}
                 </Badge>
               )}
             </div>
@@ -72,11 +72,14 @@ export function ReviewCard({
             <div className='flex items-center gap-2'>
               <Rating value={rating} readonly size='sm' />
               <span className='text-xs text-muted-foreground'>
-                {new Date(createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {new Date(createdAt).toLocaleDateString(
+                  i18n.language === 'vi' ? 'vi-VN' : 'en-US',
+                  {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }
+                )}
               </span>
             </div>
 
@@ -125,7 +128,7 @@ export function ReviewCard({
                       isHelpful ? 'text-sky-500' : ''
                     }`}
                   />
-                  Helpful ({helpfulCount})
+                  {t('productDetail.reviews.helpful')} ({helpfulCount})
                 </Button>
               </div>
             )}

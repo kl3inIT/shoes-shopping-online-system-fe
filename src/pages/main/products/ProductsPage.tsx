@@ -32,7 +32,11 @@ import {
   type CategoryResponse,
 } from '@/features/products';
 import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
-import { useAddToWishlistMutation } from '@/features/wishlist';
+import {
+  useAddToWishlistMutation,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+} from '@/features/wishlist';
 import { useIsMobile } from '@/hooks/useMobile';
 import { resolveImageUrl } from '@/lib/image';
 
@@ -51,6 +55,7 @@ type MappedProduct = {
   rating: number;
   reviewCount: number;
   variants: ShoeResponse['variants'];
+  isInWishlist?: boolean;
 };
 
 type FilterState = {
@@ -173,6 +178,8 @@ export default function ProductsPage() {
     null
   );
   const addToWishlistMutation = useAddToWishlistMutation();
+  const { data: wishlistData = [] } = useQueryWishlist();
+  const removeFromWishlistMutation = useRemoveFromWishlistMutation();
 
   const parseListParam = (value: string | null) =>
     value ? value.split(',').filter(Boolean) : [];
@@ -256,6 +263,11 @@ export default function ProductsPage() {
       variants: shoe.variants ?? [],
     })
   );
+
+  const wishlistIds = new Set(wishlistData.map((w) => w.shoeId));
+  mappedProducts.forEach((p) => {
+    p.isInWishlist = wishlistIds.has(p.id);
+  });
 
   const dynamicPriceRange = mappedProducts.reduce(
     (range, product) => ({
@@ -431,7 +443,11 @@ export default function ProductsPage() {
   };
 
   const handleAddToWishlist = (id: string) => {
-    addToWishlistMutation.mutate(id);
+    if (wishlistIds.has(id)) {
+      removeFromWishlistMutation.mutate(id);
+    } else {
+      addToWishlistMutation.mutate(id);
+    }
   };
 
   if (isLoading) {
