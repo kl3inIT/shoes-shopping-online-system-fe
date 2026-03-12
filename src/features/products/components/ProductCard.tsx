@@ -43,7 +43,7 @@ export function ProductCard({
 
   return (
     <Card
-      className='group cursor-pointer overflow-hidden transition-all hover:shadow-lg'
+      className='group flex h-full cursor-pointer flex-col overflow-hidden transition-all hover:shadow-lg'
       onClick={() => onClick?.(id)}
     >
       <div className='relative aspect-square overflow-hidden bg-muted'>
@@ -101,9 +101,11 @@ export function ProductCard({
           </Tooltip>
         </div>
       </div>
-      <CardContent className='p-4'>
+      <CardContent className='flex flex-1 flex-col p-4'>
         <p className='text-xs text-muted-foreground'>{brand}</p>
-        <h3 className='mt-1 line-clamp-2 font-medium'>{name}</h3>
+        <h3 className='mt-1 line-clamp-2 min-h-[2.75rem] font-medium'>
+          {name}
+        </h3>
         {rating !== undefined && (
           <div className='mt-1 flex items-center gap-1'>
             <span className='text-yellow-500'>★</span>
@@ -113,7 +115,7 @@ export function ProductCard({
           </div>
         )}
       </CardContent>
-      <CardFooter className='p-4 pt-0'>
+      <CardFooter className='mt-auto p-4 pt-0'>
         <div className='flex items-center gap-2'>
           <span className='text-lg font-bold'>{formatCurrency(price)}</span>
           {originalPrice && originalPrice > price && (
