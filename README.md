@@ -1,189 +1,115 @@
-## Shoes Shopping Online System - Frontend
+## Shoes Shopping Online System – Frontend
 
-Frontend của hệ thống **Shoes Shopping Online System** được xây dựng bằng **React + TypeScript + Vite**, kết hợp với **React Router**, **React Query**, **i18n**, và bộ component UI tuỳ chỉnh.
+Ứng dụng frontend cho hệ thống **Shoes Shopping Online System**, xây dựng trên **React 19 + TypeScript + Vite (rolldown-vite)**, quản lý state server bằng **TanStack Query**, giao diện với **shadcn/ui + Tailwind CSS v4**, xác thực bằng **Keycloak (OIDC)**, hỗ trợ **đa ngôn ngữ (en/vi)** và có **khu vực admin** để quản lý sản phẩm, đơn hàng, người dùng,...
 
-### 1. Công nghệ chính
+### 1. Tech stack chính
 
-- **Vite + React + TypeScript**: bundler & UI framework.
-- **React Router**: điều hướng giữa các trang (main, admin, auth, error).
-- **TanStack Query (React Query)**: quản lý data fetching / caching.
-- **Axios hoặc fetch wrapper** (thông qua `features/apiClient.ts`): gọi API backend.
-- **OIDC / Auth**: xử lý đăng nhập, token qua `features/auth`.
-- **i18n**: đa ngôn ngữ thông qua thư mục `i18n`.
-- **UI Components**: hệ thống component tái sử dụng trong `components/ui`.
+- **UI & build**
+  - React 19 + TypeScript
+  - Vite (rolldown-vite) + Tailwind CSS v4
+  - shadcn/ui (Radix UI primitives)
+- **Routing & data**
+  - React Router v7 (`src/routes/router.tsx`)
+  - TanStack Query v5 (`@tanstack/react-query`)
+- **Auth & Keycloak**
+  - `react-oidc-context` + `oidc-client-ts` (OIDC client)
+  - Keycloak realm cấu hình qua biến môi trường (backend cung cấp JWT)
+- **Khác**
+  - Axios HTTP client wrapper: `src/features/apiClient.ts`
+  - i18n: `react-i18next` + `public/locales/{en,vi}/translation.json`
+  - WebSocket + STOMP (thông báo real‑time)
 
----
-
-### 2. Cấu trúc thư mục `src`
+### 2. Cấu trúc chính của `src/`
 
 ```text
 src/
-  App.tsx
-  main.tsx
-  index.css
-  assets/
-  components/
-  features/
-  hooks/
-  i18n/
-  layouts/
-  lib/
-  pages/
-  providers/
-  routes/
-  types/
+  components/        # UI components (shadcn) + component dùng lại
+  features/          # Logic theo feature: auth, user, products, admin/...
+  hooks/             # Custom hooks chung
+  i18n/              # Cấu hình đa ngôn ngữ
+  layouts/           # MainLayout, AdminLayout, sidebar, header...
+  pages/             # Các trang gắn với route
+  providers/         # AppProviders, AuthProvider, QueryProvider, ThemeProvider...
+  routes/            # router.tsx, ProtectedRoute, RootErrorBoundary
+  types/             # Kiểu dữ liệu dùng chung (API DTO, wrapper...)
 ```
 
-#### 2.1. Entry & cấu hình gốc
+#### 2.1. Khu vực main (khách hàng)
 
-- **`main.tsx`**: Entry chính, mount React, bọc app bằng các `Provider` (Theme, Query, Auth, Router, i18n, ...).
-- **`App.tsx`**: Root component, thường render router + layout.
-- **`index.css`**: Global styles.
+- `pages/main/home/HomePage.tsx` – trang chủ
+- `pages/main/products/ProductsPage.tsx` – danh sách sản phẩm
+- `pages/main/products/ShoeDetailPage.tsx` – chi tiết sản phẩm
+- `pages/main/cart/CartPage.tsx`, `wishlist`, `orders`, `checkout`, `profile`...
+- Layout: `layouts/main/MainLayout.tsx` (header, footer, user menu)
 
-#### 2.2. `components/`
+#### 2.2. Khu vực admin
 
-- Các component dùng lại xuyên suốt hệ thống:
-  - `chart-area-interactive.tsx`, `data-table.tsx`, `section-cards.tsx`: component chức năng (biểu đồ, bảng dữ liệu, các card thống kê, ...).
-  - `language-toggle.tsx`, `mode-toggle.tsx`: nút chuyển **ngôn ngữ** và **theme** (dark/light).
-- **`components/ui/`**: thư viện UI base (giống Shadcn UI):
-  - `button.tsx`, `card.tsx`, `table.tsx`, `tabs.tsx`, `tooltip.tsx`, `sidebar.tsx`, `sheet.tsx`, `drawer.tsx`, `input.tsx`, `select.tsx`, `checkbox.tsx`, `badge.tsx`, `avatar.tsx`, `alert.tsx`, `skeleton.tsx`, ...
-  - Mục đích: chuẩn hoá giao diện, tái sử dụng, dễ maintain.
+- Layout: `layouts/admin/AdminLayout.tsx` + `app-sidebar.tsx`
+- Các trang admin chính:
+  - `/admin` – Dashboard
+  - `/admin/products`, `/admin/addshoe`, `/admin/products/:id` – quản lý sản phẩm
+  - `/admin/orders` – quản lý đơn hàng
+  - `/admin/brands` – quản lý thương hiệu
+  - `/admin/categories` – quản lý danh mục
+  - `/admin/reviews` – quản lý đánh giá
+  - `/admin/ai` – cấu hình AI
+  - **`/admin/users` – quản lý người dùng (admin & manager)**:
+    - Dữ liệu gọi qua `src/features/admin/users/api.ts`
+    - State với React Query `useQueryAdminUsers`
+    - CRUD:
+      - Tạo admin/manager mới (create user Keycloak + DB)
+      - Đổi role (ROLE_ADMIN / ROLE_MANAGER / ROLE_CUSTOMER)
+      - Suspend / Activate (bật/tắt trên Keycloak + cập nhật DB)
+      - Xoá user (xóa Keycloak + DB)
+    - UI: `UserStatsCards`, `UserTable`, `UserDetailDialog`, `UserFormDialog`, `UserRoleDialog`
 
-#### 2.3. `features/`
+### 3. Tích hợp backend & Keycloak
 
-- **Mục đích**: gom các “tính năng” có logic riêng (auth, user, HTTP, query client).
+- Toàn bộ API được gọi thông qua `apiClient` ở `src/features/apiClient.ts`:
+  - Base URL: `VITE_API_BASE_URL` (mặc định `http://localhost:8088`)
+  - Tự gắn header `Authorization: Bearer <access_token>` nếu có
+  - Tự gắn header `Accept-Language` theo ngôn ngữ i18n hiện tại
+  - Tự xử lý refresh token 401 (gọi `signinSilent` từ `react-oidc-context`)
+- Auth:
+  - `src/features/auth/oidcConfig.ts` đọc các biến:
+    - `VITE_OIDC_AUTHORITY` – URL realm Keycloak (ví dụ: `http://localhost:8080/realms/ssos-realm`)
+    - `VITE_OIDC_CLIENT_ID` – client Id (ví dụ: `ssos-app`)
+  - Callback sau đăng nhập: `/auth/callback` (`pages/auth/AuthCallBack.tsx`)
+- Các endpoint admin users khớp với backend:
+  - `GET /api/admin/users?page=&size=&search=&role=&status=`
+  - `POST /api/admin/users`
+  - `PATCH /api/admin/users/{keycloakId}/role`
+  - `PATCH /api/admin/users/{keycloakId}/status`
+  - `DELETE /api/admin/users/{keycloakId}`
 
-- **`features/apiClient.ts`**:
-  - Khởi tạo HTTP client (thường là Axios hoặc fetch wrapper).
-  - Thiết lập base URL, interceptor, header token, ...
+### 4. Scripts & cách chạy
 
-- **`features/HttpError.ts`**:
-  - Định nghĩa model/tiện ích xử lý lỗi HTTP trả về từ backend.
-
-- **`features/queryClient.ts`**:
-  - Khởi tạo và cấu hình React Query client.
-
-- **`features/auth/`**:
-  - `oidcConfig.ts`: cấu hình OIDC/OpenID Connect.
-  - `accessTokenProvider.ts`: lấy / lưu / cung cấp access token.
-  - `authUtils.ts`: các hàm tiện ích liên quan đến xác thực.
-  - `index.ts`: export chung cho module auth.
-
-- **`features/user/`**:
-  - `api.ts`: các hàm gọi API liên quan đến người dùng (lấy profile, cập nhật, ...).
-  - `hooks.ts`: các React hook (ví dụ `useUser`, `useUserProfile`, ...) dùng React Query.
-  - `queryOptions.ts`: định nghĩa query key và options chuẩn.
-  - `types.ts`: type/interface cho dữ liệu user.
-  - `index.ts`: export chung.
-
-#### 2.4. `hooks/`
-
-- **`useMobile.ts`**:
-  - Hook custom để xác định xem màn hình đang ở kích thước mobile / desktop.
-  - Thường dùng để thay đổi layout (ẩn/hiện sidebar, menu mobile, ...).
-
-#### 2.5. `i18n/`
-
-- **`i18nConfig.ts`, `i18n.ts`, `useLanguage.ts`, `index.ts`**:
-  - Khởi tạo và cấu hình hệ thống đa ngôn ngữ.
-  - Cung cấp hook `useLanguage` để đổi ngôn ngữ, kết hợp với component `language-toggle`.
-
-#### 2.6. `layouts/`
-
-- **Mục đích**: tách bố cục (layout) của từng khu vực trong app.
-
-- **`layouts/admin/`**:
-  - `AdminLayout.tsx`: layout chính cho trang admin.
-  - `app-sidebar.tsx`, `sidebar.tsx`: sidebar admin.
-  - `site-header.tsx`, `nav-main.tsx`, `nav-secondary.tsx`, `nav-documents.tsx`, `nav-user.tsx`: header và các menu điều hướng trong khu vực admin.
-  - `index.ts`: export chung cho layout admin.
-
-- **`layouts/main/`**:
-  - `MainLayout.tsx`: layout cho phần “website chính” (trang home, products, profile, ...).
-  - `Footer.tsx`: footer chung.
-  - `header/` với `Header.tsx`, `UserMenu.tsx`, `index.ts`: phần header & menu người dùng.
-
-- **`layouts/index.ts`**:
-  - Re-export các layout để import gọn hơn.
-
-#### 2.7. `pages/`
-
-- **Mục đích**: khai báo các “trang” gắn với route.
-
-- **`pages/admin/dashboard/`**:
-  - `Dashboard.tsx`, `data.json`: trang dashboard admin, có thể hiển thị thống kê, biểu đồ, bảng, ...
-
-- **`pages/auth/`**:
-  - `AuthCallBack.tsx`: xử lý callback sau khi đăng nhập (OIDC/OAuth), nhận code/token từ IdP rồi chuyển tiếp.
-  - `index.ts`: export.
-
-- **`pages/error/`**:
-  - `Page403.tsx`, `Page404.tsx`, `Page500.tsx`: các trang lỗi tương ứng **403/404/500**.
-  - `index.ts`: export.
-
-- **`pages/main/`**:
-  - `home/HomePage.tsx`: trang chủ (home).
-  - `products/ProductsPage.tsx`: trang danh sách / lưới sản phẩm giày.
-  - `profile/ProfilePage.tsx`, `profileLoader.ts`: trang hồ sơ người dùng và loader dữ liệu kèm theo.
-
-- **`pages/index.ts`**:
-  - Export các page để sử dụng trong router.
-
-#### 2.8. `providers/`
-
-- **Mục đích**: gom các context provider lại để bọc toàn bộ ứng dụng.
-
-- `AppProviders.tsx`: bọc lần lượt ThemeProvider, QueryProvider, AuthProvider, Router, i18n, ...
-- `AuthProvider.tsx`: context xác thực (trạng thái đăng nhập, thông tin user, token).
-- `QueryProvider.tsx`: cung cấp React Query client.
-- `ThemeProvider.tsx`: quản lý dark/light mode.
-- `index.ts`: export tiện lợi.
-
-#### 2.9. `routes/`
-
-- **`router.tsx`**:
-  - Định nghĩa cây route cho toàn bộ ứng dụng: route public, route bảo vệ, route admin, route lỗi, ...
-- **`ProtectedRoute.tsx`**:
-  - Component bao route, chỉ cho phép truy cập khi người dùng đã đăng nhập (và có thể kèm kiểm tra quyền).
-- **`RootErrorBoundary.tsx`**:
-  - Error boundary cho router, bắt lỗi render và chuyển hướng sang trang error phù hợp.
-
-#### 2.10. `types/`
-
-- **`apiTypes.ts`**:
-  - Định nghĩa type cho dữ liệu trao đổi với backend (request/response, DTO, ...).
-- **`index.ts`**:
-  - Export chung các type.
-
-#### 2.11. `assets/` và `lib/`
-
-- **`assets/`**:
-  - Lưu trữ asset tĩnh (ví dụ `react.svg`, logo, icon, ...).
-- **`lib/utils.ts`**:
-  - Các hàm tiện ích chung (format, parse, helper logic nhỏ).
-
----
-
-### 3. Chạy dự án
+Project dùng **pnpm** (xem `packageManager` trong `package.json`).
 
 ```bash
-# Cài đặt phụ thuộc
-npm install
+# 1. Cài dependencies
+pnpm install
 
-# Chạy dev
-npm run dev
+# 2. Chạy dev trên http://localhost:5173
+pnpm dev
 
-# Build production
-npm run build
+# 3. Lint
+pnpm lint
 
-# Preview build
-npm run preview
+# 4. Build production
+pnpm build
+
+# 5. Preview build
+pnpm preview
 ```
 
----
+> Lưu ý: cần chạy backend (`shoes-shopping-online-system-be`) trên `http://localhost:8088` (hoặc chỉnh `VITE_API_BASE_URL`) và Keycloak đang hoạt động đúng realm/client để login thành công.
 
-### 4. Hướng phát triển tiếp theo (gợi ý)
+### 5. Quy ước i18n & UI
 
-- Kết nối đầy đủ với backend (API shoes, order, cart, payment, ...).
-- Hoàn thiện luồng đăng nhập/đăng ký, phân quyền (user / admin).
-- Bổ sung test (unit test cho hooks, component, và integration test cho pages chính).
+- Tất cả trang trong `src/pages/**` **không được** hard‑code text:
+  - luôn dùng `const { t } = useTranslation();`
+  - thêm key mới vào `public/locales/en/translation.json` và `public/locales/vi/translation.json`
+- UI sử dụng component từ `components/ui/*` (shadcn):
+  - `button`, `card`, `table`, `dialog`, `select`, `input`, `badge`, `sidebar`, ...
+  - tránh dùng thẳng HTML thô cho các pattern đã có component sẵn.

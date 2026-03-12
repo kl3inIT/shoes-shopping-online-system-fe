@@ -13,6 +13,7 @@ import {
   IconSettings,
   IconShoe,
   IconStar,
+  IconUserCog,
   IconUsers,
 } from '@tabler/icons-react';
 
@@ -53,6 +54,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t('admin.nav.orders'),
       url: '/admin/orders',
       icon: IconPackage,
+    },
+    {
+      title: t('admin.nav.users'),
+      url: '/admin/users',
+      icon: IconUserCog,
     },
     {
       title: t('admin.nav.customers'),
