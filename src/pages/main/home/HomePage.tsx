@@ -34,6 +34,8 @@ function mapShoe(shoe: ShoeResponse): HomeProduct {
         : FALLBACK_IMAGE,
     brand: shoe.brandName,
     createdAt: shoe.createdAt,
+    rating: shoe.avgRating ?? 0,
+    reviewCount: shoe.reviewCount ?? 0,
   };
 }
 

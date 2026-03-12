@@ -13,11 +13,15 @@ import {
   usePublicReviewsByShoeId,
   useReviewEligibilityByShoeId,
   useCreateReviewMutation,
+  useMarkReviewHelpfulMutation,
 } from '@/features/reviews';
 import { Separator } from '@/components/ui/separator';
+import { useAddToCartMutation } from '@/features/cart';
+import { useAddToWishlistMutation } from '@/features/wishlist';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { resolveImageUrl } from '@/lib/image';
+import { toast } from 'sonner';
 
 export function ShoeDetailPage() {
   const { t } = useTranslation();
@@ -32,6 +36,9 @@ export function ShoeDetailPage() {
     auth.isAuthenticated
   );
   const createReviewMutation = useCreateReviewMutation(id);
+  const markHelpfulMutation = useMarkReviewHelpfulMutation(id);
+  const addToCartMutation = useAddToCartMutation();
+  const addToWishlistMutation = useAddToWishlistMutation();
   const reviews =
     reviewsData?.items?.map((r) => ({
       id: r.id,
@@ -46,7 +53,8 @@ export function ShoeDetailPage() {
         .map((u) => resolveImageUrl(u) ?? u)
         .filter(Boolean),
       isVerifiedPurchase: true,
-      helpfulCount: 0,
+      helpfulCount: r.helpfulCount ?? 0,
+      initialHelpful: r.currentUserVoted ?? false,
     })) ?? [];
 
   if (isLoading) {
@@ -121,13 +129,16 @@ export function ShoeDetailPage() {
     color: string,
     quantity: number
   ) => {
-    console.log('Add to cart:', { productId, size, color, quantity });
-    // TODO: Implement add to cart logic
+    addToCartMutation.mutate({
+      shoeId: productId,
+      size,
+      color,
+      quantity,
+    });
   };
 
   const handleAddToWishlist = (productId: string) => {
-    console.log('Add to wishlist:', productId);
-    // TODO: Implement add to wishlist logic
+    addToWishlistMutation.mutate(productId);
   };
 
   const handleShare = (productId: string) => {
@@ -217,7 +228,7 @@ export function ShoeDetailPage() {
               <ReviewCard
                 key={review.id}
                 {...review}
-                onHelpful={(reviewId) => console.log('Helpful:', reviewId)}
+                onHelpful={(reviewId) => markHelpfulMutation.mutate(reviewId)}
               />
             ))}
           </div>

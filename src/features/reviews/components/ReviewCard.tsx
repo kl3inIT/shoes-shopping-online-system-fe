@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Rating } from './Rating';
 import { ThumbsUp, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from 'react-oidc-context';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 export interface ReviewCardProps {
   id: string;
@@ -19,6 +23,7 @@ export interface ReviewCardProps {
   helpfulCount?: number;
   images?: string[];
   onHelpful?: (id: string) => void;
+  initialHelpful?: boolean;
 }
 
 export function ReviewCard({
@@ -32,7 +37,11 @@ export function ReviewCard({
   helpfulCount = 0,
   images = [],
   onHelpful,
+  initialHelpful,
 }: ReviewCardProps) {
+  const [isHelpful, setIsHelpful] = useState(initialHelpful ?? false);
+  const auth = useAuth();
+  const { i18n } = useTranslation();
   const initials = author.name
     .split(' ')
     .map((n) => n[0])
@@ -92,17 +101,34 @@ export function ReviewCard({
               </div>
             )}
 
-            <div className='flex items-center gap-4 pt-2'>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='h-8 text-xs'
-                onClick={() => onHelpful?.(id)}
-              >
-                <ThumbsUp className='mr-1 h-3 w-3' />
-                Helpful ({helpfulCount})
-              </Button>
-            </div>
+            {onHelpful && (
+              <div className='flex items-center gap-4 pt-2'>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className={`h-8 text-xs ${isHelpful ? 'text-sky-500' : ''}`}
+                  onClick={() => {
+                    if (!auth.isAuthenticated) {
+                      const message =
+                        i18n.language === 'vi'
+                          ? 'Vui lòng đăng nhập trước khi đánh dấu đánh giá là hữu ích'
+                          : 'Please log in before marking a review as helpful';
+                      toast.warning(message);
+                      return;
+                    }
+                    setIsHelpful((prev) => !prev);
+                    onHelpful(id);
+                  }}
+                >
+                  <ThumbsUp
+                    className={`mr-1 h-3 w-3 ${
+                      isHelpful ? 'text-sky-500' : ''
+                    }`}
+                  />
+                  Helpful ({helpfulCount})
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

@@ -31,6 +31,8 @@ import {
   type BrandResponse,
   type CategoryResponse,
 } from '@/features/products';
+import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
+import { useAddToWishlistMutation } from '@/features/wishlist';
 import { useIsMobile } from '@/hooks/useMobile';
 import { resolveImageUrl } from '@/lib/image';
 
@@ -47,6 +49,7 @@ type MappedProduct = {
   gender: string;
   createdAt: string;
   rating: number;
+  reviewCount: number;
   variants: ShoeResponse['variants'];
 };
 
@@ -66,6 +69,11 @@ export default function ProductsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartProduct, setCartProduct] = useState<AddToCartDialogProduct | null>(
+    null
+  );
+  const addToWishlistMutation = useAddToWishlistMutation();
 
   const parseListParam = (value: string | null) =>
     value ? value.split(',').filter(Boolean) : [];
@@ -141,7 +149,8 @@ export default function ProductsPage() {
           : '',
       brand: shoe.brandName,
       brandSlug: shoe.brandSlug,
-      rating: 0, // Backend doesn't provide rating yet
+      rating: shoe.avgRating ?? 0,
+      reviewCount: shoe.reviewCount ?? 0,
       categorySlug: shoe.categorySlug,
       gender: shoe.gender,
       createdAt: shoe.createdAt,
@@ -334,11 +343,20 @@ export default function ProductsPage() {
   };
 
   const handleAddToCart = (id: string) => {
-    console.log('Add to cart:', id);
+    const p = paginatedProducts.find((x) => x.id === id);
+    if (!p) return;
+
+    setCartProduct({
+      id: p.id,
+      name: p.name,
+      image: p.image,
+      price: p.price,
+    });
+    setCartOpen(true);
   };
 
   const handleAddToWishlist = (id: string) => {
-    console.log('Add to wishlist:', id);
+    addToWishlistMutation.mutate(id);
   };
 
   if (isLoading) {
@@ -529,6 +547,18 @@ export default function ProductsPage() {
           )}
         </div>
       </div>
+
+      <AddToCartDialog
+        open={cartOpen}
+        onOpenChange={setCartOpen}
+        product={cartProduct}
+      />
+
+      <AddToCartDialog
+        open={cartOpen}
+        onOpenChange={setCartOpen}
+        product={cartProduct}
+      />
     </div>
   );
 }

@@ -34,6 +34,8 @@ export interface ShoeResponse {
   price: number;
   imageUrls: string[];
   variants: ShoeVariantResponse[];
+  avgRating?: number;
+  reviewCount?: number;
   createdAt: string;
   updatedAt: string;
 }

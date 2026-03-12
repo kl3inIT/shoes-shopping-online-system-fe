@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/tooltip';
 import { formatCurrency } from '@/lib/utils';
 import { Heart, ShoppingCart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface ProductCardProps {
   id: string;
@@ -19,6 +20,7 @@ export interface ProductCardProps {
   isNew?: boolean;
   isSale?: boolean;
   rating?: number;
+  reviewCount?: number;
   onAddToCart?: (id: string) => void;
   onAddToWishlist?: (id: string) => void;
   onClick?: (id: string) => void;
@@ -33,10 +35,12 @@ export function ProductCard({
   brand,
   isSale,
   rating,
+  reviewCount,
   onAddToCart,
   onAddToWishlist,
   onClick,
 }: ProductCardProps) {
+  const { t } = useTranslation();
   const discount = originalPrice
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
@@ -101,16 +105,21 @@ export function ProductCard({
           </Tooltip>
         </div>
       </div>
-      <CardContent className='flex flex-1 flex-col p-4'>
-        <p className='text-xs text-muted-foreground'>{brand}</p>
-        <h3 className='mt-1 line-clamp-2 min-h-[2.75rem] font-medium'>
+      <CardContent className='flex flex-1 flex-col gap-1.5 p-4'>
+        <p className='text-xs font-medium text-muted-foreground'>{brand}</p>
+        <h3 className='line-clamp-2 text-sm font-semibold leading-snug'>
           {name}
         </h3>
         {rating !== undefined && (
-          <div className='mt-1 flex items-center gap-1'>
+          <div className='flex items-center gap-1 text-xs'>
             <span className='text-yellow-500'>★</span>
-            <span className='text-sm text-muted-foreground'>
+            <span className='text-muted-foreground'>
               {rating.toFixed(1)}
+              {typeof reviewCount === 'number' &&
+                ` (${t('reviews.count', {
+                  count: reviewCount,
+                  defaultValue: `${reviewCount} reviews`,
+                })})`}
             </span>
           </div>
         )}

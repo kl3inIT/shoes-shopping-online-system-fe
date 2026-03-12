@@ -157,6 +157,7 @@
     "description": "Description",
     "specifications": "Specifications",
     "noSpecifications": "No specifications available.",
+    "addToCartDescription": "Select size, color and quantity before adding this product to your cart.",
     "reviews": {
       "title": "Customer Reviews",
       "basedOn": "Based on {{count}} reviews",
@@ -178,6 +179,10 @@
     "new": "New",
     "inStock": "In Stock",
     "outOfStock": "Out of Stock"
+  },
+  "reviews": {
+    "count_one": "{{count}} review",
+    "count_other": "{{count}} reviews"
   },
   "cart": {
     "title": "Shopping Cart",
