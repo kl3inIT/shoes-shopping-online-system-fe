@@ -81,15 +81,6 @@ export const router = createBrowserRouter([
           {
             path: 'profile',
             lazy: async () => {
-              const { default: Component } =
-                await import('@/pages/main/profile/ProfileRedirectPage');
-              return { Component };
-            },
-            errorElement: <RootErrorBoundary />,
-          },
-          {
-            path: 'profile/:keycloakId',
-            lazy: async () => {
               const [{ default: Component }, { profileLoader }] =
                 await Promise.all([
                   import('@/pages/main/profile/ProfilePage'),
