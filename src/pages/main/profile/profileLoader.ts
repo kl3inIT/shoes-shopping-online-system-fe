@@ -4,8 +4,7 @@ import { getMeQueryOptions } from '@/features/user/queryOptions';
 import { isHttpError } from '@/features/apiClient';
 
 export const profileLoader =
-  (queryClient: QueryClient) =>
-  async ({ params }: LoaderFunctionArgs) => {
+  (queryClient: QueryClient) => async (_args: LoaderFunctionArgs) => {
     try {
       await queryClient.ensureQueryData(getMeQueryOptions());
     } catch (error) {
