@@ -70,6 +70,8 @@ apiClient.interceptors.request.use(
       config.headers['Content-Type'] = 'application/json';
     }
 
+    config.headers['Accept-Language'] = i18n.language?.split('-')[0] ?? 'en';
+
     if (isDev) {
       (config as unknown as { _metadata?: { startTime: number } })._metadata = {
         startTime: Date.now(),

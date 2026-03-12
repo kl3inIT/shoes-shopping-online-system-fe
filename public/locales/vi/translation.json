@@ -38,6 +38,15 @@
       "dateOfBirth": "Ngày sinh",
       "address": "Địa chỉ"
     },
+    "address": {
+      "province": "Tỉnh / Thành phố",
+      "district": "Quận / Huyện",
+      "ward": "Phường / Xã",
+      "selectProvince": "Chọn tỉnh/thành",
+      "selectDistrict": "Chọn quận/huyện",
+      "selectWard": "Chọn phường/xã",
+      "streetPlaceholder": "Số nhà, tên đường..."
+    },
     "actions": {
       "edit": "Chỉnh sửa",
       "cancel": "Hủy",
@@ -525,33 +534,12 @@
       "504": "Dịch vụ tạm thời không khả dụng"
     }
   },
-  "profile": {
-    "title": "Hồ sơ của bạn",
-    "subtitle": "Thông tin tài khoản từ hệ thống",
-    "common": {
-      "notAvailable": "N/A"
-    },
-    "personalInfo": {
-      "title": "Thông tin cá nhân",
-      "description": "Thông tin cơ bản từ hệ thống",
-      "username": "Tên người dùng",
-      "email": "Email",
-      "phone": "Số điện thoại",
-      "dateOfBirth": "Ngày sinh",
-      "avatar": "Ảnh đại diện",
-      "lastSeen": "Lần cuối truy cập"
-    },
-    "accountInfo": {
-      "title": "Thông tin tài khoản",
-      "description": "ID định danh từ Keycloak",
-      "keycloakId": "Keycloak ID"
-    }
-  },
   "admin": {
     "nav": {
       "dashboard": "Tổng quan",
       "products": "Sản phẩm",
       "orders": "Đơn hàng",
+      "users": "Người dùng",
       "customers": "Khách hàng",
       "brands": "Thương hiệu",
       "categories": "Danh mục",
@@ -754,6 +742,96 @@
         "shipping": "Địa chỉ giao hàng",
         "items": "Sản phẩm đặt mua",
         "total": "Tổng cộng"
+      }
+    },
+    "users": {
+      "title": "Quản Lý Người Dùng",
+      "subtitle": "Quản lý {{count}} người dùng",
+      "searchPlaceholder": "Tìm theo tên hoặc email...",
+      "filterRole": "Vai trò",
+      "filterStatus": "Trạng thái",
+      "allRoles": "Tất cả vai trò",
+      "allStatuses": "Tất cả trạng thái",
+      "addUser": "Thêm người dùng",
+      "stats": {
+        "total": "Tổng người dùng",
+        "admins": "Quản trị viên",
+        "managers": "Quản lý",
+        "customers": "Khách hàng"
+      },
+      "role": {
+        "ROLE_ADMIN": "Quản trị viên",
+        "ROLE_MANAGER": "Quản lý",
+        "ROLE_CUSTOMER": "Khách hàng",
+        "ROLE_SEPAY_WEBHOOK": "Webhook"
+      },
+      "status": {
+        "ACTIVE": "Hoạt động",
+        "INACTIVE": "Không hoạt động",
+        "SUSPENDED": "Bị đình chỉ"
+      },
+      "table": {
+        "user": "Người dùng",
+        "email": "Email",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "joined": "Ngày tham gia",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "viewDetails": "Xem chi tiết",
+        "changeRole": "Đổi vai trò",
+        "suspend": "Đình chỉ",
+        "activate": "Kích hoạt",
+        "delete": "Xóa"
+      },
+      "detail": {
+        "title": "Chi Tiết Người Dùng",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "dob": "Ngày sinh",
+        "joined": "Ngày tham gia",
+        "address": "Địa chỉ",
+        "lastSeen": "Lần cuối trực tuyến"
+      },
+      "createDialog": {
+        "title": "Tạo Người Dùng Mới",
+        "description": "Tạo tài khoản quản lý hoặc quản trị viên mới. Người dùng sẽ được yêu cầu đổi mật khẩu khi đăng nhập lần đầu."
+      },
+      "roleDialog": {
+        "title": "Đổi Vai Trò",
+        "description": "Cập nhật vai trò cho {{name}}"
+      },
+      "suspendDialog": {
+        "title": "Đình Chỉ Người Dùng",
+        "description": "Bạn có chắc muốn đình chỉ {{name}}? Họ sẽ không thể đăng nhập."
+      },
+      "activateDialog": {
+        "title": "Kích Hoạt Người Dùng",
+        "description": "Khôi phục quyền truy cập cho tài khoản của {{name}}."
+      },
+      "deleteDialog": {
+        "title": "Xóa Người Dùng",
+        "description": "Bạn có chắc muốn xóa {{name}}? Thao tác này sẽ xóa vĩnh viễn tài khoản khỏi Keycloak và cơ sở dữ liệu."
+      },
+      "form": {
+        "firstName": "Tên",
+        "firstNamePlaceholder": "Nhập tên",
+        "lastName": "Họ",
+        "lastNamePlaceholder": "Nhập họ",
+        "username": "Tên đăng nhập",
+        "usernamePlaceholder": "Nhập tên đăng nhập",
+        "email": "Email",
+        "emailPlaceholder": "Nhập địa chỉ email",
+        "password": "Mật khẩu tạm thời",
+        "passwordPlaceholder": "Tối thiểu 8 ký tự",
+        "role": "Vai trò"
+      },
+      "toast": {
+        "created": "Tạo người dùng thành công",
+        "roleUpdated": "Cập nhật vai trò thành công",
+        "statusUpdated": "Cập nhật trạng thái thành công",
+        "deleted": "Xóa người dùng thành công"
       }
     },
     "customers": {

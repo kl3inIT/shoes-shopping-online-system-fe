@@ -76,10 +76,7 @@ export function useChat() {
   );
 
   const handleSubmit = useCallback(
-    async (
-      event?: { preventDefault?: () => void },
-      _options?: { experimental_attachments?: FileList }
-    ) => {
+    async (event?: { preventDefault?: () => void }) => {
       event?.preventDefault?.();
 
       const question = input.trim();

@@ -13,10 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useMeQuery, useUpdateMyProfileMutation } from '@/features/user/hooks';
-import { uploadFileToStorage } from '@/features/storage/api';
+import { VietnamAddressSelector } from '@/components/ui/vietnam-address-selector';
+import {
+  useMeQuery,
+  useUpdateMyProfileMutation,
+  useUploadMyAvatarMutation,
+} from '@/features/user/hooks';
 import { cn } from '@/lib/utils';
 
 function formatDateLabel(dateString: string | null) {
@@ -45,8 +48,8 @@ export default function ProfilePage() {
   const { data: user } = useMeQuery();
   const { t } = useTranslation();
   const updateMutation = useUpdateMyProfileMutation();
+  const avatarMutation = useUploadMyAvatarMutation();
   const [mode, setMode] = useState<'view' | 'edit'>('view');
-  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const initialForm: FormState = useMemo(
@@ -65,10 +68,13 @@ export default function ProfilePage() {
   >({});
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm(initialForm);
     setErrors({});
     setMode('view');
   }, [initialForm]);
+
+  const isUploading = avatarMutation.isPending;
 
   const isDirty =
     form.phoneNumber !== initialForm.phoneNumber ||
@@ -139,25 +145,24 @@ export default function ProfilePage() {
 
   const onPickAvatar = () => fileInputRef.current?.click();
 
-  const onAvatarSelected = async (file: File | null) => {
+  const onAvatarSelected = (file: File | null) => {
     if (!file) return;
-    setIsUploading(true);
-    try {
-      // Put under stable prefix
-      const safeName = file.name.replaceAll(' ', '-');
-      const objectKey = `avatars/${user.keycloakId}/${Date.now()}-${safeName}`;
-      const url = await uploadFileToStorage(file, objectKey);
-      setForm((prev) => ({ ...prev, avatarUrl: url }));
-      toast.success(t('profile.avatar.uploaded', 'Đã tải ảnh lên'));
-    } catch (e) {
-      toast.error(
-        e instanceof Error
-          ? e.message
-          : t('profile.avatar.uploadError', 'Tải ảnh lên thất bại')
-      );
-    } finally {
-      setIsUploading(false);
-    }
+    avatarMutation.mutate(file, {
+      onSuccess: (updatedUser) => {
+        setForm((prev) => ({
+          ...prev,
+          avatarUrl: updatedUser.avatarUrl ?? '',
+        }));
+        toast.success(t('profile.avatar.uploaded', 'Đã tải ảnh lên'));
+      },
+      onError: (e) => {
+        toast.error(
+          e instanceof Error
+            ? e.message
+            : t('profile.avatar.uploadError', 'Tải ảnh lên thất bại')
+        );
+      },
+    });
   };
 
   return (
@@ -372,22 +377,15 @@ export default function ProfilePage() {
               </div>
 
               <div className='space-y-2 md:col-span-2'>
-                <Label htmlFor='address'>
-                  {t('profile.fields.address', 'Địa chỉ')}
-                </Label>
-                <Textarea
-                  id='address'
+                <Label>{t('profile.fields.address', 'Địa chỉ')}</Label>
+                <VietnamAddressSelector
                   value={mode === 'edit' ? form.address : (user.address ?? '')}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, address: e.target.value }))
+                  onChange={(val) =>
+                    setForm((prev) => ({ ...prev, address: val }))
                   }
                   readOnly={mode !== 'edit'}
-                  className={cn(errors.address && 'border-destructive')}
-                  placeholder={t('profile.common.notProvided', 'Not provided')}
+                  error={errors.address}
                 />
-                {errors.address && (
-                  <p className='text-xs text-destructive'>{errors.address}</p>
-                )}
               </div>
             </div>
           </CardContent>

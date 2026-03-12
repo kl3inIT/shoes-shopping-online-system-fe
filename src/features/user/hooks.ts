@@ -4,7 +4,7 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query';
 import { getMeQueryOptions, getUserDetailQueryOptions } from './queryOptions';
-import { updateMyProfile } from './api';
+import { updateMyProfile, uploadMyAvatar } from './api';
 import type { UpdateUserProfilePayload } from './types';
 
 export const useUserDetailQuery = (id: string) =>
@@ -21,6 +21,17 @@ export function useUpdateMyProfileMutation() {
       await queryClient.invalidateQueries({
         queryKey: getMeQueryOptions().queryKey,
       });
+      queryClient.setQueryData(getMeQueryOptions().queryKey, user);
+    },
+  });
+}
+
+export function useUploadMyAvatarMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => uploadMyAvatar(file),
+    onSuccess: (user) => {
       queryClient.setQueryData(getMeQueryOptions().queryKey, user);
     },
   });

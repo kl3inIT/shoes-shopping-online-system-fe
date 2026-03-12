@@ -38,6 +38,15 @@
       "dateOfBirth": "Date of birth",
       "address": "Address"
     },
+    "address": {
+      "province": "Province / City",
+      "district": "District",
+      "ward": "Ward / Commune",
+      "selectProvince": "Select province/city",
+      "selectDistrict": "Select district",
+      "selectWard": "Select ward/commune",
+      "streetPlaceholder": "House number, street name..."
+    },
     "actions": {
       "edit": "Edit profile",
       "cancel": "Cancel",
@@ -525,33 +534,12 @@
       "504": "The service is temporarily unavailable."
     }
   },
-  "profile": {
-    "title": "Your Profile",
-    "subtitle": "Account information from the system",
-    "common": {
-      "notAvailable": "N/A"
-    },
-    "personalInfo": {
-      "title": "Personal Information",
-      "description": "Basic information from the system",
-      "username": "Username",
-      "email": "Email",
-      "phone": "Phone Number",
-      "dateOfBirth": "Date of Birth",
-      "avatar": "Avatar",
-      "lastSeen": "Last Seen"
-    },
-    "accountInfo": {
-      "title": "Account Information",
-      "description": "Identifier ID from Keycloak",
-      "keycloakId": "Keycloak ID"
-    }
-  },
   "admin": {
     "nav": {
       "dashboard": "Dashboard",
       "products": "Products",
       "orders": "Orders",
+      "users": "Users",
       "customers": "Customers",
       "brands": "Brands",
       "categories": "Categories",
@@ -756,6 +744,96 @@
         "shipping": "Shipping Address",
         "items": "Order Items",
         "total": "Total"
+      }
+    },
+    "users": {
+      "title": "Users Management",
+      "subtitle": "Manage {{count}} users",
+      "searchPlaceholder": "Search by name or email...",
+      "filterRole": "Role",
+      "filterStatus": "Status",
+      "allRoles": "All Roles",
+      "allStatuses": "All Statuses",
+      "addUser": "Add User",
+      "stats": {
+        "total": "Total Users",
+        "admins": "Admins",
+        "managers": "Managers",
+        "customers": "Customers"
+      },
+      "role": {
+        "ROLE_ADMIN": "Admin",
+        "ROLE_MANAGER": "Manager",
+        "ROLE_CUSTOMER": "Customer",
+        "ROLE_SEPAY_WEBHOOK": "Webhook"
+      },
+      "status": {
+        "ACTIVE": "Active",
+        "INACTIVE": "Inactive",
+        "SUSPENDED": "Suspended"
+      },
+      "table": {
+        "user": "User",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "changeRole": "Change Role",
+        "suspend": "Suspend",
+        "activate": "Activate",
+        "delete": "Delete"
+      },
+      "detail": {
+        "title": "User Details",
+        "email": "Email",
+        "phone": "Phone",
+        "dob": "Date of Birth",
+        "joined": "Member Since",
+        "address": "Address",
+        "lastSeen": "Last Seen"
+      },
+      "createDialog": {
+        "title": "Create New User",
+        "description": "Create a new manager or admin account. The user will be prompted to change their password on first login."
+      },
+      "roleDialog": {
+        "title": "Change User Role",
+        "description": "Update the role for {{name}}"
+      },
+      "suspendDialog": {
+        "title": "Suspend User",
+        "description": "Are you sure you want to suspend {{name}}? They will not be able to log in."
+      },
+      "activateDialog": {
+        "title": "Activate User",
+        "description": "Reactivate {{name}}'s account and restore their access."
+      },
+      "deleteDialog": {
+        "title": "Delete User",
+        "description": "Are you sure you want to delete {{name}}? This will permanently remove their account from Keycloak and the database."
+      },
+      "form": {
+        "firstName": "First Name",
+        "firstNamePlaceholder": "Enter first name",
+        "lastName": "Last Name",
+        "lastNamePlaceholder": "Enter last name",
+        "username": "Username",
+        "usernamePlaceholder": "Enter username",
+        "email": "Email",
+        "emailPlaceholder": "Enter email address",
+        "password": "Temporary Password",
+        "passwordPlaceholder": "Min 8 characters",
+        "role": "Role"
+      },
+      "toast": {
+        "created": "User created successfully",
+        "roleUpdated": "Role updated successfully",
+        "statusUpdated": "Status updated successfully",
+        "deleted": "User deleted successfully"
       }
     },
     "customers": {
