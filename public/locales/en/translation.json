@@ -121,8 +121,13 @@
     "filters": "Filters",
     "filtersActive": "Filters active",
     "clearFilters": "Clear all filters",
+    "searchLabel": "Search",
     "search": "Search shoes...",
+    "searchAction": "Search",
+    "searchHint": "Up to {{max}} characters",
     "sortBy": "Sort by:",
+    "sortPlaceholder": "Select",
+    "sizeHint": "Only sizes in stock are selectable",
     "sort": {
       "newest": "Newest",
       "priceAsc": "Price: Low to High",
@@ -134,7 +139,8 @@
       "brands": "Brands",
       "sizes": "Sizes",
       "categories": "Categories",
-      "priceRange": "Price Range"
+      "priceRange": "Price Range",
+      "gender": "Gender"
     },
     "noProducts": "No products found.",
     "addToCart": "Add to Cart",

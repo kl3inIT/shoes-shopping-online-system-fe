@@ -32,6 +32,11 @@ export async function createShoe(
     new Blob([JSON.stringify(payload)], { type: 'application/json' })
   );
 
+  formData.append(
+    'request',
+    new Blob([JSON.stringify(payload)], { type: 'application/json' })
+  );
+
   shoeImages?.forEach((file) => formData.append('shoeImages', file));
 
   variantImages?.forEach((variantFiles, index) => {

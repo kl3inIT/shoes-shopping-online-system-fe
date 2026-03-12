@@ -121,8 +121,13 @@
     "filters": "Bộ lọc",
     "filtersActive": "Đang lọc",
     "clearFilters": "Xóa bộ lọc",
+    "searchLabel": "Tìm kiếm",
     "search": "Tìm kiếm giày...",
+    "searchAction": "Tìm",
+    "searchHint": "Tối đa {{max}} ký tự",
     "sortBy": "Sắp xếp:",
+    "sortPlaceholder": "Chọn",
+    "sizeHint": "Chỉ hiển thị size còn hàng",
     "sort": {
       "newest": "Mới nhất",
       "priceAsc": "Giá: Thấp đến Cao",
@@ -134,7 +139,8 @@
       "brands": "Thương hiệu",
       "sizes": "Kích cỡ",
       "categories": "Danh mục",
-      "priceRange": "Khoảng giá"
+      "priceRange": "Khoảng giá",
+      "gender": "Giới tính"
     },
     "noProducts": "Không tìm thấy sản phẩm.",
     "addToCart": "Thêm vào giỏ",
