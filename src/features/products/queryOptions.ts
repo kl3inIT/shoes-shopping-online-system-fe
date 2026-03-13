@@ -5,9 +5,6 @@ import {
   getAllCategories,
   getAllShoes,
   getShoeById,
-  getAdminShoesAll,
-  getAdminShoesDeleted,
-  getAdminShoesNotDeleted,
   getBestSellers,
   getShoesList,
 } from './api';
@@ -18,12 +15,6 @@ import type { ShoeResponse, BrandResponse, CategoryResponse } from './types';
 export const shoesQueryKey = ['shoes'] as const;
 export const bestSellersQueryKey = ['shoes', 'best-sellers'] as const;
 export const newArrivalsQueryKey = ['shoes', 'new-arrivals'] as const;
-export const adminShoesAllQueryKey = ['admin-shoes', 'all'] as const;
-export const adminShoesDeletedQueryKey = ['admin-shoes', 'deleted'] as const;
-export const adminShoesNotDeletedQueryKey = [
-  'admin-shoes',
-  'not-deleted',
-] as const;
 export const brandsQueryKey = ['brands'] as const;
 export const categoriesQueryKey = ['categories'] as const;
 export const shoeByIdQueryKey = (id: string | null) =>
@@ -38,30 +29,6 @@ export const shoesQueryOptions = () =>
     meta: {
       suppressErrorToast: true,
     },
-  });
-
-export const adminShoesAllQueryOptions = () =>
-  queryOptions<ShoeResponse[], Error>({
-    queryKey: adminShoesAllQueryKey,
-    queryFn: getAdminShoesAll,
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
-  });
-
-export const adminShoesDeletedQueryOptions = () =>
-  queryOptions<ShoeResponse[], Error>({
-    queryKey: adminShoesDeletedQueryKey,
-    queryFn: getAdminShoesDeleted,
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
-  });
-
-export const adminShoesNotDeletedQueryOptions = () =>
-  queryOptions<ShoeResponse[], Error>({
-    queryKey: adminShoesNotDeletedQueryKey,
-    queryFn: getAdminShoesNotDeleted,
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
   });
 
 // ===== Home page queries =====
