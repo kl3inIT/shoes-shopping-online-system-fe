@@ -9,7 +9,7 @@ import {
 
 export function usePermission(requirement?: PermissionRequirement) {
   const auth = useAuth();
-  const access = getAccessSnapshot(auth.user?.profile);
+  const access = getAccessSnapshot(auth.user);
 
   const hasRole = (...roles: AppRole[]) =>
     roles.some((role) => access.roleSet.has(role));

@@ -1,4 +1,4 @@
-import type { UserProfile } from 'oidc-client-ts';
+import type { User, UserProfile } from 'oidc-client-ts';
 
 import { client_id } from './oidcConfig';
 
@@ -34,12 +34,15 @@ export type PermissionRequirement =
 
 type KeycloakResourceAccess = Record<string, { roles?: string[] } | undefined>;
 
-type KeycloakProfile = UserProfile & {
+type KeycloakClaims = {
   realm_access?: {
     roles?: string[];
   };
   resource_access?: KeycloakResourceAccess;
 };
+
+type KeycloakProfile = UserProfile & KeycloakClaims;
+type AuthUserLike = Pick<User, 'profile' | 'access_token'>;
 
 const ROLE_ALIAS_MAP: Record<string, AppRole> = {
   admin: 'admin',
@@ -81,28 +84,71 @@ function normalizeRoleName(role: string) {
   return role.trim().toLowerCase().replaceAll('_', '-').replaceAll(' ', '-');
 }
 
+function hasAccessToken(
+  source: AuthUserLike | UserProfile
+): source is AuthUserLike {
+  return (
+    'access_token' in source &&
+    typeof (source as { access_token?: unknown }).access_token === 'string'
+  );
+}
+
+function decodeJwtPayload(token?: string | null): KeycloakClaims | null {
+  if (!token) {
+    return null;
+  }
+
+  const [, payload] = token.split('.');
+
+  if (!payload) {
+    return null;
+  }
+
+  try {
+    const normalizedPayload = payload.replaceAll('-', '+').replaceAll('_', '/');
+    const paddedPayload = normalizedPayload.padEnd(
+      Math.ceil(normalizedPayload.length / 4) * 4,
+      '='
+    );
+
+    return JSON.parse(globalThis.atob(paddedPayload)) as KeycloakClaims;
+  } catch (error) {
+    console.warn('[Auth] Failed to decode JWT payload for permissions:', error);
+    return null;
+  }
+}
+
 export function extractKeycloakRoles(
-  profile?: UserProfile | null,
+  source?: AuthUserLike | UserProfile | null,
   options?: {
     clientId?: string;
     additionalClientIds?: string[];
   }
 ) {
-  if (!profile) {
+  if (!source) {
     return [];
   }
 
-  const keycloakProfile = profile as KeycloakProfile;
+  const keycloakProfile = (
+    'profile' in source ? source.profile : source
+  ) as KeycloakProfile;
+  const accessTokenClaims = hasAccessToken(source)
+    ? decodeJwtPayload(source.access_token)
+    : null;
   const clientIds = new Set<string>(
     [options?.clientId ?? client_id, ...(options?.additionalClientIds ?? [])]
       .filter(Boolean)
       .map((value) => value.trim())
   );
 
-  const realmRoles = keycloakProfile.realm_access?.roles ?? [];
-  const clientRoles = [...clientIds].flatMap(
-    (clientKey) => keycloakProfile.resource_access?.[clientKey]?.roles ?? []
-  );
+  const realmRoles = [
+    ...(keycloakProfile.realm_access?.roles ?? []),
+    ...(accessTokenClaims?.realm_access?.roles ?? []),
+  ];
+  const clientRoles = [...clientIds].flatMap((clientKey) => [
+    ...(keycloakProfile.resource_access?.[clientKey]?.roles ?? []),
+    ...(accessTokenClaims?.resource_access?.[clientKey]?.roles ?? []),
+  ]);
 
   return [...new Set([...realmRoles, ...clientRoles].map(normalizeRoleName))];
 }
@@ -146,8 +192,8 @@ export function hasPermission(
   return passesAllOf && passesAnyOf;
 }
 
-export function getAccessSnapshot(profile?: UserProfile | null) {
-  const keycloakRoles = extractKeycloakRoles(profile);
+export function getAccessSnapshot(source?: AuthUserLike | UserProfile | null) {
+  const keycloakRoles = extractKeycloakRoles(source);
   const roles = resolveAppRoles(keycloakRoles);
   const permissionSet = buildPermissionSet(roles);
 
