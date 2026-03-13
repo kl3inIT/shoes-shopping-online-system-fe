@@ -10,6 +10,7 @@ import {
   useClearCartMutation,
   mapCartItemDtoToProps,
 } from '@/features/cart';
+import { PageErrorState, PageLoader, ReloadPageButton } from '@/components/app';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, ArrowLeft, Trash2 } from 'lucide-react';
 import {
@@ -78,27 +79,24 @@ export function CartPage() {
 
   if (isPending) {
     return (
-      <div className='container mx-auto flex justify-center px-4 py-16'>
-        <div className='h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent' />
-      </div>
+      <PageLoader
+        className='container mx-auto px-4 py-16'
+        description='Loading your cart.'
+      />
     );
   }
 
   if (isError) {
     return (
-      <div className='container mx-auto px-4 py-16 text-center'>
-        <p className='text-destructive'>
-          {error instanceof Error
-            ? error.message
-            : t('cart.loadError', { defaultValue: 'Failed to load cart' })}
-        </p>
-        <Button
-          className='mt-4'
-          variant='outline'
-          onClick={() => navigate('/products')}
-        >
-          {t('cart.continueShopping')}
-        </Button>
+      <div className='container mx-auto px-4 py-16'>
+        <PageErrorState
+          description={
+            error instanceof Error
+              ? error.message
+              : t('cart.loadError', { defaultValue: 'Failed to load cart' })
+          }
+          action={<ReloadPageButton />}
+        />
       </div>
     );
   }
