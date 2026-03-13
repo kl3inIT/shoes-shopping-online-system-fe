@@ -1,12 +1,13 @@
 import {
+  Heart,
+  LayoutDashboard,
   LogIn,
   LogOut,
+  Package,
+  ShoppingCart,
   User,
   UserCircle,
   UserPlus,
-  Package,
-  Heart,
-  ShoppingCart,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oidc-context';
@@ -21,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { PERMISSIONS, PermissionGuard, usePermission } from '@/features/auth';
 
 type UserMenuProps = {
   mobile?: boolean;
@@ -29,6 +31,7 @@ type UserMenuProps = {
 
 function getDisplayName(auth: ReturnType<typeof useAuth>) {
   if (!auth.user) return 'User';
+
   return (
     auth.user.profile.name ||
     auth.user.profile.preferred_username ||
@@ -39,6 +42,7 @@ function getDisplayName(auth: ReturnType<typeof useAuth>) {
 
 export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   const auth = useAuth();
+  const permission = usePermission(PERMISSIONS.dashboardView);
   const { t } = useTranslation();
 
   const handleLogin = () => {
@@ -47,8 +51,6 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   };
 
   const handleRegister = () => {
-    // Keycloak supports `kc_action=register` to open the registration screen.
-    // `extraQueryParams` is supported by oidc-client-ts via react-oidc-context.
     void auth.signinRedirect({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       extraQueryParams: { kc_action: 'register' } as any,
@@ -80,7 +82,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
           size='sm'
         >
           <LogIn className='mr-2 h-4 w-4' />
-          {t('auth.login', { defaultValue: 'Đăng nhập' })}
+          {t('auth.login', { defaultValue: 'Login' })}
         </Button>
         <Button
           onClick={handleRegister}
@@ -89,7 +91,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
           size='sm'
         >
           <UserPlus className='mr-2 h-4 w-4' />
-          {t('auth.register', { defaultValue: 'Đăng ký' })}
+          {t('auth.register', { defaultValue: 'Register' })}
         </Button>
       </div>
     ) : (
@@ -97,7 +99,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         <Button onClick={handleLogin} size='sm' className='gap-2'>
           <LogIn className='h-4 w-4' />
           <span className='hidden sm:inline-block'>
-            {t('auth.login', { defaultValue: 'Đăng nhập' })}
+            {t('auth.login', { defaultValue: 'Login' })}
           </span>
         </Button>
         <Button
@@ -108,7 +110,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         >
           <UserPlus className='h-4 w-4' />
           <span className='hidden sm:inline-block'>
-            {t('auth.register', { defaultValue: 'Đăng ký' })}
+            {t('auth.register', { defaultValue: 'Register' })}
           </span>
         </Button>
       </div>
@@ -116,7 +118,35 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   }
 
   const displayName = getDisplayName(auth);
-  const profilePath = '/profile';
+  const dashboardLabel = permission.hasRole('admin')
+    ? t('auth.adminDashboard', { defaultValue: 'Admin Dashboard' })
+    : t('auth.dashboard', { defaultValue: 'Dashboard' });
+
+  const dashboardMenuItem = (
+    <PermissionGuard requirement={PERMISSIONS.dashboardView}>
+      {mobile ? (
+        <Button
+          asChild
+          variant='ghost'
+          className='w-full justify-start'
+          size='sm'
+          onClick={onAfterAction}
+        >
+          <Link to='/admin'>
+            <LayoutDashboard className='mr-2 h-4 w-4' />
+            {dashboardLabel}
+          </Link>
+        </Button>
+      ) : (
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/admin'>
+            <LayoutDashboard className='mr-2 h-4 w-4' />
+            <span>{dashboardLabel}</span>
+          </Link>
+        </DropdownMenuItem>
+      )}
+    </PermissionGuard>
+  );
 
   return mobile ? (
     <>
@@ -135,11 +165,12 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         size='sm'
         onClick={onAfterAction}
       >
-        <Link to={profilePath}>
+        <Link to='/profile'>
           <UserCircle className='mr-2 h-4 w-4' />
-          {t('auth.profile', { defaultValue: 'Hồ sơ' })}
+          {t('auth.profile', { defaultValue: 'Profile' })}
         </Link>
       </Button>
+      {dashboardMenuItem}
       <Button
         asChild
         variant='ghost'
@@ -149,7 +180,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
       >
         <Link to='/orders'>
           <Package className='mr-2 h-4 w-4' />
-          {t('nav.orders', { defaultValue: 'Đơn hàng' })}
+          {t('nav.orders', { defaultValue: 'Orders' })}
         </Link>
       </Button>
       <Button
@@ -161,7 +192,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
       >
         <Link to='/wishlist'>
           <Heart className='mr-2 h-4 w-4' />
-          {t('nav.wishlist', { defaultValue: 'Yêu thích' })}
+          {t('nav.wishlist', { defaultValue: 'Wishlist' })}
         </Link>
       </Button>
       <Button
@@ -173,7 +204,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
       >
         <Link to='/cart'>
           <ShoppingCart className='mr-2 h-4 w-4' />
-          {t('nav.cart', { defaultValue: 'Giỏ hàng' })}
+          {t('nav.cart', { defaultValue: 'Cart' })}
         </Link>
       </Button>
       <Button
@@ -183,7 +214,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         size='sm'
       >
         <LogOut className='mr-2 h-4 w-4' />
-        {t('auth.logout', { defaultValue: 'Đăng xuất' })}
+        {t('auth.logout', { defaultValue: 'Logout' })}
       </Button>
     </>
   ) : (
@@ -197,9 +228,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
       <DropdownMenuContent align='end' className='w-56'>
         <DropdownMenuLabel>
           <div className='flex flex-col space-y-1'>
-            <p className='text-sm font-medium leading-none'>
-              {auth.user.profile.name || 'User'}
-            </p>
+            <p className='text-sm font-medium leading-none'>{displayName}</p>
             {auth.user.profile.email && (
               <p className='text-xs leading-none text-muted-foreground'>
                 {auth.user.profile.email}
@@ -209,33 +238,34 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className='cursor-pointer'>
-          <Link to={profilePath}>
+          <Link to='/profile'>
             <UserCircle className='mr-2 h-4 w-4' />
-            <span>{t('auth.profile', { defaultValue: 'Hồ sơ' })}</span>
+            <span>{t('auth.profile', { defaultValue: 'Profile' })}</span>
           </Link>
         </DropdownMenuItem>
+        {dashboardMenuItem}
         <DropdownMenuItem asChild className='cursor-pointer'>
           <Link to='/orders'>
             <Package className='mr-2 h-4 w-4' />
-            <span>{t('nav.orders', { defaultValue: 'Đơn hàng' })}</span>
+            <span>{t('nav.orders', { defaultValue: 'Orders' })}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className='cursor-pointer'>
           <Link to='/wishlist'>
             <Heart className='mr-2 h-4 w-4' />
-            <span>{t('nav.wishlist', { defaultValue: 'Yêu thích' })}</span>
+            <span>{t('nav.wishlist', { defaultValue: 'Wishlist' })}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className='cursor-pointer'>
           <Link to='/cart'>
             <ShoppingCart className='mr-2 h-4 w-4' />
-            <span>{t('nav.cart', { defaultValue: 'Giỏ hàng' })}</span>
+            <span>{t('nav.cart', { defaultValue: 'Cart' })}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>
           <LogOut className='mr-2 h-4 w-4' />
-          <span>{t('auth.logout', { defaultValue: 'Đăng xuất' })}</span>
+          <span>{t('auth.logout', { defaultValue: 'Logout' })}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
