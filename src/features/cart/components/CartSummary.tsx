@@ -27,7 +27,6 @@ export function CartSummary({
   subtotal,
   shipping = 0,
   discount = 0,
-  tax = 0,
   total,
   itemCount,
   onApplyCoupon,

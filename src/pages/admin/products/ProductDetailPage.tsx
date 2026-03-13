@@ -112,14 +112,14 @@ export default function ProductDetailPage() {
               </div>
             ) : (
               <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
-                {gallery.map((url, index) => (
+                {gallery.map((url) => (
                   <div
-                    key={`${url}-${index}`}
+                    key={url}
                     className='aspect-square overflow-hidden rounded-md border bg-muted'
                   >
                     <img
                       src={url}
-                      alt={`${shoe.name}-${index}`}
+                      alt={shoe.name}
                       className='h-full w-full object-cover'
                     />
                   </div>
@@ -207,13 +207,13 @@ export default function ProductDetailPage() {
                     </TableCell>
                     <TableCell>
                       <div className='flex flex-wrap gap-2'>
-                        {(variant.imageUrls ?? []).slice(0, 4).map((u, idx) => {
+                        {(variant.imageUrls ?? []).slice(0, 4).map((u) => {
                           const src = resolveImageUrl(u) ?? u;
                           return (
                             <img
-                              key={`${variant.id}-${idx}`}
+                              key={src}
                               src={src}
-                              alt={`${shoe.name}-variant-${idx}`}
+                              alt={`${shoe.name}-variant`}
                               className='h-10 w-10 rounded object-cover'
                             />
                           );

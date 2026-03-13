@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
+import { use, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -8,7 +9,6 @@ import {
   usePaymentInfoQuery,
   type QrPaymentInfo,
 } from '@/features/qr';
-import { useContext, useEffect } from 'react';
 import { WebSocketContext } from '@/providers';
 
 export function PaymentQrPage() {
@@ -26,7 +26,7 @@ export function PaymentQrPage() {
     orderCode: data?.orderCode ?? 'SSOS-OD3423-JSKDF',
   };
 
-  const stompClient = useContext(WebSocketContext);
+  const stompClient = use(WebSocketContext);
 
   useEffect(() => {
     if (!stompClient) return;
@@ -39,7 +39,7 @@ export function PaymentQrPage() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [stompClient]);
+  }, [navigate, stompClient]);
 
   return (
     <div className='container mx-auto px-4 py-8'>

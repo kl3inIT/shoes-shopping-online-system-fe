@@ -89,14 +89,14 @@ export function ReviewCard({
 
             {images.length > 0 && (
               <div className='flex gap-2 pt-2'>
-                {images.map((image, index) => (
+                {images.map((image) => (
                   <div
-                    key={index}
+                    key={image}
                     className='h-16 w-16 overflow-hidden rounded-md bg-muted'
                   >
                     <img
                       src={image}
-                      alt={`Review image ${index + 1}`}
+                      alt='Review image'
                       className='h-full w-full object-cover'
                     />
                   </div>

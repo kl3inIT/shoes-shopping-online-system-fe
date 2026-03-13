@@ -113,7 +113,6 @@ apiClient.interceptors.response.use(
     }
 
     const { status = 0, data } = error.response;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const problemDetail = (data ?? {}) as ProblemDetailPayload;
 
     switch (status) {
