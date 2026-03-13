@@ -150,11 +150,18 @@ export function ProductDetail({
       {/* Images Gallery */}
       <div className='space-y-4'>
         <div className='relative aspect-square overflow-hidden rounded-lg bg-muted'>
-          <img
-            src={allImages[activeImageIndex]?.url}
-            alt={allImages[activeImageIndex]?.alt}
-            className='h-full w-full object-contain'
-          />
+          <a
+            href={`/products/${id}`}
+            onClick={(event) => event.preventDefault()}
+            className='block h-full w-full'
+          >
+            <img
+              src={allImages[activeImageIndex]?.url}
+              alt={allImages[activeImageIndex]?.alt}
+              draggable={false}
+              className='h-full w-full object-contain'
+            />
+          </a>
           <div className='absolute left-4 top-4 flex flex-col gap-2'>
             {isSale && discount > 0 && (
               <Badge variant='destructive'>-{discount}%</Badge>
@@ -172,11 +179,18 @@ export function ProductDetail({
                   : 'border-transparent hover:border-muted-foreground/50'
               }`}
             >
-              <img
-                src={image.url}
-                alt={image.alt}
-                className='h-full w-full object-contain'
-              />
+              <a
+                href={`/products/${id}`}
+                onClick={(event) => event.preventDefault()}
+                className='block h-full w-full'
+              >
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                  draggable={false}
+                  className='h-full w-full object-contain'
+                />
+              </a>
             </button>
           ))}
         </div>

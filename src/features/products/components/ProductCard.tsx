@@ -47,16 +47,26 @@ export function ProductCard({
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
 
+  const detailHref = `/products/${id}`;
+
   return (
     <Card
       className='group flex h-full cursor-pointer flex-col overflow-hidden transition-all hover:shadow-lg'
       onClick={() => onClick?.(id)}
     >
-      <div className='relative aspect-square overflow-hidden bg-muted'>
+      <a
+        href={detailHref}
+        className='relative aspect-square overflow-hidden bg-muted'
+        onClick={(event) => {
+          event.preventDefault();
+          onClick?.(id);
+        }}
+      >
         {image ? (
           <img
             src={image}
             alt={name}
+            draggable={false}
             className='h-full w-full object-cover transition-transform group-hover:scale-105'
             onError={(e) => {
               e.currentTarget.style.display = 'none';
@@ -80,6 +90,7 @@ export function ProductCard({
                 variant='secondary'
                 className='h-8 w-8'
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   onAddToWishlist?.(id);
                 }}
@@ -104,6 +115,7 @@ export function ProductCard({
                 variant='secondary'
                 className='h-8 w-8'
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   onAddToCart?.(id);
                 }}
@@ -114,7 +126,7 @@ export function ProductCard({
             <TooltipContent>{t('products.addToCart')}</TooltipContent>
           </Tooltip>
         </div>
-      </div>
+      </a>
       <CardContent className='flex flex-1 flex-col gap-1.5 p-4'>
         <p className='text-xs font-medium text-muted-foreground'>{brand}</p>
         <h3 className='line-clamp-2 text-sm font-semibold leading-snug'>

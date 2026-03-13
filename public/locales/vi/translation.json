@@ -643,6 +643,7 @@
       "filterBrand": "Thương hiệu",
       "allStatuses": "Tất cả trạng thái",
       "allBrands": "Tất cả thương hiệu",
+      "allCategories": "Tất cả danh mục",
       "stats": {
         "total": "Tổng Sản Phẩm",
         "active": "Đang bán",
@@ -688,6 +689,16 @@
         "inactive": "Ngừng bán: Sản phẩm ẩn khỏi catalog nhưng vẫn được lưu trong hệ thống.",
         "draft": "Nháp: Bản nháp nội bộ, không hiển thị cho khách hàng.",
         "discontinued": "Ngừng kinh doanh: Dừng bán vĩnh viễn và ẩn khỏi catalog."
+      },
+      "detail": {
+        "fields": {
+          "status": "Trạng thái",
+          "brand": "Thương hiệu",
+          "category": "Danh mục",
+          "gender": "Giới tính",
+          "material": "Chất liệu",
+          "basePrice": "Giá gốc"
+        }
       }
     },
     "orders": {

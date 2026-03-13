@@ -34,12 +34,14 @@ interface CategoryTableProps {
   categories: Category[];
   onEdit?: (category: Category) => void;
   onDelete?: (category: Category) => void;
+  onViewProducts?: (category: Category) => void;
 }
 
 export function CategoryTable({
   categories,
   onEdit,
   onDelete,
+  onViewProducts,
 }: CategoryTableProps) {
   const { t, i18n } = useTranslation();
 
@@ -84,7 +86,13 @@ export function CategoryTable({
               className='group transition-colors hover:bg-muted/30'
             >
               <TableCell className='align-top py-4'>
-                <p className='font-semibold text-foreground'>{category.name}</p>
+                <button
+                  type='button'
+                  className='font-semibold text-foreground hover:underline'
+                  onClick={() => onViewProducts?.(category)}
+                >
+                  {category.name}
+                </button>
               </TableCell>
               <TableCell className='align-top py-4 max-w-[300px]'>
                 <p

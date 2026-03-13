@@ -92,7 +92,7 @@ export function ProductFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value='all'>
-            {t('admin.products.allCategories', 'All Categories')}
+            {t('admin.products.allCategories')}
           </SelectItem>
           {categoryOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>

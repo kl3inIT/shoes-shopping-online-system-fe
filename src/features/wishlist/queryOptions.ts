@@ -15,4 +15,7 @@ export const wishlistQueryOptions = (params?: WishlistFilterParams) =>
     queryKey: wishlistQueryKey(params),
     queryFn: () => getWishlist(params),
     refetchOnWindowFocus: false,
+    meta: {
+      suppressErrorToast: true,
+    },
   });

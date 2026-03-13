@@ -39,6 +39,9 @@ export const bestSellersQueryOptions = (limit = 5) =>
     queryFn: () => getBestSellers(limit),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
+    meta: {
+      suppressErrorToast: true,
+    },
   });
 
 export const newArrivalsQueryOptions = (limit = 5) =>
@@ -55,6 +58,9 @@ export const newArrivalsQueryOptions = (limit = 5) =>
     },
     staleTime: 60_000,
     refetchOnWindowFocus: false,
+    meta: {
+      suppressErrorToast: true,
+    },
   });
 
 // ===== Brand & Category Queries =====
@@ -82,4 +88,7 @@ export const shoeByIdQueryOptions = (id: string | null) =>
     queryKey: shoeByIdQueryKey(id),
     queryFn: () => getShoeById(id!),
     enabled: !!id,
+    meta: {
+      suppressErrorToast: true,
+    },
   });

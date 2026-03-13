@@ -8,4 +8,7 @@ export const cartQueryOptions = () =>
     queryKey: cartQueryKey,
     queryFn: getCart,
     refetchOnWindowFocus: false,
+    meta: {
+      suppressErrorToast: true,
+    },
   });

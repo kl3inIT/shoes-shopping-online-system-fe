@@ -14,14 +14,20 @@ import { AuthProvider } from './AuthProvider';
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error) => {
+    onError: (error, query) => {
+      if (query?.meta?.suppressErrorToast) {
+        return;
+      }
       const fallback = i18n.t('common.loadError');
       const message = error instanceof Error ? error.message : fallback;
       toast.error(message || fallback);
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error) => {
+    onError: (error, _variables, _context, mutation) => {
+      if (mutation?.meta?.suppressErrorToast) {
+        return;
+      }
       const fallback = i18n.t('common.error');
       const message = error instanceof Error ? error.message : fallback;
       toast.error(message || fallback);

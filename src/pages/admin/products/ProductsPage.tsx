@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconInfoCircle, IconPlus } from '@tabler/icons-react';
 
@@ -114,6 +114,7 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
 export default function AdminProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { data: shoes = [] } = useAdminShoes();
   const { data: brands = [] } = useQueryBrands();
   const { data: categories = [] } = useCategories();
@@ -122,9 +123,11 @@ export default function AdminProductsPage() {
   const products = useMemo(() => shoes.map(mapShoeToProduct), [shoes]);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const initialCategoryId = searchParams.get('categoryId') ?? 'all';
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [brandFilter, setBrandFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] =
+    useState<string>(initialCategoryId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
@@ -161,6 +164,11 @@ export default function AdminProductsPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, statusFilter, brandFilter, categoryFilter]);
+
+  useEffect(() => {
+    const categoryId = searchParams.get('categoryId') ?? 'all';
+    setCategoryFilter(categoryId);
+  }, [searchParams]);
 
   useEffect(() => {
     setCurrentPage((prev) => Math.min(prev, totalPages));
