@@ -27,7 +27,7 @@ export function Header() {
 
   const { data: cartData } = useQueryCart();
   const { data: wishlistData } = useQueryWishlist();
-  const cartItemCount = cartData?.totalQuantity ?? 0;
+  const cartItemCount = cartData?.items.length ?? 0;
   const wishlistCount = wishlistData?.length ?? 0;
 
   const mainNavigation = [

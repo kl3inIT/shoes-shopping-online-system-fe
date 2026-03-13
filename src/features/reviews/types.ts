@@ -7,6 +7,8 @@ export interface ReviewPublicItemDto {
   description: string;
   imageUrls: string[];
   createdAt: string;
+  helpfulCount: number;
+  currentUserVoted: boolean;
 }
 
 export interface ReviewPublicListDto {

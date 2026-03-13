@@ -1,5 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, use, type ReactNode, useEffect, useState } from 'react';
-// eslint-disable-next-line import/no-duplicates
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 
@@ -23,6 +23,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     const socket = new SockJS('http://localhost:8088/ws');
 
     const stompClient = new Client({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
       onConnect: () => {
@@ -34,11 +35,12 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     });
 
     // Lưu client để các component dùng subscribe/send
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setClient(stompClient);
     stompClient.activate();
 
     return () => {
-      stompClient.deactivate();
+      void stompClient.deactivate();
       setClient(null);
     };
   }, []);

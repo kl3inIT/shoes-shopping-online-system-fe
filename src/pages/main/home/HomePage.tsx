@@ -14,7 +14,11 @@ import {
   type BrandResponse,
 } from '@/features/products';
 import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
-import { useAddToWishlistMutation } from '@/features/wishlist';
+import {
+  useAddToWishlistMutation,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+} from '@/features/wishlist';
 import { resolveImageUrl } from '@/lib/image';
 import { FloatingChat } from '@/features/ai/component/FloatingChat';
 
@@ -34,11 +38,14 @@ function mapShoe(shoe: ShoeResponse): HomeProduct {
         : FALLBACK_IMAGE,
     brand: shoe.brandName,
     createdAt: shoe.createdAt,
+    rating: shoe.avgRating ?? 0,
+    reviewCount: shoe.reviewCount ?? 0,
+    isInWishlist: false,
   };
 }
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=1920&q=80';
+  'https://images.unsplash.com/photo-1635855374289-b6ca7fe114ab?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c2hvZXMlMjBzaG9wfGVufDB8fDB8fHww';
 
 const services = [
   { icon: Truck, key: 'freeShipping' },
@@ -60,9 +67,25 @@ export default function HomePage() {
   const { data: newArrivalsRaw = [], isLoading: loadingNewArrivals } =
     useNewArrivals(5);
   const { data: brands = [], isLoading: loadingBrands } = useBrands();
+  const { data: wishlistData = [] } = useQueryWishlist();
+  const removeFromWishlistMutation = useRemoveFromWishlistMutation();
 
-  const featured = bestSellersRaw.map(mapShoe);
-  const arrivals = newArrivalsRaw.map(mapShoe);
+  // Base mapped products
+  const rawFeatured = bestSellersRaw.map(mapShoe);
+  const rawArrivals = newArrivalsRaw.map(mapShoe);
+
+  // Mark those that are already in wishlist
+  const wishlistIds = new Set(wishlistData.map((w) => w.shoeId));
+  const featured = rawFeatured.map((p) => ({
+    ...p,
+    isInWishlist: wishlistIds.has(p.id),
+  }));
+  const arrivals = rawArrivals.map((p) => ({
+    ...p,
+    isInWishlist: wishlistIds.has(p.id),
+  }));
+
+  // All products (used for AddToCartDialog lookup)
   const allMapped = [...featured, ...arrivals];
 
   const handleClick = (id: string) => navigate(`/products/${id}`);
@@ -81,7 +104,13 @@ export default function HomePage() {
   };
 
   const wishlistMutation = useAddToWishlistMutation();
-  const handleWishlist = (id: string) => wishlistMutation.mutate(id);
+  const handleWishlist = (id: string) => {
+    if (wishlistIds.has(id)) {
+      removeFromWishlistMutation.mutate(id);
+    } else {
+      wishlistMutation.mutate(id);
+    }
+  };
 
   return (
     <div className='relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-6 w-screen'>

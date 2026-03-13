@@ -5,7 +5,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
-import { createReview } from './api';
+import { createReview, markReviewHelpful } from './api';
 import {
   publicReviewsByShoeIdQueryKey,
   publicReviewsByShoeIdQueryOptions,
@@ -52,6 +52,23 @@ export function useCreateReviewMutation(shoeId?: string) {
         });
       } else {
         await queryClient.invalidateQueries({ queryKey: ['reviews'] });
+      }
+    },
+  });
+}
+
+export function useMarkReviewHelpfulMutation(shoeId?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (reviewId: string) => markReviewHelpful(reviewId),
+    onSuccess: () => {
+      if (shoeId) {
+        void queryClient.invalidateQueries({
+          queryKey: publicReviewsByShoeIdQueryKey(shoeId),
+        });
+      } else {
+        void queryClient.invalidateQueries({ queryKey: ['reviews'] });
       }
     },
   });

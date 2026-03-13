@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { SlidersHorizontal, X } from 'lucide-react';
@@ -31,6 +31,12 @@ import {
   type BrandResponse,
   type CategoryResponse,
 } from '@/features/products';
+import { AddToCartDialog, type AddToCartDialogProduct } from '@/features/cart';
+import {
+  useAddToWishlistMutation,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+} from '@/features/wishlist';
 import { useIsMobile } from '@/hooks/useMobile';
 import { resolveImageUrl } from '@/lib/image';
 
@@ -47,7 +53,9 @@ type MappedProduct = {
   gender: string;
   createdAt: string;
   rating: number;
+  reviewCount: number;
   variants: ShoeResponse['variants'];
+  isInWishlist?: boolean;
 };
 
 type FilterState = {
@@ -61,11 +69,117 @@ type FilterState = {
   sort?: string;
 };
 
+type FilterSidebarProps = {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+  onSearchSubmit: (value: string) => void;
+  dynamicBrandOptions: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+  selectedBrands: string[];
+  onBrandsChange: (brands: string[]) => void;
+  dynamicCategoryOptions: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+  selectedCategories: string[];
+  onCategoriesChange: (categories: string[]) => void;
+  dynamicSizeOptions: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+  selectedSizes: string[];
+  onSizesChange: (sizes: string[]) => void;
+  dynamicGenderOptions: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+  selectedGenders: string[];
+  onGendersChange: (genders: string[]) => void;
+  dynamicPriceRange: {
+    min: number;
+    max: number;
+  };
+  selectedPriceRange: {
+    min: number;
+    max: number;
+  };
+  onPriceRangeChange: (range: { min: number; max: number }) => void;
+  sortOptions: typeof sortOptions;
+  selectedSort: string;
+  onSortChange: (sort: string) => void;
+  onClearFilters: () => void;
+};
+
+function FilterSidebar({
+  searchValue,
+  onSearchChange,
+  onSearchSubmit,
+  dynamicBrandOptions,
+  selectedBrands,
+  onBrandsChange,
+  dynamicCategoryOptions,
+  selectedCategories,
+  onCategoriesChange,
+  dynamicSizeOptions,
+  selectedSizes,
+  onSizesChange,
+  dynamicGenderOptions,
+  selectedGenders,
+  onGendersChange,
+  dynamicPriceRange,
+  selectedPriceRange,
+  onPriceRangeChange,
+  sortOptions: filterSortOptions,
+  selectedSort,
+  onSortChange,
+  onClearFilters,
+}: FilterSidebarProps) {
+  return (
+    <ProductFilter
+      searchValue={searchValue}
+      onSearchChange={onSearchChange}
+      onSearchSubmit={onSearchSubmit}
+      brands={dynamicBrandOptions}
+      selectedBrands={selectedBrands}
+      onBrandsChange={onBrandsChange}
+      categories={dynamicCategoryOptions}
+      selectedCategories={selectedCategories}
+      onCategoriesChange={onCategoriesChange}
+      sizes={dynamicSizeOptions}
+      selectedSizes={selectedSizes}
+      onSizesChange={onSizesChange}
+      genders={dynamicGenderOptions}
+      selectedGenders={selectedGenders}
+      onGendersChange={onGendersChange}
+      priceRange={dynamicPriceRange}
+      selectedPriceRange={selectedPriceRange}
+      onPriceRangeChange={onPriceRangeChange}
+      sortOptions={filterSortOptions}
+      selectedSort={selectedSort}
+      onSortChange={onSortChange}
+      onClearFilters={onClearFilters}
+    />
+  );
+}
+
 export default function ProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartProduct, setCartProduct] = useState<AddToCartDialogProduct | null>(
+    null
+  );
+  const addToWishlistMutation = useAddToWishlistMutation();
+  const { data: wishlistData = [] } = useQueryWishlist();
+  const removeFromWishlistMutation = useRemoveFromWishlistMutation();
 
   const parseListParam = (value: string | null) =>
     value ? value.split(',').filter(Boolean) : [];
@@ -141,13 +255,31 @@ export default function ProductsPage() {
           : '',
       brand: shoe.brandName,
       brandSlug: shoe.brandSlug,
-      rating: 0, // Backend doesn't provide rating yet
+      rating: shoe.avgRating ?? 0,
+      reviewCount: shoe.reviewCount ?? 0,
       categorySlug: shoe.categorySlug,
       gender: shoe.gender,
       createdAt: shoe.createdAt,
       variants: shoe.variants ?? [],
     })
   );
+
+  const wishlistIds = new Set(wishlistData.map((w) => w.shoeId));
+  mappedProducts.forEach((p) => {
+    p.isInWishlist = wishlistIds.has(p.id);
+  });
+
+  const dynamicPriceRange = mappedProducts.reduce(
+    (range, product) => ({
+      min: Math.min(range.min, product.price),
+      max: Math.max(range.max, product.price),
+    }),
+    { min: priceRange.min, max: priceRange.max }
+  );
+
+  const effectivePriceRange = hasAdjustedPriceRange
+    ? selectedPriceRange
+    : dynamicPriceRange;
 
   // Filter products based on search and filters
   const filteredProducts = mappedProducts.filter((product: MappedProduct) => {
@@ -194,8 +326,8 @@ export default function ProductsPage() {
 
     // Price filter
     if (
-      product.price < selectedPriceRange.min ||
-      product.price > selectedPriceRange.max
+      product.price < effectivePriceRange.min ||
+      product.price > effectivePriceRange.max
     ) {
       return false;
     }
@@ -229,24 +361,11 @@ export default function ProductsPage() {
     Math.ceil(sortedProducts.length / itemsPerPage)
   );
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [
-    searchValue,
-    selectedSort,
-    selectedBrands,
-    selectedSizes,
-    selectedCategories,
-    selectedPriceRange,
-  ]);
-
-  useEffect(() => {
-    setCurrentPage((prev) => Math.min(prev, totalPages));
-  }, [totalPages]);
+  const safeCurrentPage = Math.min(currentPage, totalPages);
 
   const paginatedProducts = sortedProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    (safeCurrentPage - 1) * itemsPerPage,
+    safeCurrentPage * itemsPerPage
   );
 
   // Dynamic filter options from backend data
@@ -306,39 +425,29 @@ export default function ProductsPage() {
     count,
   }));
 
-  const dynamicPriceRange = mappedProducts.reduce(
-    (range, product) => ({
-      min: Math.min(range.min, product.price),
-      max: Math.max(range.max, product.price),
-    }),
-    { min: priceRange.min, max: priceRange.max }
-  );
-
-  useEffect(() => {
-    if (!selectedPriceRange || hasAdjustedPriceRange) {
-      return;
-    }
-
-    if (
-      selectedPriceRange.min === dynamicPriceRange.min &&
-      selectedPriceRange.max === dynamicPriceRange.max
-    ) {
-      return;
-    }
-
-    setSelectedPriceRange(dynamicPriceRange);
-  }, [dynamicPriceRange, selectedPriceRange, hasAdjustedPriceRange]);
-
   const handleProductClick = (id: string) => {
-    navigate(`/products/${id}`);
+    void navigate(`/products/${id}`);
   };
 
   const handleAddToCart = (id: string) => {
-    console.log('Add to cart:', id);
+    const p = paginatedProducts.find((x) => x.id === id);
+    if (!p) return;
+
+    setCartProduct({
+      id: p.id,
+      name: p.name,
+      image: p.image,
+      price: p.price,
+    });
+    setCartOpen(true);
   };
 
   const handleAddToWishlist = (id: string) => {
-    console.log('Add to wishlist:', id);
+    if (wishlistIds.has(id)) {
+      removeFromWishlistMutation.mutate(id);
+    } else {
+      addToWishlistMutation.mutate(id);
+    }
   };
 
   if (isLoading) {
@@ -378,38 +487,8 @@ export default function ProductsPage() {
     selectedSizes.length > 0 ||
     selectedCategories.length > 0 ||
     selectedGenders.length > 0 ||
-    selectedPriceRange.min !== dynamicPriceRange.min ||
-    selectedPriceRange.max !== dynamicPriceRange.max;
-
-  const FilterSidebar = () => (
-    <ProductFilter
-      searchValue={searchValue}
-      onSearchChange={setSearchValue}
-      onSearchSubmit={(value) => setSearchValue(value)}
-      brands={dynamicBrandOptions}
-      selectedBrands={selectedBrands}
-      onBrandsChange={setSelectedBrands}
-      categories={dynamicCategoryOptions}
-      selectedCategories={selectedCategories}
-      onCategoriesChange={setSelectedCategories}
-      sizes={dynamicSizeOptions}
-      selectedSizes={selectedSizes}
-      onSizesChange={setSelectedSizes}
-      genders={dynamicGenderOptions}
-      selectedGenders={selectedGenders}
-      onGendersChange={setSelectedGenders}
-      priceRange={dynamicPriceRange}
-      selectedPriceRange={selectedPriceRange}
-      onPriceRangeChange={(range) => {
-        setSelectedPriceRange(range);
-        setHasAdjustedPriceRange(true);
-      }}
-      sortOptions={sortOptions}
-      selectedSort={selectedSort}
-      onSortChange={setSelectedSort}
-      onClearFilters={handleClearFilters}
-    />
-  );
+    effectivePriceRange.min !== dynamicPriceRange.min ||
+    effectivePriceRange.max !== dynamicPriceRange.max;
 
   return (
     <div className='space-y-6'>
@@ -453,7 +532,55 @@ export default function ProductsPage() {
                   <SheetTitle>{t('products.filters')}</SheetTitle>
                 </SheetHeader>
                 <div className='mt-6'>
-                  <FilterSidebar />
+                  <FilterSidebar
+                    searchValue={searchValue}
+                    onSearchChange={(value) => {
+                      setSearchValue(value);
+                      setCurrentPage(1);
+                    }}
+                    onSearchSubmit={(value) => {
+                      setSearchValue(value);
+                      setCurrentPage(1);
+                    }}
+                    dynamicBrandOptions={dynamicBrandOptions}
+                    selectedBrands={selectedBrands}
+                    onBrandsChange={(brands) => {
+                      setSelectedBrands(brands);
+                      setCurrentPage(1);
+                    }}
+                    dynamicCategoryOptions={dynamicCategoryOptions}
+                    selectedCategories={selectedCategories}
+                    onCategoriesChange={(categories) => {
+                      setSelectedCategories(categories);
+                      setCurrentPage(1);
+                    }}
+                    dynamicSizeOptions={dynamicSizeOptions}
+                    selectedSizes={selectedSizes}
+                    onSizesChange={(sizes) => {
+                      setSelectedSizes(sizes);
+                      setCurrentPage(1);
+                    }}
+                    dynamicGenderOptions={dynamicGenderOptions}
+                    selectedGenders={selectedGenders}
+                    onGendersChange={(genders) => {
+                      setSelectedGenders(genders);
+                      setCurrentPage(1);
+                    }}
+                    dynamicPriceRange={dynamicPriceRange}
+                    selectedPriceRange={effectivePriceRange}
+                    onPriceRangeChange={(range) => {
+                      setSelectedPriceRange(range);
+                      setHasAdjustedPriceRange(true);
+                      setCurrentPage(1);
+                    }}
+                    sortOptions={sortOptions}
+                    selectedSort={selectedSort}
+                    onSortChange={(sort) => {
+                      setSelectedSort(sort);
+                      setCurrentPage(1);
+                    }}
+                    onClearFilters={handleClearFilters}
+                  />
                 </div>
               </SheetContent>
             </Sheet>
@@ -467,7 +594,55 @@ export default function ProductsPage() {
           <aside className='lg:col-span-1'>
             <div className='sticky top-20 rounded-lg border p-4'>
               <h2 className='mb-4 font-semibold'>{t('products.filters')}</h2>
-              <FilterSidebar />
+              <FilterSidebar
+                searchValue={searchValue}
+                onSearchChange={(value) => {
+                  setSearchValue(value);
+                  setCurrentPage(1);
+                }}
+                onSearchSubmit={(value) => {
+                  setSearchValue(value);
+                  setCurrentPage(1);
+                }}
+                dynamicBrandOptions={dynamicBrandOptions}
+                selectedBrands={selectedBrands}
+                onBrandsChange={(brands) => {
+                  setSelectedBrands(brands);
+                  setCurrentPage(1);
+                }}
+                dynamicCategoryOptions={dynamicCategoryOptions}
+                selectedCategories={selectedCategories}
+                onCategoriesChange={(categories) => {
+                  setSelectedCategories(categories);
+                  setCurrentPage(1);
+                }}
+                dynamicSizeOptions={dynamicSizeOptions}
+                selectedSizes={selectedSizes}
+                onSizesChange={(sizes) => {
+                  setSelectedSizes(sizes);
+                  setCurrentPage(1);
+                }}
+                dynamicGenderOptions={dynamicGenderOptions}
+                selectedGenders={selectedGenders}
+                onGendersChange={(genders) => {
+                  setSelectedGenders(genders);
+                  setCurrentPage(1);
+                }}
+                dynamicPriceRange={dynamicPriceRange}
+                selectedPriceRange={effectivePriceRange}
+                onPriceRangeChange={(range) => {
+                  setSelectedPriceRange(range);
+                  setHasAdjustedPriceRange(true);
+                  setCurrentPage(1);
+                }}
+                sortOptions={sortOptions}
+                selectedSort={selectedSort}
+                onSortChange={(sort) => {
+                  setSelectedSort(sort);
+                  setCurrentPage(1);
+                }}
+                onClearFilters={handleClearFilters}
+              />
             </div>
           </aside>
         )}
@@ -490,7 +665,7 @@ export default function ProductsPage() {
                     <PaginationPrevious
                       onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                       className={
-                        currentPage === 1
+                        safeCurrentPage === 1
                           ? 'pointer-events-none opacity-50'
                           : 'cursor-pointer'
                       }
@@ -501,8 +676,10 @@ export default function ProductsPage() {
                     (page) => (
                       <PaginationItem key={page}>
                         <PaginationLink
-                          onClick={() => setCurrentPage(page)}
-                          isActive={currentPage === page}
+                          onClick={() =>
+                            setCurrentPage(Math.min(page, totalPages))
+                          }
+                          isActive={safeCurrentPage === page}
                           className='cursor-pointer'
                         >
                           {page}
@@ -517,7 +694,7 @@ export default function ProductsPage() {
                         setCurrentPage((p) => Math.min(totalPages, p + 1))
                       }
                       className={
-                        currentPage === totalPages
+                        safeCurrentPage === totalPages
                           ? 'pointer-events-none opacity-50'
                           : 'cursor-pointer'
                       }
@@ -529,6 +706,18 @@ export default function ProductsPage() {
           )}
         </div>
       </div>
+
+      <AddToCartDialog
+        open={cartOpen}
+        onOpenChange={setCartOpen}
+        product={cartProduct}
+      />
+
+      <AddToCartDialog
+        open={cartOpen}
+        onOpenChange={setCartOpen}
+        product={cartProduct}
+      />
     </div>
   );
 }
