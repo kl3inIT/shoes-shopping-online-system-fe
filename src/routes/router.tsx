@@ -4,7 +4,6 @@ import { AdminLayout } from '@/layouts/admin/AdminLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RootErrorBoundary } from '@/routes/RootErrorBoundary';
 import { queryClient } from '@/features/queryClient';
-import { useVietnamAddressOptions } from '@/features';
 
 export const router = createBrowserRouter([
   {

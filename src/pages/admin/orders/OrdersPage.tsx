@@ -43,8 +43,7 @@ export default function AdminOrdersPage() {
   });
 
   const { data, isPending } = useQueryOrders(params);
-  const orders = data?.content ?? [];
-  console.log(orders);
+  const orders = useMemo(() => data?.content ?? [], [data?.content]);
   const totalElements = data?.totalElements ?? 0;
   const totalPages = data?.totalPages ?? 1;
 

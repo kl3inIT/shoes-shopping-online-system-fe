@@ -333,14 +333,17 @@ export default function AdminProductsPage() {
                 />
               </PaginationItem>
 
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <PaginationItem key={i + 1}>
+              {Array.from(
+                { length: totalPages },
+                (_, pageIndex) => pageIndex + 1
+              ).map((pageNumber) => (
+                <PaginationItem key={pageNumber}>
                   <PaginationLink
-                    onClick={() => setCurrentPage(i + 1)}
-                    isActive={currentPage === i + 1}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    isActive={currentPage === pageNumber}
                     className='cursor-pointer'
                   >
-                    {i + 1}
+                    {pageNumber}
                   </PaginationLink>
                 </PaginationItem>
               ))}

@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useQueryCart } from '@/features/cart';
 import { createOrder } from './api';
 import type {
   CheckoutItem,
   CheckoutSummary,
   CreateOrderRequest,
-  OrderCreateResponse,
 } from './types';
 
 interface VNWard {
