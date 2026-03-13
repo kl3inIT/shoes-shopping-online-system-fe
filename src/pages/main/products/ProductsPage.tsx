@@ -6,6 +6,12 @@ import { SlidersHorizontal, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
+  PageEmptyState,
+  PageErrorState,
+  PageLoader,
+  ReloadPageButton,
+} from '@/components/app';
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -451,21 +457,15 @@ export default function ProductsPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className='flex h-96 items-center justify-center'>
-        <div className='h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
-      </div>
-    );
+    return <PageLoader description='Loading product catalog and filters.' />;
   }
 
   if (error) {
     return (
-      <div className='flex h-96 flex-col items-center justify-center gap-4'>
-        <p className='text-destructive'>
-          Error loading products. Please try again later.
-        </p>
-        <Button onClick={() => window.location.reload()}>Retry</Button>
-      </div>
+      <PageErrorState
+        description='Error loading products. Please try again later.'
+        action={<ReloadPageButton />}
+      />
     );
   }
 
@@ -649,12 +649,24 @@ export default function ProductsPage() {
 
         {/* Products Grid */}
         <div className={isMobile ? 'col-span-1' : 'lg:col-span-3'}>
-          <ProductGrid
-            products={paginatedProducts}
-            onProductClick={handleProductClick}
-            onAddToCart={handleAddToCart}
-            onAddToWishlist={handleAddToWishlist}
-          />
+          {sortedProducts.length === 0 ? (
+            <PageEmptyState
+              title='No products match these filters'
+              description='Try clearing one or more filters to broaden the catalog results.'
+              action={
+                <Button variant='outline' onClick={handleClearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <ProductGrid
+              products={paginatedProducts}
+              onProductClick={handleProductClick}
+              onAddToCart={handleAddToCart}
+              onAddToWishlist={handleAddToWishlist}
+            />
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -706,12 +718,6 @@ export default function ProductsPage() {
           )}
         </div>
       </div>
-
-      <AddToCartDialog
-        open={cartOpen}
-        onOpenChange={setCartOpen}
-        product={cartProduct}
-      />
 
       <AddToCartDialog
         open={cartOpen}

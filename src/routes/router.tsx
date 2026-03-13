@@ -224,19 +224,6 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <RequirePermission requirement={PERMISSIONS.customersRead} />,
-        children: [
-          {
-            path: 'customers',
-            lazy: async () => {
-              const { default: Component } =
-                await import('@/pages/admin/customers/CustomersPage');
-              return { Component };
-            },
-          },
-        ],
-      },
-      {
         element: <RequirePermission requirement={PERMISSIONS.brandsManage} />,
         children: [
           {

@@ -7,7 +7,6 @@ import {
   IconShoe,
   IconStar,
   IconUserCog,
-  IconUsers,
   type Icon,
 } from '@tabler/icons-react';
 
@@ -42,13 +41,6 @@ export const adminNavigationItems: readonly AdminNavigationItem[] = [
     url: '/admin/orders',
     icon: IconPackage,
     requirement: PERMISSIONS.ordersManage,
-  },
-  {
-    titleKey: 'admin.nav.customers',
-    defaultTitle: 'Customers',
-    url: '/admin/customers',
-    icon: IconUsers,
-    requirement: PERMISSIONS.customersRead,
   },
   {
     titleKey: 'admin.nav.brands',
