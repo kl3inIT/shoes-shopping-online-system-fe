@@ -130,7 +130,7 @@ export function Chat({
             ...part,
             toolInvocation: {
               ...part.toolInvocation,
-              state: 'result',
+              state: 'result' as 'result',
               result: {
                 content: 'Tool execution was cancelled',
                 __cancelled: true,
@@ -139,7 +139,7 @@ export function Chat({
           };
         }
         return part;
-      });
+      }) as NonNullable<Message['parts']>;
 
       if (needsUpdate) {
         updatedMessage = {
