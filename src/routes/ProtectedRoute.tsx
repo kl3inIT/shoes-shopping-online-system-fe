@@ -1,3 +1,4 @@
+import type { PropsWithChildren } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { Outlet, useLocation } from 'react-router';
 import { Loader2, ShieldAlert } from 'lucide-react';
@@ -6,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTranslation } from 'react-i18next';
 
-export function ProtectedRoute() {
+export function ProtectedRoute({ children }: PropsWithChildren) {
   const auth = useAuth();
   const location = useLocation();
   const { t } = useTranslation();
@@ -82,5 +83,5 @@ export function ProtectedRoute() {
   }
 
   // Authenticated - render nested routes
-  return <Outlet />;
+  return children ? <>{children}</> : <Outlet />;
 }
