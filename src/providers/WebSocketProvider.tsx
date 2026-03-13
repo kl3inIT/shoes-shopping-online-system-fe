@@ -19,8 +19,11 @@ interface WebSocketProviderProps {
 export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const [client, setClient] = useState<Client | null>(null);
 
+  const WS_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8088';
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8088/ws');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const socket = new SockJS(`${WS_BASE_URL}/ws`);
 
     const stompClient = new Client({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return

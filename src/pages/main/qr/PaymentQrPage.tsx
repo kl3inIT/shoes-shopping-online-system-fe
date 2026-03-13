@@ -29,17 +29,17 @@ export function PaymentQrPage() {
   const stompClient = useContext(WebSocketContext);
 
   useEffect(() => {
-    if (!stompClient) return;
+    if (!stompClient || !stompClient.connected) return;
 
     const subscription = stompClient.subscribe('/topic/orders', (msg) => {
-      navigate('/orders');
       console.log('QR nhận:', msg.body);
+      navigate('/orders');
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [stompClient]);
+  }, [stompClient?.connected]);
 
   return (
     <div className='container mx-auto px-4 py-8'>
