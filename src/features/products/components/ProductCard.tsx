@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/tooltip';
 import { formatCurrency } from '@/lib/utils';
 import { Heart, ShoppingCart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface ProductCardProps {
   id: string;
@@ -19,6 +20,8 @@ export interface ProductCardProps {
   isNew?: boolean;
   isSale?: boolean;
   rating?: number;
+  reviewCount?: number;
+  isInWishlist?: boolean;
   onAddToCart?: (id: string) => void;
   onAddToWishlist?: (id: string) => void;
   onClick?: (id: string) => void;
@@ -33,10 +36,13 @@ export function ProductCard({
   brand,
   isSale,
   rating,
+  reviewCount,
+  isInWishlist,
   onAddToCart,
   onAddToWishlist,
   onClick,
 }: ProductCardProps) {
+  const { t } = useTranslation();
   const discount = originalPrice
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
@@ -78,10 +84,18 @@ export function ProductCard({
                   onAddToWishlist?.(id);
                 }}
               >
-                <Heart className='h-4 w-4' />
+                <Heart
+                  className={`h-4 w-4 ${
+                    isInWishlist ? 'fill-red-500 text-red-500' : ''
+                  }`}
+                />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Add to Wishlist</TooltipContent>
+            <TooltipContent>
+              {isInWishlist
+                ? t('wishlist.removeFromWishlist')
+                : t('products.addToWishlist')}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -97,20 +111,25 @@ export function ProductCard({
                 <ShoppingCart className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Add to Cart</TooltipContent>
+            <TooltipContent>{t('products.addToCart')}</TooltipContent>
           </Tooltip>
         </div>
       </div>
-      <CardContent className='flex flex-1 flex-col p-4'>
-        <p className='text-xs text-muted-foreground'>{brand}</p>
-        <h3 className='mt-1 line-clamp-2 min-h-[2.75rem] font-medium'>
+      <CardContent className='flex flex-1 flex-col gap-1.5 p-4'>
+        <p className='text-xs font-medium text-muted-foreground'>{brand}</p>
+        <h3 className='line-clamp-2 text-sm font-semibold leading-snug'>
           {name}
         </h3>
         {rating !== undefined && (
-          <div className='mt-1 flex items-center gap-1'>
+          <div className='flex items-center gap-1 text-xs'>
             <span className='text-yellow-500'>★</span>
-            <span className='text-sm text-muted-foreground'>
+            <span className='text-muted-foreground'>
               {rating.toFixed(1)}
+              {typeof reviewCount === 'number' &&
+                ` (${t('reviews.count', {
+                  count: reviewCount,
+                  defaultValue: `${reviewCount} reviews`,
+                })})`}
             </span>
           </div>
         )}

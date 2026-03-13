@@ -10,6 +10,8 @@ export function QrPaymentCard({ className, info }: QrPaymentCardProps) {
 
   const { amount, accountName, accountNumber, bankName, orderCode } = info;
 
+  console.log(accountNumber, bankName, amount, orderCode);
+
   const qrUrl = `https://qr.sepay.vn/img?acc=${encodeURIComponent(
     accountNumber
   )}&bank=${encodeURIComponent(bankName ?? '')}&amount=${amount}&des=${encodeURIComponent(

@@ -13,8 +13,15 @@ import {
   usePublicReviewsByShoeId,
   useReviewEligibilityByShoeId,
   useCreateReviewMutation,
+  useMarkReviewHelpfulMutation,
 } from '@/features/reviews';
 import { Separator } from '@/components/ui/separator';
+import { useAddToCartMutation } from '@/features/cart';
+import {
+  useAddToWishlistMutation,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+} from '@/features/wishlist';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { resolveImageUrl } from '@/lib/image';
@@ -32,6 +39,11 @@ export function ShoeDetailPage() {
     auth.isAuthenticated
   );
   const createReviewMutation = useCreateReviewMutation(id);
+  const markHelpfulMutation = useMarkReviewHelpfulMutation(id);
+  const addToCartMutation = useAddToCartMutation();
+  const addToWishlistMutation = useAddToWishlistMutation();
+  const removeFromWishlistMutation = useRemoveFromWishlistMutation();
+  const { data: wishlistData = [] } = useQueryWishlist();
   const reviews =
     reviewsData?.items?.map((r) => ({
       id: r.id,
@@ -46,7 +58,8 @@ export function ShoeDetailPage() {
         .map((u) => resolveImageUrl(u) ?? u)
         .filter(Boolean),
       isVerifiedPurchase: true,
-      helpfulCount: 0,
+      helpfulCount: r.helpfulCount ?? 0,
+      initialHelpful: r.currentUserVoted ?? false,
     })) ?? [];
 
   if (isLoading) {
@@ -107,6 +120,7 @@ export function ShoeDetailPage() {
     variants,
     rating: reviewsData?.avgRating ?? 0,
     reviewCount: reviewsData?.reviewCount ?? 0,
+    isInWishlist: wishlistData.some((w) => w.shoeId === shoe.id),
     specifications: [
       { label: 'Material', value: shoe.material },
       { label: 'Gender', value: shoe.gender },
@@ -116,18 +130,24 @@ export function ShoeDetailPage() {
   };
 
   const handleAddToCart = (
-    productId: string,
-    size: string,
-    color: string,
+    variantId: string,
+    _size: string,
+    _color: string,
     quantity: number
   ) => {
-    console.log('Add to cart:', { productId, size, color, quantity });
-    // TODO: Implement add to cart logic
+    addToCartMutation.mutate({
+      shoeVariantId: variantId,
+      quantity,
+    });
   };
 
   const handleAddToWishlist = (productId: string) => {
-    console.log('Add to wishlist:', productId);
-    // TODO: Implement add to wishlist logic
+    const isInWishlist = wishlistData.some((w) => w.shoeId === productId);
+    if (isInWishlist) {
+      removeFromWishlistMutation.mutate(productId);
+    } else {
+      addToWishlistMutation.mutate(productId);
+    }
   };
 
   const handleShare = (productId: string) => {
@@ -217,7 +237,7 @@ export function ShoeDetailPage() {
               <ReviewCard
                 key={review.id}
                 {...review}
-                onHelpful={(reviewId) => console.log('Helpful:', reviewId)}
+                onHelpful={(reviewId) => markHelpfulMutation.mutate(reviewId)}
               />
             ))}
           </div>

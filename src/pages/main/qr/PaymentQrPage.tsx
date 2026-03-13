@@ -1,33 +1,45 @@
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { QrPaymentCard, type QrPaymentInfo } from '@/features/qr';
+
+import {
+  QrPaymentCard,
+  usePaymentInfoQuery,
+  type QrPaymentInfo,
+} from '@/features/qr';
+import { useContext, useEffect } from 'react';
+import { WebSocketContext } from '@/providers';
 
 export function PaymentQrPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { orderId } = useParams();
+
+  const { data } = usePaymentInfoQuery(orderId);
 
   const paymentInfo: QrPaymentInfo = {
-    amount: 2000,
-    accountName: 'NHU DINH NHAT',
-    accountNumber: '22226376222',
-    bankName: 'TPBank',
-    orderCode: 'SSOS-OD3423-JSKDF',
+    amount: data?.amount ?? 0,
+    accountName: data?.accountHolder ?? 'NHU DINH NHAT',
+    accountNumber: data?.bankNumber ?? '22226376222',
+    bankName: data?.bankCode ?? 'TPBank',
+    orderCode: data?.orderCode ?? 'SSOS-OD3423-JSKDF',
   };
 
-  // const stompClient = use(WebSocketContext);
-  // useEffect(() => {
-  //   if (!stompClient) return;
+  const stompClient = useContext(WebSocketContext);
 
-  //   const subscription = stompClient.subscribe('/user/queue/orders', (msg) => {
-  //     console.log('QR nhận:', msg.body);
-  //   });
+  useEffect(() => {
+    if (!stompClient) return;
 
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [stompClient]);
+    const subscription = stompClient.subscribe('/topic/orders', (msg) => {
+      navigate('/orders');
+      console.log('QR nhận:', msg.body);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [stompClient]);
 
   return (
     <div className='container mx-auto px-4 py-8'>

@@ -49,16 +49,9 @@ apiClient.interceptors.request.use(
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
-      } catch (error) {
-        console.warn(
-          '[API Client] Failed to get access token, proceeding without token:',
-          error
-        );
+      } catch {
+        // silently proceed without token
       }
-    } else if (isDev) {
-      console.log(
-        `[API Client] Auth not ready, proceeding without token for ${config.method?.toUpperCase()} ${config.url}`
-      );
     }
 
     // ==== QUAN TRỌNG: xử lý Content-Type ====
@@ -83,15 +76,6 @@ apiClient.interceptors.request.use(
       (config as unknown as { _metadata?: { startTime: number } })._metadata = {
         startTime: Date.now(),
       };
-
-      console.log(
-        `[API Request] ${config.method?.toUpperCase()} ${config.url}`,
-        {
-          baseURL: config.baseURL,
-          params: config.params as unknown,
-          data: config.data as unknown,
-        }
-      );
     }
 
     return config;
@@ -103,27 +87,7 @@ apiClient.interceptors.request.use(
 );
 
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
-    if (isDev) {
-      const config = response.config as unknown as {
-        _metadata?: { startTime?: number };
-      };
-      const duration = config._metadata?.startTime
-        ? Date.now() - config._metadata.startTime
-        : undefined;
-
-      console.log(
-        `[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} ${response.status}`,
-        {
-          status: response.status,
-          duration: duration ? `${duration}ms` : undefined,
-          data: response.data as unknown,
-        }
-      );
-    }
-
-    return response;
-  },
+  (response: AxiosResponse) => response,
   async (error: AxiosError<ProblemDetailPayload>) => {
     if (isDev) {
       console.error('[API Response Error]', {

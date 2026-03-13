@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
@@ -112,6 +113,12 @@ export function AddToCartDialog({
           <DialogTitle>
             {t('products.addToCart', { defaultValue: 'Add to Cart' })}
           </DialogTitle>
+          <DialogDescription>
+            {t('productDetail.addToCartDescription', {
+              defaultValue:
+                'Select size, color and quantity before adding this product to your cart.',
+            })}
+          </DialogDescription>
         </DialogHeader>
         <div className='space-y-4'>
           <div className='flex gap-4'>

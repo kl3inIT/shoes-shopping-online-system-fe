@@ -4,6 +4,7 @@ import { AdminLayout } from '@/layouts/admin/AdminLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RootErrorBoundary } from '@/routes/RootErrorBoundary';
 import { queryClient } from '@/features/queryClient';
+import { useVietnamAddressOptions } from '@/features';
 
 export const router = createBrowserRouter([
   {
@@ -52,7 +53,7 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: 'payment/qr',
+        path: 'payment/qr/:orderId',
         lazy: async () => {
           const { default: Component } =
             await import('@/pages/main/qr/PaymentQrPage');

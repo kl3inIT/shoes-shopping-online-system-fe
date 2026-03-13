@@ -23,7 +23,7 @@ import {
 
 function computeSummary(subtotal: number, itemCount: number) {
   const shipping = subtotal >= 100 ? 0 : 10;
-  const tax = subtotal * 0.1;
+  const tax = 0;
   const total = subtotal + shipping + tax;
   return {
     subtotal,

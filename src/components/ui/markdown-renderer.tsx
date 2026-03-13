@@ -198,11 +198,16 @@ function withClass<TagName extends keyof React.JSX.IntrinsicElements>(
   Tag: TagName,
   classes: string
 ) {
-  const Component = ({ ...props }: React.JSX.IntrinsicElements[TagName]) => (
-    <Tag className={classes} {...props} />
-  );
+  // Relax typing here to avoid complex JSX generic inference issues
+  const Component = (props: any) => {
+    const { className, ...rest } = props ?? {};
+    return React.createElement(Tag, {
+      ...rest,
+      className: cn(classes, className),
+    });
+  };
   Component.displayName = String(Tag);
-  return Component;
+  return Component as any;
 }
 
 export default MarkdownRenderer;

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Trash2 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 export interface CartItemProps {
   id: string;
@@ -92,7 +93,7 @@ export function CartItem({
 
           <div className='flex items-center gap-4'>
             <span className='font-medium'>
-              ${(price * quantity).toFixed(2)}
+              {formatCurrency(price * quantity)}
             </span>
             <Button
               variant='ghost'

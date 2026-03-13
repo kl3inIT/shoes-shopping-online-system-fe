@@ -30,18 +30,38 @@ export default function AdminReviewsPage() {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
-  // Filter reviews
-  const filteredReviews = reviews.filter((review) => {
-    const matchesSearch =
-      review.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      review.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      review.comment.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === 'all' || review.status === statusFilter;
-    const matchesRating =
-      ratingFilter === 'all' || review.rating === Number(ratingFilter);
-    return matchesSearch && matchesStatus && matchesRating;
-  });
+  // Filter & sort reviews (PENDING -> APPROVED -> REJECTED, newest first)
+  const statusOrder: Record<ReviewStatus, number> = {
+    PENDING: 0,
+    APPROVED: 1,
+    REJECTED: 2,
+  };
+
+  const filteredReviews = reviews
+    .filter((review) => {
+      const matchesSearch =
+        review.customer.name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        review.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        review.comment.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus =
+        statusFilter === 'all' || review.status === statusFilter;
+      const matchesRating =
+        ratingFilter === 'all' || review.rating === Number(ratingFilter);
+      return matchesSearch && matchesStatus && matchesRating;
+    })
+    .sort((a, b) => {
+      const orderA = statusOrder[a.status] ?? 99;
+      const orderB = statusOrder[b.status] ?? 99;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+
+      const timeA = new Date(a.updatedAt ?? a.createdAt).getTime();
+      const timeB = new Date(b.updatedAt ?? b.createdAt).getTime();
+      return timeB - timeA;
+    });
 
   const stats = {
     total: reviews.length,

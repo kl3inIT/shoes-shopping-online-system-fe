@@ -30,7 +30,7 @@ export function mapWishlistDtoToItemProps(
   dto: WishlistItemDto
 ): Omit<WishlistItemProps, 'onRemove' | 'onClick'> {
   return {
-    id: dto.wishlistId,
+    id: dto.shoeId,
     productId: dto.shoeId,
     name: dto.shoeName,
     brand: dto.brandName,

@@ -20,8 +20,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const [client, setClient] = useState<Client | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS('http://localhost:8088/ws');
 
     const stompClient = new Client({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return

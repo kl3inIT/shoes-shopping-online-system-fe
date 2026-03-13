@@ -163,9 +163,11 @@
     "quantity": "Số lượng",
     "addToCart": "Thêm Vào Giỏ",
     "wishlist": "Yêu Thích",
+    "addedToWishlist": "Đã yêu thích",
     "description": "Mô tả",
     "specifications": "Thông số",
     "noSpecifications": "Không có thông số.",
+    "addToCartDescription": "Chọn size, màu sắc và số lượng trước khi thêm sản phẩm vào giỏ hàng.",
     "reviews": {
       "title": "Đánh Giá Của Khách Hàng",
       "basedOn": "Dựa trên {{count}} đánh giá",
@@ -186,7 +188,12 @@
     },
     "new": "Mới",
     "inStock": "Còn hàng",
-    "outOfStock": "Hết hàng"
+    "outOfStock": "Hết hàng",
+    "inStockCount": "Còn lại: {{count}} sản phẩm"
+  },
+  "reviews": {
+    "count_one": "{{count}} đánh giá",
+    "count_other": "{{count}} đánh giá"
   },
   "cart": {
     "title": "Giỏ Hàng",

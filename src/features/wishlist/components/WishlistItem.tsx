@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, ExternalLink } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 export interface WishlistItemProps {
   id: string;
@@ -79,10 +80,10 @@ export function WishlistItem({
         </div>
         <p className='mt-0.5 text-sm text-muted-foreground'>{brand}</p>
         <div className='mt-1 flex flex-wrap items-center gap-2'>
-          <span className='font-semibold'>${price.toFixed(2)}</span>
+          <span className='font-semibold'>{formatCurrency(price)}</span>
           {originalPrice != null && originalPrice > price && (
             <span className='text-sm text-muted-foreground line-through'>
-              ${originalPrice.toFixed(2)}
+              {formatCurrency(originalPrice)}
             </span>
           )}
         </div>

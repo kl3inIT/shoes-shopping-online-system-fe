@@ -55,7 +55,9 @@ export function OrderStatsCards({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='text-2xl font-bold text-green-600'>${revenue}</div>
+          <div className='text-2xl font-bold text-green-600'>
+            {revenue} - VND
+          </div>
         </CardContent>
       </Card>
     </div>
