@@ -12,9 +12,16 @@ export async function getPublicReviewsByShoeId(
 ): Promise<ReviewPublicListDto> {
   const response = await apiClient.get<ApiSuccessResponse<ReviewPublicListDto>>(
     `/api/reviews/shoe/${shoeId}`,
-    { params, skipAuth: true }
+    { params }
   );
   return response.data.data;
+}
+
+export async function markReviewHelpful(reviewId: string): Promise<void> {
+  await apiClient.post<ApiSuccessResponse<unknown>>(
+    `/api/reviews/${reviewId}/helpful`,
+    undefined
+  );
 }
 
 export async function getReviewEligibilityByShoeId(

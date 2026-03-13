@@ -80,7 +80,7 @@ export const router = createBrowserRouter([
             },
           },
           {
-            path: 'profile/:keycloakId',
+            path: 'profile',
             lazy: async () => {
               const [{ default: Component }, { profileLoader }] =
                 await Promise.all([
@@ -179,6 +179,14 @@ export const router = createBrowserRouter([
         lazy: async () => {
           const { default: Component } =
             await import('@/pages/admin/orders/OrdersPage');
+          return { Component };
+        },
+      },
+      {
+        path: 'users',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/users/UsersPage');
           return { Component };
         },
       },

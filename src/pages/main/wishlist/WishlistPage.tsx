@@ -7,15 +7,16 @@ import {
   useRemoveFromWishlistMutation,
   mapWishlistDtoToItemProps,
 } from '@/features/wishlist';
+import type { WishlistFilterParams } from '@/features/wishlist';
 
 export function WishlistPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [sortByDateAsc, setSortByDateAsc] = useState(true);
 
-  const filterParams = {
-    sortBy: 'createdAt' as const,
-    sortOrder: (sortByDateAsc ? 'desc' : 'asc') as 'desc' | 'asc',
+  const filterParams: WishlistFilterParams = {
+    sortBy: 'createdAt',
+    sortOrder: sortByDateAsc ? 'desc' : 'asc',
   };
 
   const { data, isPending, isError, error } = useQueryWishlist(filterParams);
