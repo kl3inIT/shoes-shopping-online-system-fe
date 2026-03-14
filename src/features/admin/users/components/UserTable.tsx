@@ -50,7 +50,7 @@ function getStatusBadgeClass(status: AdminUser['status']) {
   switch (status) {
     case 'ACTIVE':
       return 'bg-green-500 text-white hover:bg-green-600';
-    case 'SUSPENDED':
+    case 'INACTIVE':
       return 'bg-red-500 text-white hover:bg-red-600';
     default:
       return '';
@@ -159,7 +159,7 @@ export function UserTable({
                           className='text-destructive focus:text-destructive'
                         >
                           <IconBan className='mr-2 h-4 w-4' />
-                          {t('admin.users.actions.suspend')}
+                          {t('admin.users.actions.deactivate')}
                         </DropdownMenuItem>
                       ) : (
                         <DropdownMenuItem onClick={() => onToggleStatus(user)}>

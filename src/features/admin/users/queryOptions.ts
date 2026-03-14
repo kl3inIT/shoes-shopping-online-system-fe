@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions } from '@tanstack/react-query';
 import { getAdminUsers, getAdminUserStats } from './api';
 import type { GetAdminUsersParams } from './types';
 
@@ -9,6 +9,7 @@ export const adminUsersQueryOptions = (params: GetAdminUsersParams) =>
   queryOptions({
     queryKey: adminUsersQueryKey(params),
     queryFn: () => getAdminUsers(params),
+    placeholderData: keepPreviousData,
   });
 
 export const adminUserStatsQueryKey = () =>

@@ -799,8 +799,7 @@
       },
       "status": {
         "ACTIVE": "Active",
-        "INACTIVE": "Inactive",
-        "SUSPENDED": "Suspended"
+        "INACTIVE": "Inactive"
       },
       "table": {
         "user": "User",
@@ -813,8 +812,8 @@
       "actions": {
         "viewDetails": "View Details",
         "changeRole": "Change Role",
-        "suspend": "Suspend",
         "activate": "Activate",
+        "deactivate": "Deactivate",
         "delete": "Delete"
       },
       "detail": {
@@ -834,9 +833,9 @@
         "title": "Change User Role",
         "description": "Update the role for {{name}}"
       },
-      "suspendDialog": {
-        "title": "Suspend User",
-        "description": "Are you sure you want to suspend {{name}}? They will not be able to log in."
+      "deactivateDialog": {
+        "title": "Deactivate User",
+        "description": "Are you sure you want to deactivate {{name}}? They will not be able to log in."
       },
       "activateDialog": {
         "title": "Activate User",
