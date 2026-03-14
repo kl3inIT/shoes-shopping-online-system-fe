@@ -37,6 +37,9 @@ export function CartSummary({
   const [couponCode, setCouponCode] = useState('');
   const { t } = useTranslation();
 
+  const formatCurrency = (amount: number) =>
+    `${amount.toLocaleString('vi-VN')} \u20ab`;
+
   const handleApplyCoupon = () => {
     if (couponCode.trim()) {
       onApplyCoupon?.(couponCode.trim());
@@ -62,7 +65,7 @@ export function CartSummary({
             })}
             )
           </span>
-          <span>{parseFloat(subtotal.toFixed(2)) + ' ₫'}</span>
+          <span>{formatCurrency(subtotal)}</span>
         </div>
 
         {shipping > 0 && (
@@ -70,7 +73,7 @@ export function CartSummary({
             <span className='text-muted-foreground'>
               {t('cart.summary.shipping', { defaultValue: 'Shipping' })}
             </span>
-            <span>{parseFloat(subtotal.toFixed(2)) + ' ₫'}</span>
+            <span>{formatCurrency(shipping)}</span>
           </div>
         )}
 
@@ -90,20 +93,19 @@ export function CartSummary({
             <span className='text-muted-foreground'>
               {t('cart.summary.discount', { defaultValue: 'Discount' })}
             </span>
-            <span className='text-green-600'>
-              -{parseFloat(subtotal.toFixed(2)) + ' ₫'}
-            </span>
+            <span className='text-green-600'>-{formatCurrency(discount)}</span>
           </div>
         )}
 
-        {/* {tax > 0 && (
+        {tax > 0 && (
           <div className='flex justify-between text-sm'>
-            <span className='text-muted-foreground'>Tax</span>
-            <span>${tax.toFixed(2)}</span>
+            <span className='text-muted-foreground'>
+              {t('cart.summary.tax', { defaultValue: 'Tax' })}
+            </span>
+            <span>{formatCurrency(tax)}</span>
           </div>
-        )} */}
+        )}
 
-        {/* Coupon Input */}
         {onApplyCoupon && (
           <>
             <Separator />
@@ -127,9 +129,7 @@ export function CartSummary({
 
         <div className='flex justify-between font-medium'>
           <span>{t('cart.summary.total', { defaultValue: 'Total' })}</span>
-          <span className='text-lg'>
-            {parseFloat(subtotal.toFixed(2)) + ' ₫'}
-          </span>
+          <span className='text-lg'>{formatCurrency(total)}</span>
         </div>
       </CardContent>
       <CardFooter>

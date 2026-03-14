@@ -1,12 +1,13 @@
 import {
+  Heart,
+  LayoutDashboard,
   LogIn,
   LogOut,
+  Package,
+  ShoppingCart,
   User,
   UserCircle,
   UserPlus,
-  Package,
-  Heart,
-  ShoppingCart,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oidc-context';
@@ -21,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { PERMISSIONS, PermissionGuard, usePermission } from '@/features/auth';
 
 type UserMenuProps = {
   mobile?: boolean;
@@ -39,6 +41,7 @@ function getDisplayName(auth: ReturnType<typeof useAuth>) {
 
 export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   const auth = useAuth();
+  const permission = usePermission(PERMISSIONS.dashboardView);
   const { t } = useTranslation();
 
   const handleLogin = () => {
@@ -47,8 +50,6 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   };
 
   const handleRegister = () => {
-    // Keycloak supports `kc_action=register` to open the registration screen.
-    // `extraQueryParams` is supported by oidc-client-ts via react-oidc-context.
     void auth.signinRedirect({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       extraQueryParams: { kc_action: 'register' } as any,
@@ -117,6 +118,35 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
 
   const displayName = getDisplayName(auth);
   const profilePath = '/profile';
+  const dashboardLabel = permission.hasRole('admin')
+    ? t('auth.adminDashboard', { defaultValue: 'Admin Dashboard' })
+    : t('auth.dashboard', { defaultValue: 'Dashboard' });
+
+  const dashboardMenuItem = (
+    <PermissionGuard requirement={PERMISSIONS.dashboardView}>
+      {mobile ? (
+        <Button
+          asChild
+          variant='ghost'
+          className='w-full justify-start'
+          size='sm'
+          onClick={onAfterAction}
+        >
+          <Link to='/admin'>
+            <LayoutDashboard className='mr-2 h-4 w-4' />
+            {dashboardLabel}
+          </Link>
+        </Button>
+      ) : (
+        <DropdownMenuItem asChild className='cursor-pointer'>
+          <Link to='/admin'>
+            <LayoutDashboard className='mr-2 h-4 w-4' />
+            <span>{dashboardLabel}</span>
+          </Link>
+        </DropdownMenuItem>
+      )}
+    </PermissionGuard>
+  );
 
   return mobile ? (
     <>
@@ -140,6 +170,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
           {t('auth.profile', { defaultValue: 'Hồ sơ' })}
         </Link>
       </Button>
+      {dashboardMenuItem}
       <Button
         asChild
         variant='ghost'
@@ -214,6 +245,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
             <span>{t('auth.profile', { defaultValue: 'Hồ sơ' })}</span>
           </Link>
         </DropdownMenuItem>
+        {dashboardMenuItem}
         <DropdownMenuItem asChild className='cursor-pointer'>
           <Link to='/orders'>
             <Package className='mr-2 h-4 w-4' />

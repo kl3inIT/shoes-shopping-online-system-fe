@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import Markdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import type { ExtraProps } from 'react-markdown';
 
 import { cn } from '@/lib/utils';
 import { CopyButton } from '@/components/ui/copy-button';
@@ -198,8 +199,9 @@ function withClass<TagName extends keyof React.JSX.IntrinsicElements>(
   Tag: TagName,
   classes: string
 ) {
-  // Relax typing here to avoid complex JSX generic inference issues
-  const Component = (props: any) => {
+  type ComponentProps = React.JSX.IntrinsicElements[TagName] & ExtraProps;
+
+  const Component = (props: ComponentProps) => {
     const { className, ...rest } = props ?? {};
     return React.createElement(Tag, {
       ...rest,
@@ -207,7 +209,7 @@ function withClass<TagName extends keyof React.JSX.IntrinsicElements>(
     });
   };
   Component.displayName = String(Tag);
-  return Component as any;
+  return Component;
 }
 
 export default MarkdownRenderer;

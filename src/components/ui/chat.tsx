@@ -130,7 +130,7 @@ export function Chat({
             ...part,
             toolInvocation: {
               ...part.toolInvocation,
-              state: 'result' as 'result',
+              state: 'result',
               result: {
                 content: 'Tool execution was cancelled',
                 __cancelled: true,
