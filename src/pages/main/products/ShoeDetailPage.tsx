@@ -1,24 +1,66 @@
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from 'react-oidc-context';
 import {
   ProductDetail,
   useShoeById,
   type ProductDetailProps,
 } from '@/features/products';
-import { ReviewCard, ReviewForm, Rating } from '@/features/reviews';
+import {
+  ReviewCard,
+  ReviewForm,
+  Rating,
+  usePublicReviewsByShoeId,
+  useReviewEligibilityByShoeId,
+  useCreateReviewMutation,
+  useMarkReviewHelpfulMutation,
+} from '@/features/reviews';
 import { Separator } from '@/components/ui/separator';
+import { useAddToCartMutation } from '@/features/cart';
+import {
+  useAddToWishlistMutation,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+} from '@/features/wishlist';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { mockReviews } from './detailData';
 import { resolveImageUrl } from '@/lib/image';
 
 export function ShoeDetailPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const auth = useAuth();
   const { id } = useParams<{ id: string }>();
 
   const { data: shoe, isLoading, error } = useShoeById(id);
-  const reviews = mockReviews;
+  const { data: reviewsData } = usePublicReviewsByShoeId(id);
+  const { data: eligibility } = useReviewEligibilityByShoeId(
+    id,
+    auth.isAuthenticated
+  );
+  const createReviewMutation = useCreateReviewMutation(id);
+  const markHelpfulMutation = useMarkReviewHelpfulMutation(id);
+  const addToCartMutation = useAddToCartMutation();
+  const addToWishlistMutation = useAddToWishlistMutation();
+  const removeFromWishlistMutation = useRemoveFromWishlistMutation();
+  const { data: wishlistData = [] } = useQueryWishlist();
+  const reviews =
+    reviewsData?.items?.map((r) => ({
+      id: r.id,
+      author: {
+        name: r.authorName,
+        avatar: resolveImageUrl(r.authorAvatarUrl ?? undefined),
+      },
+      rating: r.numberStars,
+      content: r.description,
+      createdAt: r.createdAt,
+      images: (r.imageUrls ?? [])
+        .map((u) => resolveImageUrl(u) ?? u)
+        .filter(Boolean),
+      isVerifiedPurchase: true,
+      helpfulCount: r.helpfulCount ?? 0,
+      initialHelpful: r.currentUserVoted ?? false,
+    })) ?? [];
 
   if (isLoading) {
     return (
@@ -76,8 +118,9 @@ export function ShoeDetailPage() {
     description: shoe.description,
     images,
     variants,
-    rating: 0, // Backend doesn't provide yet
-    reviewCount: 0, // Backend doesn't provide yet
+    rating: reviewsData?.avgRating ?? 0,
+    reviewCount: reviewsData?.reviewCount ?? 0,
+    isInWishlist: wishlistData.some((w) => w.shoeId === shoe.id),
     specifications: [
       { label: 'Material', value: shoe.material },
       { label: 'Gender', value: shoe.gender },
@@ -87,18 +130,24 @@ export function ShoeDetailPage() {
   };
 
   const handleAddToCart = (
-    productId: string,
-    size: string,
-    color: string,
+    variantId: string,
+    _size: string,
+    _color: string,
     quantity: number
   ) => {
-    console.log('Add to cart:', { productId, size, color, quantity });
-    // TODO: Implement add to cart logic
+    addToCartMutation.mutate({
+      shoeVariantId: variantId,
+      quantity,
+    });
   };
 
   const handleAddToWishlist = (productId: string) => {
-    console.log('Add to wishlist:', productId);
-    // TODO: Implement add to wishlist logic
+    const isInWishlist = wishlistData.some((w) => w.shoeId === productId);
+    if (isInWishlist) {
+      removeFromWishlistMutation.mutate(productId);
+    } else {
+      addToWishlistMutation.mutate(productId);
+    }
   };
 
   const handleShare = (productId: string) => {
@@ -110,9 +159,26 @@ export function ShoeDetailPage() {
     rating: number;
     title: string;
     content: string;
+    images: File[];
   }) => {
-    console.log('Submit review:', data);
-    // TODO: Implement submit review logic
+    if (
+      !eligibility?.eligible ||
+      !eligibility.orderDetailId ||
+      !eligibility.shoeVariantId
+    ) {
+      return;
+    }
+    const description = data.title?.trim()
+      ? `${data.title.trim()}\n\n${data.content}`
+      : data.content;
+
+    createReviewMutation.mutate({
+      orderDetailId: eligibility.orderDetailId,
+      shoeVariantId: eligibility.shoeVariantId,
+      numberStars: data.rating,
+      description,
+      images: data.images,
+    });
   };
 
   return (
@@ -155,12 +221,15 @@ export function ShoeDetailPage() {
 
         <div className='grid gap-8 lg:grid-cols-3'>
           {/* Review Form */}
-          <div className='lg:col-span-1'>
-            <ReviewForm
-              productName={productProps.name}
-              onSubmit={handleSubmitReview}
-            />
-          </div>
+          {auth.isAuthenticated && eligibility?.eligible ? (
+            <div className='lg:col-span-1'>
+              <ReviewForm
+                productName={productProps.name}
+                onSubmit={handleSubmitReview}
+                isSubmitting={createReviewMutation.isPending}
+              />
+            </div>
+          ) : null}
 
           {/* Review List */}
           <div className='space-y-4 lg:col-span-2'>
@@ -168,7 +237,7 @@ export function ShoeDetailPage() {
               <ReviewCard
                 key={review.id}
                 {...review}
-                onHelpful={(reviewId) => console.log('Helpful:', reviewId)}
+                onHelpful={(reviewId) => markHelpfulMutation.mutate(reviewId)}
               />
             ))}
           </div>

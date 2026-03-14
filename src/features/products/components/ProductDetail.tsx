@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -39,12 +40,12 @@ export interface ProductDetailProps {
   reviewCount?: number;
   isSale?: boolean;
   isNew?: boolean;
+  isInWishlist?: boolean;
   specifications?: { label: string; value: string }[];
   onAddToCart?: (
     id: string,
     size: string,
     color: string,
-
     quantity: number
   ) => void;
   onAddToWishlist?: (id: string) => void;
@@ -67,7 +68,9 @@ export function ProductDetail({
   onAddToCart,
   onAddToWishlist,
   onShare,
+  isInWishlist,
 }: ProductDetailProps) {
+  const { t } = useTranslation();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
@@ -130,8 +133,9 @@ export function ProductDetail({
   };
 
   const handleAddToCart = () => {
-    if (selectedSize && selectedColor) {
-      onAddToCart?.(id, selectedSize, selectedColor, quantity);
+    if (selectedSize && selectedColor && selectedVariant) {
+      // Pass selected variant id as first argument so backend can resolve exact variant
+      onAddToCart?.(selectedVariant.id, selectedSize, selectedColor, quantity);
     }
   };
 
@@ -146,11 +150,18 @@ export function ProductDetail({
       {/* Images Gallery */}
       <div className='space-y-4'>
         <div className='relative aspect-square overflow-hidden rounded-lg bg-muted'>
-          <img
-            src={allImages[activeImageIndex]?.url}
-            alt={allImages[activeImageIndex]?.alt}
-            className='h-full w-full object-contain'
-          />
+          <a
+            href={`/products/${id}`}
+            onClick={(event) => event.preventDefault()}
+            className='block h-full w-full'
+          >
+            <img
+              src={allImages[activeImageIndex]?.url}
+              alt={allImages[activeImageIndex]?.alt}
+              draggable={false}
+              className='h-full w-full object-contain'
+            />
+          </a>
           <div className='absolute left-4 top-4 flex flex-col gap-2'>
             {isSale && discount > 0 && (
               <Badge variant='destructive'>-{discount}%</Badge>
@@ -168,11 +179,18 @@ export function ProductDetail({
                   : 'border-transparent hover:border-muted-foreground/50'
               }`}
             >
-              <img
-                src={image.url}
-                alt={image.alt}
-                className='h-full w-full object-contain'
-              />
+              <a
+                href={`/products/${id}`}
+                onClick={(event) => event.preventDefault()}
+                className='block h-full w-full'
+              >
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                  draggable={false}
+                  className='h-full w-full object-contain'
+                />
+              </a>
             </button>
           ))}
         </div>
@@ -186,19 +204,29 @@ export function ProductDetail({
           {rating !== undefined && (
             <div className='mt-2 flex items-center gap-2'>
               <div className='flex items-center'>
-                {[...Array(5)].map((_, i) => (
-                  <span
-                    key={i}
-                    className={
-                      i < Math.round(rating) ? 'text-yellow-500' : 'text-muted'
-                    }
-                  >
-                    ★
-                  </span>
-                ))}
+                {Array.from({ length: 5 }, (_, starIndex) => starIndex + 1).map(
+                  (starValue) => (
+                    <span
+                      key={starValue}
+                      className={
+                        starValue <= Math.round(rating)
+                          ? 'text-yellow-500'
+                          : 'text-muted'
+                      }
+                    >
+                      ★
+                    </span>
+                  )
+                )}
               </div>
               <span className='text-sm text-muted-foreground'>
-                {rating.toFixed(1)} ({reviewCount} reviews)
+                {rating.toFixed(1)} (
+                {t('reviews.count', {
+                  count: reviewCount ?? 0,
+                  defaultValue:
+                    '{{count}} ' + (reviewCount === 1 ? 'review' : 'reviews'),
+                })}
+                )
               </span>
             </div>
           )}
@@ -206,10 +234,12 @@ export function ProductDetail({
 
         <div className='flex items-baseline gap-3'>
           <span className='text-3xl font-bold'>
-            {new Intl.NumberFormat('vi-VN', {
-              style: 'currency',
-              currency: 'VND',
-            }).format(price)}
+            {t('products.price', {
+              defaultValue: new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+              }).format(price),
+            })}
           </span>
           {originalPrice && originalPrice > price && (
             <span className='text-xl text-muted-foreground line-through'>
@@ -226,7 +256,9 @@ export function ProductDetail({
         {/* Color (optional) */}
         {availableColors.length > 0 && !selectedSize && (
           <div>
-            <h3 className='mb-3 font-medium'>Color</h3>
+            <h3 className='mb-3 font-medium'>
+              {t('productDetail.selectColor')}
+            </h3>
             <div className='flex flex-wrap gap-2'>
               {availableColors.map((color) => (
                 <Button
@@ -244,7 +276,7 @@ export function ProductDetail({
 
         {/* Size Selection */}
         <div className='space-y-3'>
-          <h3 className='font-medium'>Kích thước (Size)</h3>
+          <h3 className='font-medium'>{t('productDetail.selectSize')}</h3>
           <div className='flex flex-wrap gap-2'>
             {uniqueSizes.map((size) => {
               const hasStockForSize = variants
@@ -269,7 +301,7 @@ export function ProductDetail({
         {/* Color Selection */}
         {selectedSize && (
           <div className='space-y-3 animate-in fade-in slide-in-from-top-1'>
-            <h3 className='font-medium'>Màu sắc</h3>
+            <h3 className='font-medium'>{t('productDetail.selectColor')}</h3>
             <div className='flex flex-wrap gap-2'>
               {availableColors.map((color) => {
                 const variant = variants.find(
@@ -296,10 +328,12 @@ export function ProductDetail({
         {/* Stock Status & Quantity */}
         <div className='space-y-3'>
           <div className='flex items-center justify-between'>
-            <h3 className='font-medium'>Số lượng</h3>
+            <h3 className='font-medium'>{t('productDetail.quantity')}</h3>
             {selectedVariant && (
               <span className='text-sm text-muted-foreground'>
-                Còn lại: {selectedVariant.quantity} sản phẩm
+                {t('productDetail.inStockCount', {
+                  count: selectedVariant.quantity,
+                })}
               </span>
             )}
           </div>
@@ -333,15 +367,23 @@ export function ProductDetail({
             onClick={handleAddToCart}
           >
             <ShoppingCart className='mr-2 h-5 w-5' />
-            Thêm vào giỏ hàng
+            {t('productDetail.addToCart')}
           </Button>
           <Button
             size='lg'
             variant='outline'
             onClick={() => onAddToWishlist?.(id)}
           >
-            <Heart className='mr-2 h-5 w-5' />
-            Yêu thích
+            <Heart
+              className={`mr-2 h-5 w-5 ${
+                isInWishlist ? 'fill-red-500 text-red-500' : ''
+              }`}
+            />
+            {isInWishlist
+              ? t('productDetail.addedToWishlist', {
+                  defaultValue: 'Added to wishlist',
+                })
+              : t('productDetail.wishlist')}
           </Button>
           <Button size='lg' variant='ghost' onClick={() => onShare?.(id)}>
             <Share2 className='h-5 w-5' />
@@ -353,8 +395,12 @@ export function ProductDetail({
         {/* Tabs */}
         <Tabs defaultValue='description'>
           <TabsList className='w-full justify-start'>
-            <TabsTrigger value='description'>Mô tả</TabsTrigger>
-            <TabsTrigger value='specifications'>Thông số kĩ thuật</TabsTrigger>
+            <TabsTrigger value='description'>
+              {t('productDetail.description')}
+            </TabsTrigger>
+            <TabsTrigger value='specifications'>
+              {t('productDetail.specifications')}
+            </TabsTrigger>
           </TabsList>
           <TabsContent value='description' className='mt-4'>
             <p className='text-muted-foreground leading-relaxed'>
@@ -375,7 +421,7 @@ export function ProductDetail({
               </dl>
             ) : (
               <p className='text-muted-foreground'>
-                Chưa có thông số chi tiết.
+                {t('productDetail.noSpecifications')}
               </p>
             )}
           </TabsContent>

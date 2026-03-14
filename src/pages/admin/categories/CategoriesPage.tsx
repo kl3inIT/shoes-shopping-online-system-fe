@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import { IconPlus, IconSearch } from '@tabler/icons-react';
 import { toast } from 'sonner';
 
@@ -27,15 +28,21 @@ import {
   updateCategory,
   deleteCategory,
 } from '@/features/admin/categories/api';
-import { getErrorMessage, isNoResponseError } from '@/features/apiClient';
+import {
+  getErrorMessage,
+  isNoResponseError,
+  isHttpError,
+} from '@/features/apiClient';
 
 export default function AdminCategoriesPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -75,9 +82,12 @@ export default function AdminCategoriesPage() {
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const applySearch = () => {
+    setSearchQuery(searchInput.trim());
+  };
+
   const stats = {
     total: categories.length,
-    root: categories.filter((c) => !c.parentCategory).length,
     totalProducts: categories.reduce((sum, c) => sum + c.productCount, 0),
   };
 
@@ -116,7 +126,18 @@ export default function AdminCategoriesPage() {
       setSelectedCategory(null);
     } catch (error) {
       if (!isNoResponseError(error)) {
-        toast.error(getErrorMessage(error));
+        if (isHttpError(error) && error.messageKey) {
+          const translated = t(error.messageKey, {
+            defaultValue: t(
+              'http.error.unknown',
+              'An unexpected error occurred.'
+            ),
+            ...(error.params ?? {}),
+          });
+          toast.error(translated);
+        } else {
+          toast.error(getErrorMessage(error));
+        }
       }
     } finally {
       setDeleting(false);
@@ -181,12 +202,18 @@ export default function AdminCategoriesPage() {
 
       {/* Search */}
       <div className='flex items-center gap-4 px-4 lg:px-6'>
-        <div className='relative flex-1 max-w-sm'>
+        <div className='relative flex-1 w-full'>
           <IconSearch className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
           <Input
             placeholder={t('admin.categories.searchPlaceholder')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                applySearch();
+              }
+            }}
+            onBlur={applySearch}
             className='pl-10'
           />
         </div>
@@ -203,6 +230,9 @@ export default function AdminCategoriesPage() {
             categories={filteredCategories}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onViewProducts={(category) =>
+              navigate(`/admin/products?categoryId=${category.id}`)
+            }
           />
         )}
       </div>

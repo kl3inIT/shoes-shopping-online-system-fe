@@ -45,7 +45,7 @@ const HighlightedPre = React.memo(
       <pre {...props}>
         <code>
           {tokens.map((line, lineIndex) => (
-            <>
+            <React.Fragment key={lineIndex}>
               <span key={lineIndex}>
                 {line.map((token, tokenIndex) => {
                   const style =
@@ -65,7 +65,7 @@ const HighlightedPre = React.memo(
                 })}
               </span>
               {lineIndex !== tokens.length - 1 && '\n'}
-            </>
+            </React.Fragment>
           ))}
         </code>
       </pre>
@@ -117,12 +117,22 @@ const CodeBlock = ({
   );
 };
 
-function childrenTakeAllStringContents(element: any): string {
+type ReactElementWithChildren = React.ReactElement<{
+  children?: React.ReactNode;
+}>;
+
+function hasChildrenProp(
+  value: React.ReactNode
+): value is ReactElementWithChildren {
+  return React.isValidElement(value);
+}
+
+function childrenTakeAllStringContents(element: React.ReactNode): string {
   if (typeof element === 'string') {
     return element;
   }
 
-  if (element?.props?.children) {
+  if (hasChildrenProp(element) && element.props.children) {
     const children = element.props.children;
 
     if (Array.isArray(children)) {
@@ -146,7 +156,7 @@ const COMPONENTS: Components = {
   strong: withClass('strong', 'font-semibold'),
   a: withClass('a', 'text-primary underline underline-offset-2'),
   blockquote: withClass('blockquote', 'border-l-2 border-primary pl-4'),
-  code: ({ children, className, node, ...rest }: any) => {
+  code: ({ children, className, ...rest }) => {
     const match = /language-(\w+)/.exec(className || '');
     return match ? (
       <CodeBlock className={className} language={match[1]} {...rest}>
@@ -163,7 +173,7 @@ const COMPONENTS: Components = {
       </code>
     );
   },
-  pre: ({ children }: any) => children,
+  pre: ({ children }) => children,
   ol: withClass('ol', 'list-decimal space-y-2 pl-6'),
   ul: withClass('ul', 'list-disc space-y-2 pl-6'),
   li: withClass('li', 'my-1.5'),
@@ -188,11 +198,16 @@ function withClass<TagName extends keyof React.JSX.IntrinsicElements>(
   Tag: TagName,
   classes: string
 ) {
-  const Component: React.FC<any> = ({ node, ...props }) => (
-    <Tag className={classes} {...props} />
-  );
+  // Relax typing here to avoid complex JSX generic inference issues
+  const Component = (props: any) => {
+    const { className, ...rest } = props ?? {};
+    return React.createElement(Tag, {
+      ...rest,
+      className: cn(classes, className),
+    });
+  };
   Component.displayName = String(Tag);
-  return Component;
+  return Component as any;
 }
 
 export default MarkdownRenderer;

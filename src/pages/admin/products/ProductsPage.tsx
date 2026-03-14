@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconInfoCircle, IconPlus } from '@tabler/icons-react';
 
@@ -42,6 +42,7 @@ import {
 } from '@/features/admin/products';
 import {
   useAdminShoes,
+  useAdminShoeStockSummary,
   useUpdateShoeMutation,
 } from '@/features/admin/products';
 import {
@@ -114,6 +115,7 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
 export default function AdminProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { data: shoes = [] } = useAdminShoes();
   const { data: brands = [] } = useQueryBrands();
   const { data: categories = [] } = useCategories();
@@ -122,9 +124,11 @@ export default function AdminProductsPage() {
   const products = useMemo(() => shoes.map(mapShoeToProduct), [shoes]);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const initialCategoryId = searchParams.get('categoryId') ?? 'all';
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [brandFilter, setBrandFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] =
+    useState<string>(initialCategoryId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
@@ -163,6 +167,11 @@ export default function AdminProductsPage() {
   }, [searchQuery, statusFilter, brandFilter, categoryFilter]);
 
   useEffect(() => {
+    const categoryId = searchParams.get('categoryId') ?? 'all';
+    setCategoryFilter(categoryId);
+  }, [searchParams]);
+
+  useEffect(() => {
     setCurrentPage((prev) => Math.min(prev, totalPages));
   }, [totalPages]);
 
@@ -190,14 +199,33 @@ export default function AdminProductsPage() {
   const getTotalStock = (product: Product) =>
     product.variants.reduce((sum, v) => sum + v.stockQuantity, 0);
 
+  const isFiltering =
+    searchQuery !== '' ||
+    statusFilter !== 'all' ||
+    brandFilter !== 'all' ||
+    categoryFilter !== 'all';
+
+  const { data: stockSummary } = useAdminShoeStockSummary(10, !isFiltering);
+
   const stats = {
-    total: filteredProducts.length,
-    active: filteredProducts.filter((p) => p.status === 'ACTIVE').length,
-    outOfStock: filteredProducts.filter((p) => p.status === 'OUT_OF_STOCK')
-      .length,
-    lowStock: filteredProducts.filter(
-      (p) => getTotalStock(p) > 0 && getTotalStock(p) < 10
-    ).length,
+    total:
+      !isFiltering && stockSummary?.total !== undefined
+        ? stockSummary.total
+        : filteredProducts.length,
+    active:
+      !isFiltering && stockSummary?.selling !== undefined
+        ? stockSummary.selling
+        : filteredProducts.filter((p) => p.status === 'ACTIVE').length,
+    outOfStock:
+      !isFiltering && stockSummary?.outOfStock !== undefined
+        ? stockSummary.outOfStock
+        : filteredProducts.filter((p) => p.status === 'OUT_OF_STOCK').length,
+    lowStock:
+      !isFiltering && stockSummary?.lowStock !== undefined
+        ? stockSummary.lowStock
+        : filteredProducts.filter(
+            (p) => getTotalStock(p) > 0 && getTotalStock(p) < 10
+          ).length,
   };
 
   const handleView = (product: Product) => {
@@ -333,14 +361,17 @@ export default function AdminProductsPage() {
                 />
               </PaginationItem>
 
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <PaginationItem key={i + 1}>
+              {Array.from(
+                { length: totalPages },
+                (_, pageIndex) => pageIndex + 1
+              ).map((pageNumber) => (
+                <PaginationItem key={pageNumber}>
                   <PaginationLink
-                    onClick={() => setCurrentPage(i + 1)}
-                    isActive={currentPage === i + 1}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    isActive={currentPage === pageNumber}
                     className='cursor-pointer'
                   >
-                    {i + 1}
+                    {pageNumber}
                   </PaginationLink>
                 </PaginationItem>
               ))}

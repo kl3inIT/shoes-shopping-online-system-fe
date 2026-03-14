@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/tooltip';
 import { formatCurrency } from '@/lib/utils';
 import { Heart, ShoppingCart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface ProductCardProps {
   id: string;
@@ -19,6 +20,8 @@ export interface ProductCardProps {
   isNew?: boolean;
   isSale?: boolean;
   rating?: number;
+  reviewCount?: number;
+  isInWishlist?: boolean;
   onAddToCart?: (id: string) => void;
   onAddToWishlist?: (id: string) => void;
   onClick?: (id: string) => void;
@@ -33,24 +36,37 @@ export function ProductCard({
   brand,
   isSale,
   rating,
+  reviewCount,
+  isInWishlist,
   onAddToCart,
   onAddToWishlist,
   onClick,
 }: ProductCardProps) {
+  const { t } = useTranslation();
   const discount = originalPrice
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
 
+  const detailHref = `/products/${id}`;
+
   return (
     <Card
-      className='group cursor-pointer overflow-hidden transition-all hover:shadow-lg'
+      className='group flex h-full cursor-pointer flex-col overflow-hidden transition-all hover:shadow-lg'
       onClick={() => onClick?.(id)}
     >
-      <div className='relative aspect-square overflow-hidden bg-muted'>
+      <a
+        href={detailHref}
+        className='relative aspect-square overflow-hidden bg-muted'
+        onClick={(event) => {
+          event.preventDefault();
+          onClick?.(id);
+        }}
+      >
         {image ? (
           <img
             src={image}
             alt={name}
+            draggable={false}
             className='h-full w-full object-cover transition-transform group-hover:scale-105'
             onError={(e) => {
               e.currentTarget.style.display = 'none';
@@ -74,14 +90,23 @@ export function ProductCard({
                 variant='secondary'
                 className='h-8 w-8'
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   onAddToWishlist?.(id);
                 }}
               >
-                <Heart className='h-4 w-4' />
+                <Heart
+                  className={`h-4 w-4 ${
+                    isInWishlist ? 'fill-red-500 text-red-500' : ''
+                  }`}
+                />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Add to Wishlist</TooltipContent>
+            <TooltipContent>
+              {isInWishlist
+                ? t('wishlist.removeFromWishlist')
+                : t('products.addToWishlist')}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -90,6 +115,7 @@ export function ProductCard({
                 variant='secondary'
                 className='h-8 w-8'
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   onAddToCart?.(id);
                 }}
@@ -97,23 +123,30 @@ export function ProductCard({
                 <ShoppingCart className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Add to Cart</TooltipContent>
+            <TooltipContent>{t('products.addToCart')}</TooltipContent>
           </Tooltip>
         </div>
-      </div>
-      <CardContent className='p-4'>
-        <p className='text-xs text-muted-foreground'>{brand}</p>
-        <h3 className='mt-1 line-clamp-2 font-medium'>{name}</h3>
+      </a>
+      <CardContent className='flex flex-1 flex-col gap-1.5 p-4'>
+        <p className='text-xs font-medium text-muted-foreground'>{brand}</p>
+        <h3 className='line-clamp-2 text-sm font-semibold leading-snug'>
+          {name}
+        </h3>
         {rating !== undefined && (
-          <div className='mt-1 flex items-center gap-1'>
+          <div className='flex items-center gap-1 text-xs'>
             <span className='text-yellow-500'>★</span>
-            <span className='text-sm text-muted-foreground'>
+            <span className='text-muted-foreground'>
               {rating.toFixed(1)}
+              {typeof reviewCount === 'number' &&
+                ` (${t('reviews.count', {
+                  count: reviewCount,
+                  defaultValue: `${reviewCount} reviews`,
+                })})`}
             </span>
           </div>
         )}
       </CardContent>
-      <CardFooter className='p-4 pt-0'>
+      <CardFooter className='mt-auto p-4 pt-0'>
         <div className='flex items-center gap-2'>
           <span className='text-lg font-bold'>{formatCurrency(price)}</span>
           {originalPrice && originalPrice > price && (

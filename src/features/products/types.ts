@@ -34,8 +34,17 @@ export interface ShoeResponse {
   price: number;
   imageUrls: string[];
   variants: ShoeVariantResponse[];
+  avgRating?: number;
+  reviewCount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ShoeStockSummaryResponse {
+  total: number;
+  selling: number;
+  outOfStock: number;
+  lowStock: number;
 }
 
 export interface ResponseGeneral<T> {

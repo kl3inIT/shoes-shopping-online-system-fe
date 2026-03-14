@@ -1,8 +1,10 @@
 import type { AuthProviderProps } from 'react-oidc-context';
 import { WebStorageStateStore } from 'oidc-client-ts';
 
-export const authority = import.meta.env.VITE_OIDC_AUTHORITY;
-export const client_id = import.meta.env.VITE_OIDC_CLIENT_ID;
+import { appEnv } from '@/lib/env';
+
+export const authority = appEnv.oidcAuthority;
+export const client_id = appEnv.oidcClientId;
 
 export const oidcConfig: AuthProviderProps = {
   authority: authority,

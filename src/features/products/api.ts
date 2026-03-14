@@ -118,6 +118,39 @@ export async function getNewArrivals(limit = 5): Promise<ShoeResponse[]> {
   return response.data.data;
 }
 
+export interface ShoesListParams {
+  sort?: string;
+  order?: 'asc' | 'desc';
+  page?: number;
+  size?: number;
+  search?: string;
+  brandIds?: string[];
+  categoryIds?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+}
+
+/**
+ * For new arrivals.
+ */
+export async function getShoesList(
+  params: ShoesListParams = {}
+): Promise<PageResponse<ShoeResponse>> {
+  const {
+    sort = 'createdAt',
+    order = 'desc',
+    page = 0,
+    size = 20,
+    ...rest
+  } = params;
+  const response = await apiClient.get<
+    ResponseGeneral<PageResponse<ShoeResponse>>
+  >(SHOES_ENDPOINT, {
+    params: { sort: `${sort},${order}`, page, size, ...rest },
+  });
+  return response.data.data;
+}
+
 export async function getAllBrands(): Promise<BrandResponse[]> {
   const response =
     await apiClient.get<ResponseGeneral<BrandResponse[]>>('/api/brands');

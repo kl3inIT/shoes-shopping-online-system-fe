@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface CartSummaryProps {
   subtotal: number;
@@ -26,7 +27,6 @@ export function CartSummary({
   subtotal,
   shipping = 0,
   discount = 0,
-  tax = 0,
   total,
   itemCount,
   onApplyCoupon,
@@ -34,6 +34,7 @@ export function CartSummary({
   isCheckoutDisabled = false,
 }: CartSummaryProps) {
   const [couponCode, setCouponCode] = useState('');
+  const { t } = useTranslation();
 
   const handleApplyCoupon = () => {
     if (couponCode.trim()) {
@@ -45,43 +46,59 @@ export function CartSummary({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Order Summary</CardTitle>
+        <CardTitle>
+          {t('cart.summary.title', { defaultValue: 'Order Summary' })}
+        </CardTitle>
       </CardHeader>
       <CardContent className='space-y-4'>
         <div className='flex justify-between text-sm'>
           <span className='text-muted-foreground'>
-            Subtotal ({itemCount} items)
+            {t('cart.summary.subtotal', { defaultValue: 'Subtotal' })} (
+            {itemCount}{' '}
+            {t('cart.summary.items', {
+              defaultValue: 'items',
+              count: itemCount,
+            })}
+            )
           </span>
           <span>${subtotal.toFixed(2)}</span>
         </div>
 
         {shipping > 0 && (
           <div className='flex justify-between text-sm'>
-            <span className='text-muted-foreground'>Shipping</span>
+            <span className='text-muted-foreground'>
+              {t('cart.summary.shipping', { defaultValue: 'Shipping' })}
+            </span>
             <span>${shipping.toFixed(2)}</span>
           </div>
         )}
 
         {shipping === 0 && (
           <div className='flex justify-between text-sm'>
-            <span className='text-muted-foreground'>Shipping</span>
-            <span className='text-green-600'>Free</span>
+            <span className='text-muted-foreground'>
+              {t('cart.summary.shipping', { defaultValue: 'Shipping' })}
+            </span>
+            <span className='text-green-600'>
+              {t('cart.summary.freeShipping', { defaultValue: 'Free' })}
+            </span>
           </div>
         )}
 
         {discount > 0 && (
           <div className='flex justify-between text-sm'>
-            <span className='text-muted-foreground'>Discount</span>
+            <span className='text-muted-foreground'>
+              {t('cart.summary.discount', { defaultValue: 'Discount' })}
+            </span>
             <span className='text-green-600'>-${discount.toFixed(2)}</span>
           </div>
         )}
 
-        {tax > 0 && (
+        {/* {tax > 0 && (
           <div className='flex justify-between text-sm'>
             <span className='text-muted-foreground'>Tax</span>
             <span>${tax.toFixed(2)}</span>
           </div>
-        )}
+        )} */}
 
         {/* Coupon Input */}
         {onApplyCoupon && (
@@ -89,13 +106,15 @@ export function CartSummary({
             <Separator />
             <div className='flex gap-2'>
               <Input
-                placeholder='Coupon code'
+                placeholder={t('cart.summary.couponPlaceholder', {
+                  defaultValue: 'Coupon code',
+                })}
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 className='flex-1'
               />
               <Button variant='outline' onClick={handleApplyCoupon}>
-                Apply
+                {t('cart.summary.applyCoupon', { defaultValue: 'Apply' })}
               </Button>
             </div>
           </>
@@ -104,7 +123,7 @@ export function CartSummary({
         <Separator />
 
         <div className='flex justify-between font-medium'>
-          <span>Total</span>
+          <span>{t('cart.summary.total', { defaultValue: 'Total' })}</span>
           <span className='text-lg'>${total.toFixed(2)}</span>
         </div>
       </CardContent>
@@ -115,7 +134,9 @@ export function CartSummary({
           onClick={onCheckout}
           disabled={isCheckoutDisabled || itemCount === 0}
         >
-          Proceed to Checkout
+          {t('cart.summary.proceedToCheckout', {
+            defaultValue: 'Proceed to Checkout',
+          })}
         </Button>
       </CardFooter>
     </Card>

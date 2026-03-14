@@ -203,10 +203,24 @@ export default function EditShoePage() {
       );
     };
 
-  const handleRemoveVariant = (id: string) => {
-    setVariants((prev) =>
-      prev.length > 1 ? prev.filter((v) => v.id !== id) : prev
-    );
+  const handleRemoveVariantAt = (index: number) => {
+    setVariants((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddVariant = () => {
+    setVariants((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        size: '',
+        color: '',
+        stockQuantity: '0',
+        existingImageUrls: [],
+        keepImageUrls: [],
+        newImages: [],
+        newPreviewUrls: [],
+      },
+    ]);
   };
 
   const handleChooseMainImage = () => {
@@ -423,6 +437,25 @@ export default function EditShoePage() {
       return;
     }
 
+    const seenVariants = new Set<string>();
+    for (const variant of variants) {
+      const sizeKey = variant.size.trim().toLowerCase();
+      const colorKey = variant.color.trim().toLowerCase();
+      const key = `${sizeKey}|${colorKey}`;
+
+      if (!sizeKey || !colorKey) {
+        toast.error('Vui lòng nhập đầy đủ size và màu cho biến thể');
+        return;
+      }
+
+      if (seenVariants.has(key)) {
+        toast.error('Không được trùng size và màu giữa các biến thể');
+        return;
+      }
+
+      seenVariants.add(key);
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -435,16 +468,18 @@ export default function EditShoePage() {
         brandId: shoe.brandId,
         price: Number(shoe.basePrice) || 0,
         variants: variants.map((v) => ({
-          id: v.id,
+          id: v.existingImageUrls.length > 0 ? v.id : undefined,
           size: v.size,
           color: v.color,
           quantity: Number(v.stockQuantity) || 0,
         })),
         keepShoeImageUrls: shoeKeepImageUrls,
-        variantImageUpdates: variants.map((v) => ({
-          variantId: v.id,
-          keepImageUrls: v.keepImageUrls,
-        })),
+        variantImageUpdates: variants
+          .filter((v) => v.existingImageUrls.length > 0)
+          .map((v) => ({
+            variantId: v.id,
+            keepImageUrls: v.keepImageUrls,
+          })),
       };
 
       await updateShoeMutation.mutateAsync({
@@ -824,6 +859,12 @@ export default function EditShoePage() {
                   {t('admin.products.addPage.variants.subtitle')}
                 </p>
               </div>
+              <Button type='button' size='sm' onClick={handleAddVariant}>
+                {t(
+                  'admin.products.addPage.variants.addButton',
+                  'Thêm biến thể'
+                )}
+              </Button>
             </CardHeader>
             <CardContent className='space-y-6'>
               {variants.map((variant, index) => (
@@ -842,7 +883,7 @@ export default function EditShoePage() {
                       variant='ghost'
                       size='sm'
                       className='text-destructive hover:text-destructive'
-                      onClick={() => handleRemoveVariant(variant.id)}
+                      onClick={() => handleRemoveVariantAt(index)}
                       disabled={variants.length === 1}
                     >
                       <IconTrash className='mr-2 h-4 w-4' />
