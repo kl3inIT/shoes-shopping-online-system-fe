@@ -1,23 +1,32 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { WishlistGrid } from '@/features/wishlist';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { mockWishlistItems } from './data';
+import { PageErrorState, PageLoader, ReloadPageButton } from '@/components/app';
+import {
+  WishlistGrid,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+  mapWishlistDtoToItemProps,
+} from '@/features/wishlist';
+import type { WishlistFilterParams } from '@/features/wishlist';
 
 export function WishlistPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [items, setItems] = useState(mockWishlistItems);
+  const [sortByDateAsc, setSortByDateAsc] = useState(true);
 
-  const handleAddToCart = (productId: string) => {
-    console.log('Add to cart from wishlist:', productId);
-    // TODO: Implement add to cart logic
+  const filterParams: WishlistFilterParams = {
+    sortBy: 'createdAt',
+    sortOrder: sortByDateAsc ? 'desc' : 'asc',
   };
 
-  const handleRemove = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const { data, isPending, isError, error } = useQueryWishlist(filterParams);
+  const removeMutation = useRemoveFromWishlistMutation();
+
+  const items = data?.map(mapWishlistDtoToItemProps) ?? [];
+
+  const handleRemove = (shoeId: string) => {
+    removeMutation.mutate(shoeId);
   };
 
   const handleItemClick = (productId: string) => {
@@ -28,25 +37,37 @@ export function WishlistPage() {
     navigate('/products');
   };
 
+  if (isPending) {
+    return (
+      <PageLoader
+        className='container mx-auto px-4 py-16'
+        description='Loading your wishlist.'
+      />
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className='container mx-auto px-4 py-16'>
+        <PageErrorState
+          description={
+            error instanceof Error ? error.message : t('wishlist.loadError')
+          }
+          action={<ReloadPageButton />}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className='container mx-auto px-4 py-8'>
-      {/* Header */}
-      <div className='mb-8'>
-        <Button variant='ghost' className='mb-2' onClick={() => navigate(-1)}>
-          <ArrowLeft className='mr-2 h-4 w-4' />
-          {t('common.back')}
-        </Button>
-        <h1 className='text-3xl font-bold'>{t('wishlist.title')}</h1>
-        <p className='text-muted-foreground'>{t('wishlist.subtitle')}</p>
-      </div>
-
-      {/* Wishlist Grid */}
       <WishlistGrid
         items={items}
-        onAddToCart={handleAddToCart}
         onRemove={handleRemove}
         onItemClick={handleItemClick}
         onContinueShopping={handleContinueShopping}
+        sortByDateAsc={sortByDateAsc}
+        onToggleSort={() => setSortByDateAsc((v) => !v)}
       />
     </div>
   );

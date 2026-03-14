@@ -15,3 +15,14 @@ export interface QrPaymentCardProps {
   className?: string;
   info: QrPaymentInfo;
 }
+
+export interface PaymentInfoResponse {
+  orderId: string;
+  orderCode: string;
+  bankNumber: string;
+  bankCode: string;
+  accountHolder: string;
+  amount: number;
+  status: string;
+  expiredAt: string;
+}

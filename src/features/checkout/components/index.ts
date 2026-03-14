@@ -1,15 +1,6 @@
-export {
-  CheckoutForm,
-  type CheckoutFormProps,
-  type ShippingAddress,
-} from './CheckoutForm';
+export { CheckoutForm, type CheckoutFormProps } from './CheckoutForm';
 export {
   CheckoutOrderSummary,
   type CheckoutOrderSummaryProps,
-  type CheckoutItem,
 } from './CheckoutOrderSummary';
-export {
-  PaymentMethod,
-  type PaymentMethodProps,
-  type PaymentOption,
-} from './PaymentMethod';
+export { PaymentMethod, type PaymentMethodProps } from './PaymentMethod';

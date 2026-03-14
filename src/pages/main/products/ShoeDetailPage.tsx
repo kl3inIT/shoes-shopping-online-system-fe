@@ -1,49 +1,154 @@
-import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ProductDetail } from '@/features/products';
+import { useAuth } from 'react-oidc-context';
+import {
+  ProductDetail,
+  useShoeById,
+  type ProductDetailProps,
+} from '@/features/products';
 import {
   ReviewCard,
   ReviewForm,
   Rating,
-  useShoeReviews,
-  useCreateReview,
-  type Review,
+  usePublicReviewsByShoeId,
+  useReviewEligibilityByShoeId,
+  useCreateReviewMutation,
+  useMarkReviewHelpfulMutation,
 } from '@/features/reviews';
 import { Separator } from '@/components/ui/separator';
+import { useAddToCartMutation } from '@/features/cart';
+import {
+  useAddToWishlistMutation,
+  useQueryWishlist,
+  useRemoveFromWishlistMutation,
+} from '@/features/wishlist';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { mockProductDetail } from './detailData';
-import { toast } from 'sonner';
+import { resolveImageUrl } from '@/lib/image';
 
 export function ShoeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
-    null
+  const auth = useAuth();
+  const { id } = useParams<{ id: string }>();
+
+  const { data: shoe, isLoading, error } = useShoeById(id);
+  const { data: reviewsData } = usePublicReviewsByShoeId(id);
+  const { data: eligibility } = useReviewEligibilityByShoeId(
+    id,
+    auth.isAuthenticated
+  );
+  const createReviewMutation = useCreateReviewMutation(id);
+  const markHelpfulMutation = useMarkReviewHelpfulMutation(id);
+  const addToCartMutation = useAddToCartMutation();
+  const addToWishlistMutation = useAddToWishlistMutation();
+  const removeFromWishlistMutation = useRemoveFromWishlistMutation();
+  const { data: wishlistData = [] } = useQueryWishlist();
+  const reviews =
+    reviewsData?.items?.map((r) => ({
+      id: r.id,
+      author: {
+        name: r.authorName,
+        avatar: resolveImageUrl(r.authorAvatarUrl ?? undefined),
+      },
+      rating: r.numberStars,
+      content: r.description,
+      createdAt: r.createdAt,
+      images: (r.imageUrls ?? [])
+        .map((u) => resolveImageUrl(u) ?? u)
+        .filter(Boolean),
+      isVerifiedPurchase: true,
+      helpfulCount: r.helpfulCount ?? 0,
+      initialHelpful: r.currentUserVoted ?? false,
+    })) ?? [];
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 items-center justify-center'>
+        <div className='h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
+      </div>
+    );
+  }
+
+  if (error || !shoe) {
+    return (
+      <div className='flex h-96 flex-col items-center justify-center gap-4'>
+        <p className='text-destructive'>
+          {error?.message || 'Product not found'}
+        </p>
+        <Button onClick={() => navigate('/products')}>Back to Products</Button>
+      </div>
+    );
+  }
+
+  // Map backend ShoeResponse to ProductDetailProps
+  const baseImages = (shoe.imageUrls?.length ? shoe.imageUrls : []).map(
+    (url, index) => ({
+      id: `shoe-${index}`,
+      url: resolveImageUrl(url) || url,
+      alt: `${shoe.name} - View ${index + 1}`,
+    })
   );
 
-  // In real app, fetch product by id
-  const product = mockProductDetail;
+  // Fallback image if backend doesn't have images
+  const images =
+    baseImages.length > 0
+      ? baseImages
+      : [
+          {
+            id: 'fallback',
+            url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800',
+            alt: shoe.name,
+          },
+        ];
 
-  const { data: reviews = [], isLoading: isLoadingReviews } = useShoeReviews(
-    id || ''
-  );
-  const createReviewMutation = useCreateReview(id || '');
+  const variants = shoe.variants.map((variant) => ({
+    id: variant.id,
+    size: variant.size,
+    color: variant.color,
+    quantity: variant.quantity,
+    imageUrls: (variant.imageUrls || []).map((u) => resolveImageUrl(u) ?? u),
+  }));
+
+  const productProps: ProductDetailProps = {
+    id: shoe.id,
+    name: shoe.name,
+    brand: shoe.brandName,
+    price: shoe.price,
+    description: shoe.description,
+    images,
+    variants,
+    rating: reviewsData?.avgRating ?? 0,
+    reviewCount: reviewsData?.reviewCount ?? 0,
+    isInWishlist: wishlistData.some((w) => w.shoeId === shoe.id),
+    specifications: [
+      { label: 'Material', value: shoe.material },
+      { label: 'Gender', value: shoe.gender },
+      { label: 'Status', value: shoe.status },
+      { label: 'Category', value: shoe.categoryName },
+    ],
+  };
 
   const handleAddToCart = (
-    productId: string,
-    size: string,
+    variantId: string,
+    _size: string,
+    _color: string,
     quantity: number
   ) => {
-    console.log('Add to cart:', { productId, size, quantity });
-    // TODO: Implement add to cart logic
+    addToCartMutation.mutate({
+      shoeVariantId: variantId,
+      quantity,
+    });
   };
 
   const handleAddToWishlist = (productId: string) => {
-    console.log('Add to wishlist:', productId);
-    // TODO: Implement add to wishlist logic
+    const isInWishlist = wishlistData.some((w) => w.shoeId === productId);
+    if (isInWishlist) {
+      removeFromWishlistMutation.mutate(productId);
+    } else {
+      addToWishlistMutation.mutate(productId);
+    }
   };
 
   const handleShare = (productId: string) => {
@@ -55,30 +160,26 @@ export function ShoeDetailPage() {
     rating: number;
     title: string;
     content: string;
+    images: File[];
   }) => {
-    if (!id) return;
-    if (!selectedVariantId) {
-      toast.error(t('productDetail.reviews.pleaseSelectSize'));
+    if (
+      !eligibility?.eligible ||
+      !eligibility.orderDetailId ||
+      !eligibility.shoeVariantId
+    ) {
       return;
     }
+    const description = data.title?.trim()
+      ? `${data.title.trim()}\n\n${data.content}`
+      : data.content;
 
-    createReviewMutation.mutate(
-      {
-        shoeVariantId: selectedVariantId,
-        numberStars: data.rating,
-        description: data.content,
-        imageUrls: [], // Có thể bổ sung tính năng upload ảnh sau
-      },
-      {
-        onSuccess: () => {
-          toast.success(t('productDetail.reviews.submitSuccess'));
-        },
-        onError: (error: any) => {
-          toast.error(t('productDetail.reviews.submitError'));
-          console.error('Submit review error:', error);
-        },
-      }
-    );
+    createReviewMutation.mutate({
+      orderDetailId: eligibility.orderDetailId,
+      shoeVariantId: eligibility.shoeVariantId,
+      numberStars: data.rating,
+      description,
+      images: data.images,
+    });
   };
 
   return (
@@ -95,7 +196,7 @@ export function ShoeDetailPage() {
 
       {/* Product Detail */}
       <ProductDetail
-        {...product}
+        {...productProps}
         onAddToCart={handleAddToCart}
         onAddToWishlist={handleAddToWishlist}
         onShare={handleShare}
@@ -112,7 +213,7 @@ export function ShoeDetailPage() {
               {t('productDetail.reviews.title')}
             </h2>
             <div className='mt-2 flex items-center gap-2'>
-              <Rating value={product.rating || 0} readonly />
+              <Rating value={productProps.rating || 0} readonly />
               <span className='text-muted-foreground'>
                 {t('productDetail.reviews.basedOn', { count: reviews.length })}
               </span>
@@ -122,44 +223,25 @@ export function ShoeDetailPage() {
 
         <div className='grid gap-8 lg:grid-cols-3'>
           {/* Review Form */}
-          <div className='lg:col-span-1'>
-            <ReviewForm
-              productName={product.name}
-              onSubmit={handleSubmitReview}
-              isSubmitting={createReviewMutation.isPending}
-            />
-          </div>
+          {auth.isAuthenticated && eligibility?.eligible ? (
+            <div className='lg:col-span-1'>
+              <ReviewForm
+                productName={productProps.name}
+                onSubmit={handleSubmitReview}
+                isSubmitting={createReviewMutation.isPending}
+              />
+            </div>
+          ) : null}
 
           {/* Review List */}
           <div className='space-y-4 lg:col-span-2'>
-            {isLoadingReviews ? (
-              <div className='flex h-40 items-center justify-center'>
-                <p>{t('common.loading')}</p>
-              </div>
-            ) : reviews.length > 0 ? (
-              reviews.map((review: Review) => (
-                <ReviewCard
-                  key={review.id}
-                  id={review.id}
-                  author={{
-                    name: review.customerName,
-                  }}
-                  rating={review.numberStars}
-                  content={review.description}
-                  createdAt={review.createdAt}
-                  images={review.imageUrls}
-                  onHelpful={(reviewId: string) =>
-                    console.log('Helpful:', reviewId)
-                  }
-                />
-              ))
-            ) : (
-              <div className='flex h-40 flex-col items-center justify-center rounded-lg border border-dashed'>
-                <p className='text-muted-foreground'>
-                  {t('productDetail.reviews.noReviews')}
-                </p>
-              </div>
-            )}
+            {reviews.map((review) => (
+              <ReviewCard
+                key={review.id}
+                {...review}
+                onHelpful={(reviewId) => markHelpfulMutation.mutate(reviewId)}
+              />
+            ))}
           </div>
         </div>
       </section>

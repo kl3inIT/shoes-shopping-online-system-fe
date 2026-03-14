@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Trash2 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 export interface CartItemProps {
   id: string;
@@ -9,6 +10,7 @@ export interface CartItemProps {
   image: string;
   price: number;
   size: string;
+  color?: string;
   quantity: number;
   maxQuantity?: number;
   onQuantityChange?: (id: string, quantity: number) => void;
@@ -24,6 +26,7 @@ export function CartItem({
   image,
   price,
   size,
+  color,
   quantity,
   maxQuantity = 10,
   onQuantityChange,
@@ -36,7 +39,16 @@ export function CartItem({
         className='h-24 w-24 flex-shrink-0 cursor-pointer overflow-hidden rounded-md bg-muted'
         onClick={() => onClick?.(productId)}
       >
-        <img src={image} alt={name} className='h-full w-full object-cover' />
+        {image ? (
+          <img src={image} alt={name} className='h-full w-full object-cover' />
+        ) : (
+          <div
+            className='flex h-full w-full items-center justify-center text-muted-foreground'
+            aria-hidden
+          >
+            <span className='text-xs'>No image</span>
+          </div>
+        )}
       </div>
 
       <div className='flex flex-1 flex-col justify-between'>
@@ -48,7 +60,10 @@ export function CartItem({
           >
             {name}
           </h4>
-          <p className='text-sm text-muted-foreground'>Size: {size}</p>
+          <p className='text-sm text-muted-foreground'>
+            Size: {size}
+            {color ? ` · ${color}` : ''}
+          </p>
         </div>
 
         <div className='flex items-center justify-between'>
@@ -78,7 +93,7 @@ export function CartItem({
 
           <div className='flex items-center gap-4'>
             <span className='font-medium'>
-              ${(price * quantity).toFixed(2)}
+              {formatCurrency(price * quantity)}
             </span>
             <Button
               variant='ghost'

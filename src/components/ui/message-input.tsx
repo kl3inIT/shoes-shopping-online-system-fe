@@ -59,7 +59,9 @@ export function MessageInput({
   } = useAudioRecording({
     transcribeAudio,
     onTranscriptionComplete: (text) => {
-      props.onChange?.({ target: { value: text } } as any);
+      props.onChange?.({
+        target: { value: text },
+      } as React.ChangeEvent<HTMLTextAreaElement>);
     },
   });
 
@@ -115,10 +117,7 @@ export function MessageInput({
     if (text && text.length > 500 && props.allowAttachments) {
       event.preventDefault();
       const blob = new Blob([text], { type: 'text/plain' });
-      const file = new File([blob], 'Pasted text', {
-        type: 'text/plain',
-        lastModified: Date.now(),
-      });
+      const file = new File([blob], 'Pasted text', { type: 'text/plain' });
       addFiles([file]);
       return;
     }

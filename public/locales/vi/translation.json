@@ -21,6 +21,57 @@
       "redirectSubtitle": "Bạn sẽ quay lại trang này sau khi đăng nhập"
     }
   },
+  "profile": {
+    "title": "Tài khoản của tôi",
+    "subtitle": "Quản lý thông tin cá nhân và địa chỉ giao hàng.",
+    "lastSeen": "Hoạt động gần đây",
+    "section": {
+      "profile": "Hồ sơ",
+      "profileDesc": "Thông tin dùng để liên hệ và giao hàng.",
+      "summary": "Tóm tắt",
+      "summaryDesc": "Thông tin chính"
+    },
+    "fields": {
+      "username": "Tên người dùng",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "dateOfBirth": "Ngày sinh",
+      "address": "Địa chỉ"
+    },
+    "address": {
+      "province": "Tỉnh / Thành phố",
+      "district": "Quận / Huyện",
+      "ward": "Phường / Xã",
+      "selectProvince": "Chọn tỉnh/thành",
+      "selectDistrict": "Chọn quận/huyện",
+      "selectWard": "Chọn phường/xã",
+      "streetPlaceholder": "Số nhà, tên đường..."
+    },
+    "actions": {
+      "edit": "Chỉnh sửa",
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "saving": "Đang lưu..."
+    },
+    "common": {
+      "notProvided": "Chưa cung cấp"
+    },
+    "validation": {
+      "phone": "Số điện thoại không hợp lệ",
+      "dateOfBirth": "Ngày sinh không hợp lệ",
+      "dateOfBirthFuture": "Ngày sinh không thể ở tương lai",
+      "address": "Địa chỉ quá ngắn"
+    },
+    "update": {
+      "success": "Cập nhật hồ sơ thành công",
+      "error": "Cập nhật hồ sơ thất bại"
+    },
+    "avatar": {
+      "change": "Đổi ảnh",
+      "uploaded": "Đã tải ảnh lên",
+      "uploadError": "Tải ảnh lên thất bại"
+    }
+  },
   "home": {
     "hero": {
       "badge": "Bộ sưu tập mới 2024",
@@ -79,8 +130,13 @@
     "filters": "Bộ lọc",
     "filtersActive": "Đang lọc",
     "clearFilters": "Xóa bộ lọc",
+    "searchLabel": "Tìm kiếm",
     "search": "Tìm kiếm giày...",
+    "searchAction": "Tìm",
+    "searchHint": "Tối đa {{max}} ký tự",
     "sortBy": "Sắp xếp:",
+    "sortPlaceholder": "Chọn",
+    "sizeHint": "Chỉ hiển thị size còn hàng",
     "sort": {
       "newest": "Mới nhất",
       "priceAsc": "Giá: Thấp đến Cao",
@@ -92,7 +148,8 @@
       "brands": "Thương hiệu",
       "sizes": "Kích cỡ",
       "categories": "Danh mục",
-      "priceRange": "Khoảng giá"
+      "priceRange": "Khoảng giá",
+      "gender": "Giới tính"
     },
     "noProducts": "Không tìm thấy sản phẩm.",
     "addToCart": "Thêm vào giỏ",
@@ -101,13 +158,16 @@
   "productDetail": {
     "backToProducts": "Quay lại danh sách",
     "selectSize": "Chọn Size",
+    "selectColor": "Màu sắc",
     "pleaseSelectSize": "Vui lòng chọn size",
     "quantity": "Số lượng",
     "addToCart": "Thêm Vào Giỏ",
     "wishlist": "Yêu Thích",
+    "addedToWishlist": "Đã yêu thích",
     "description": "Mô tả",
     "specifications": "Thông số",
     "noSpecifications": "Không có thông số.",
+    "addToCartDescription": "Chọn size, màu sắc và số lượng trước khi thêm sản phẩm vào giỏ hàng.",
     "reviews": {
       "title": "Đánh Giá Của Khách Hàng",
       "basedOn": "Dựa trên {{count}} đánh giá",
@@ -128,7 +188,12 @@
     },
     "new": "Mới",
     "inStock": "Còn hàng",
-    "outOfStock": "Hết hàng"
+    "outOfStock": "Hết hàng",
+    "inStockCount": "Còn lại: {{count}} sản phẩm"
+  },
+  "reviews": {
+    "count_one": "{{count}} đánh giá",
+    "count_other": "{{count}} đánh giá"
   },
   "cart": {
     "title": "Giỏ Hàng",
@@ -164,15 +229,23 @@
   "wishlist": {
     "title": "Danh Sách Yêu Thích",
     "subtitle": "Lưu những sản phẩm bạn yêu thích để quay lại sau",
+    "savedItems": "Sản phẩm đã lưu",
     "itemCount": "{{count}} sản phẩm trong danh sách yêu thích",
     "empty": {
       "title": "Danh sách yêu thích trống",
       "description": "Lưu sản phẩm yêu thích bằng cách nhấn vào biểu tượng trái tim"
     },
     "continueShopping": "Tiếp Tục Mua Sắm",
+    "shareList": "Chia sẻ danh sách",
+    "dateAddedNewest": "Ngày thêm (mới nhất)",
+    "dateAddedOldest": "Ngày thêm (cũ nhất)",
+    "loadError": "Không tải được danh sách yêu thích",
     "addToCart": "Thêm Vào Giỏ",
     "viewDetails": "Xem Chi Tiết",
-    "addedOn": "Đã thêm vào {{date}}"
+    "soldOut": "Hết hàng",
+    "removeFromWishlist": "Xóa khỏi danh sách yêu thích",
+    "addedOn": "Đã thêm vào {{date}}",
+    "added": "Đã thêm {{date}}"
   },
   "checkout": {
     "title": "Thanh Toán",
@@ -413,8 +486,11 @@
     "confirm": "Xác nhận",
     "save": "Lưu",
     "delete": "Xóa",
+    "deleting": "Đang xóa...",
     "edit": "Sửa",
     "loading": "Đang tải...",
+    "loadError": "Không tải được dữ liệu",
+    "uploading": "Đang tải lên...",
     "error": "Lỗi",
     "success": "Thành công"
   },
@@ -445,6 +521,7 @@
   "http": {
     "error": {
       "network": "Không thể kết nối tới máy chủ",
+      "timeout": "Máy chủ phản hồi quá chậm. Vui lòng thử lại.",
       "unknown": "Đã xảy ra lỗi, vui lòng thử lại",
       "400": "Dữ liệu không hợp lệ",
       "401": "Phiên đăng nhập đã hết hạn",
@@ -459,33 +536,12 @@
       "504": "Dịch vụ tạm thời không khả dụng"
     }
   },
-  "profile": {
-    "title": "Hồ sơ của bạn",
-    "subtitle": "Thông tin tài khoản từ hệ thống",
-    "common": {
-      "notAvailable": "N/A"
-    },
-    "personalInfo": {
-      "title": "Thông tin cá nhân",
-      "description": "Thông tin cơ bản từ hệ thống",
-      "username": "Tên người dùng",
-      "email": "Email",
-      "phone": "Số điện thoại",
-      "dateOfBirth": "Ngày sinh",
-      "avatar": "Ảnh đại diện",
-      "lastSeen": "Lần cuối truy cập"
-    },
-    "accountInfo": {
-      "title": "Thông tin tài khoản",
-      "description": "ID định danh từ Keycloak",
-      "keycloakId": "Keycloak ID"
-    }
-  },
   "admin": {
     "nav": {
       "dashboard": "Tổng quan",
       "products": "Sản phẩm",
       "orders": "Đơn hàng",
+      "users": "Người dùng",
       "customers": "Khách hàng",
       "brands": "Thương hiệu",
       "categories": "Danh mục",
@@ -493,6 +549,7 @@
       "notifications": "Thông báo",
       "inventory": "Kho hàng",
       "analytics": "Phân tích",
+      "ai": "AI",
       "settings": "Cài đặt",
       "help": "Trợ giúp",
       "search": "Tìm kiếm"
@@ -587,6 +644,7 @@
       "filterBrand": "Thương hiệu",
       "allStatuses": "Tất cả trạng thái",
       "allBrands": "Tất cả thương hiệu",
+      "allCategories": "Tất cả danh mục",
       "stats": {
         "total": "Tổng Sản Phẩm",
         "active": "Đang bán",
@@ -596,7 +654,9 @@
       "status": {
         "active": "Đang bán",
         "inactive": "Ngừng bán",
-        "outOfStock": "Hết hàng"
+        "outOfStock": "Hết hàng",
+        "draft": "Nháp",
+        "discontinued": "Ngừng kinh doanh"
       },
       "table": {
         "image": "Ảnh",
@@ -611,11 +671,35 @@
       "actions": {
         "view": "Xem",
         "edit": "Sửa",
-        "delete": "Xóa"
+        "changeStatus": "Cập nhật trạng thái",
+        "delete": "Ẩn khỏi catalog"
       },
       "deleteDialog": {
-        "title": "Xóa Sản Phẩm?",
-        "description": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Thao tác này không thể hoàn tác."
+        "title": "Ẩn sản phẩm khỏi catalog?",
+        "description": "Sản phẩm \"{{name}}\" sẽ không còn hiển thị với khách hàng nhưng vẫn được giữ lại trong hệ thống."
+      },
+      "statusDialog": {
+        "title": "Cập nhật trạng thái sản phẩm",
+        "description": "Chọn trạng thái mới cho \"{{name}}\".",
+        "statusLabel": "Trạng thái",
+        "tooltip": "Trạng thái quyết định sản phẩm có hiển thị trên catalog và khách hàng có thể mua hay không."
+      },
+      "statusHelp": {
+        "active": "Đang bán: Sản phẩm hiển thị trên catalog và khách có thể mua.",
+        "outOfStock": "Hết hàng: Sản phẩm vẫn hiển thị nhưng tạm thời không thể mua cho đến khi nhập thêm.",
+        "inactive": "Ngừng bán: Sản phẩm ẩn khỏi catalog nhưng vẫn được lưu trong hệ thống.",
+        "draft": "Nháp: Bản nháp nội bộ, không hiển thị cho khách hàng.",
+        "discontinued": "Ngừng kinh doanh: Dừng bán vĩnh viễn và ẩn khỏi catalog."
+      },
+      "detail": {
+        "fields": {
+          "status": "Trạng thái",
+          "brand": "Thương hiệu",
+          "category": "Danh mục",
+          "gender": "Giới tính",
+          "material": "Chất liệu",
+          "basePrice": "Giá gốc"
+        }
       }
     },
     "orders": {
@@ -672,6 +756,96 @@
         "shipping": "Địa chỉ giao hàng",
         "items": "Sản phẩm đặt mua",
         "total": "Tổng cộng"
+      }
+    },
+    "users": {
+      "title": "Quản Lý Người Dùng",
+      "subtitle": "Quản lý {{count}} người dùng",
+      "searchPlaceholder": "Tìm theo tên hoặc email...",
+      "filterRole": "Vai trò",
+      "filterStatus": "Trạng thái",
+      "allRoles": "Tất cả vai trò",
+      "allStatuses": "Tất cả trạng thái",
+      "addUser": "Thêm người dùng",
+      "stats": {
+        "total": "Tổng người dùng",
+        "admins": "Quản trị viên",
+        "managers": "Quản lý",
+        "customers": "Khách hàng"
+      },
+      "role": {
+        "ROLE_ADMIN": "Quản trị viên",
+        "ROLE_MANAGER": "Quản lý",
+        "ROLE_CUSTOMER": "Khách hàng",
+        "ROLE_SEPAY_WEBHOOK": "Webhook"
+      },
+      "status": {
+        "ACTIVE": "Hoạt động",
+        "INACTIVE": "Không hoạt động",
+        "SUSPENDED": "Bị đình chỉ"
+      },
+      "table": {
+        "user": "Người dùng",
+        "email": "Email",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "joined": "Ngày tham gia",
+        "actions": "Thao tác"
+      },
+      "actions": {
+        "viewDetails": "Xem chi tiết",
+        "changeRole": "Đổi vai trò",
+        "suspend": "Đình chỉ",
+        "activate": "Kích hoạt",
+        "delete": "Xóa"
+      },
+      "detail": {
+        "title": "Chi Tiết Người Dùng",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "dob": "Ngày sinh",
+        "joined": "Ngày tham gia",
+        "address": "Địa chỉ",
+        "lastSeen": "Lần cuối trực tuyến"
+      },
+      "createDialog": {
+        "title": "Tạo Người Dùng Mới",
+        "description": "Tạo tài khoản quản lý hoặc quản trị viên mới. Người dùng sẽ được yêu cầu đổi mật khẩu khi đăng nhập lần đầu."
+      },
+      "roleDialog": {
+        "title": "Đổi Vai Trò",
+        "description": "Cập nhật vai trò cho {{name}}"
+      },
+      "suspendDialog": {
+        "title": "Đình Chỉ Người Dùng",
+        "description": "Bạn có chắc muốn đình chỉ {{name}}? Họ sẽ không thể đăng nhập."
+      },
+      "activateDialog": {
+        "title": "Kích Hoạt Người Dùng",
+        "description": "Khôi phục quyền truy cập cho tài khoản của {{name}}."
+      },
+      "deleteDialog": {
+        "title": "Xóa Người Dùng",
+        "description": "Bạn có chắc muốn xóa {{name}}? Thao tác này sẽ xóa vĩnh viễn tài khoản khỏi Keycloak và cơ sở dữ liệu."
+      },
+      "form": {
+        "firstName": "Tên",
+        "firstNamePlaceholder": "Nhập tên",
+        "lastName": "Họ",
+        "lastNamePlaceholder": "Nhập họ",
+        "username": "Tên đăng nhập",
+        "usernamePlaceholder": "Nhập tên đăng nhập",
+        "email": "Email",
+        "emailPlaceholder": "Nhập địa chỉ email",
+        "password": "Mật khẩu tạm thời",
+        "passwordPlaceholder": "Tối thiểu 8 ký tự",
+        "role": "Vai trò"
+      },
+      "toast": {
+        "created": "Tạo người dùng thành công",
+        "roleUpdated": "Cập nhật vai trò thành công",
+        "statusUpdated": "Cập nhật trạng thái thành công",
+        "deleted": "Xóa người dùng thành công"
       }
     },
     "customers": {
@@ -756,6 +930,9 @@
         "country": "Quốc gia",
         "selectCountry": "Chọn quốc gia",
         "logoUrl": "URL Logo",
+        "uploadLogo": "Tải lên",
+        "logoPreviewHint": "Xem trước – ảnh chỉ tải lên MinIO khi bấm Lưu",
+        "noImage": "Không có ảnh",
         "description": "Mô tả"
       }
     },
@@ -806,7 +983,15 @@
       "createSuccess": "Đã tạo danh mục thành công",
       "updateSuccess": "Đã cập nhật danh mục thành công",
       "deleteSuccess": "Đã xóa danh mục thành công",
-      "fillRequired": "Vui lòng điền đầy đủ tên và mô tả"
+      "fillRequired": "Vui lòng điền đầy đủ tên và mô tả",
+      "deleteHasProducts": "Không thể xóa danh mục vì vẫn còn sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển sản phẩm sang danh mục khác trước."
+    },
+    "error": {
+      "category": {
+        "delete": {
+          "has_products": "Không thể xóa danh mục vì vẫn còn sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển sản phẩm sang danh mục khác trước."
+        }
+      }
     },
     "reviews": {
       "title": "Quản Lý Đánh Giá",

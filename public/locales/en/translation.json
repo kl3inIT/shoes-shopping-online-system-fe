@@ -21,6 +21,57 @@
       "redirectSubtitle": "You will be redirected back here after logging in"
     }
   },
+  "profile": {
+    "title": "My account",
+    "subtitle": "Manage your personal details and shipping address.",
+    "lastSeen": "Recently active",
+    "section": {
+      "profile": "Profile",
+      "profileDesc": "Contact and delivery information.",
+      "summary": "Summary",
+      "summaryDesc": "Key details"
+    },
+    "fields": {
+      "username": "Username",
+      "email": "Email",
+      "phone": "Phone number",
+      "dateOfBirth": "Date of birth",
+      "address": "Address"
+    },
+    "address": {
+      "province": "Province / City",
+      "district": "District",
+      "ward": "Ward / Commune",
+      "selectProvince": "Select province/city",
+      "selectDistrict": "Select district",
+      "selectWard": "Select ward/commune",
+      "streetPlaceholder": "House number, street name..."
+    },
+    "actions": {
+      "edit": "Edit profile",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saving": "Saving..."
+    },
+    "common": {
+      "notProvided": "Not provided"
+    },
+    "validation": {
+      "phone": "Invalid phone number",
+      "dateOfBirth": "Invalid date of birth",
+      "dateOfBirthFuture": "Date of birth cannot be in the future",
+      "address": "Address is too short"
+    },
+    "update": {
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile"
+    },
+    "avatar": {
+      "change": "Change avatar",
+      "uploaded": "Avatar uploaded",
+      "uploadError": "Failed to upload avatar"
+    }
+  },
   "home": {
     "hero": {
       "badge": "New Collection 2024",
@@ -79,8 +130,13 @@
     "filters": "Filters",
     "filtersActive": "Filters active",
     "clearFilters": "Clear all filters",
+    "searchLabel": "Search",
     "search": "Search shoes...",
+    "searchAction": "Search",
+    "searchHint": "Up to {{max}} characters",
     "sortBy": "Sort by:",
+    "sortPlaceholder": "Select",
+    "sizeHint": "Only sizes in stock are selectable",
     "sort": {
       "newest": "Newest",
       "priceAsc": "Price: Low to High",
@@ -92,7 +148,8 @@
       "brands": "Brands",
       "sizes": "Sizes",
       "categories": "Categories",
-      "priceRange": "Price Range"
+      "priceRange": "Price Range",
+      "gender": "Gender"
     },
     "noProducts": "No products found.",
     "addToCart": "Add to Cart",
@@ -101,13 +158,16 @@
   "productDetail": {
     "backToProducts": "Back to Products",
     "selectSize": "Select Size",
+    "selectColor": "Color",
     "pleaseSelectSize": "Please select a size",
     "quantity": "Quantity",
     "addToCart": "Add to Cart",
     "wishlist": "Wishlist",
+    "addedToWishlist": "Added to wishlist",
     "description": "Description",
     "specifications": "Specifications",
     "noSpecifications": "No specifications available.",
+    "addToCartDescription": "Select size, color and quantity before adding this product to your cart.",
     "reviews": {
       "title": "Customer Reviews",
       "basedOn": "Based on {{count}} reviews",
@@ -128,7 +188,12 @@
     },
     "new": "New",
     "inStock": "In Stock",
-    "outOfStock": "Out of Stock"
+    "outOfStock": "Out of Stock",
+    "inStockCount": "{{count}} item(s) left in stock"
+  },
+  "reviews": {
+    "count_one": "{{count}} review",
+    "count_other": "{{count}} reviews"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -164,15 +229,23 @@
   "wishlist": {
     "title": "My Wishlist",
     "subtitle": "Save items you love and come back to them later",
+    "savedItems": "Saved Items",
     "itemCount": "{{count}} item(s) in your wishlist",
     "empty": {
       "title": "Your wishlist is empty",
       "description": "Save items you love by clicking the heart icon"
     },
     "continueShopping": "Continue Shopping",
+    "shareList": "Share List",
+    "dateAddedNewest": "Date Added (newest)",
+    "dateAddedOldest": "Date Added (oldest)",
+    "loadError": "Failed to load wishlist",
     "addToCart": "Add to Cart",
     "viewDetails": "View Details",
-    "addedOn": "Added on {{date}}"
+    "soldOut": "Sold Out",
+    "removeFromWishlist": "Remove from wishlist",
+    "addedOn": "Added on {{date}}",
+    "added": "Added {{date}}"
   },
   "checkout": {
     "title": "Checkout",
@@ -413,8 +486,11 @@
     "confirm": "Confirm",
     "save": "Save",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "loading": "Loading...",
+    "loadError": "Failed to load data",
+    "uploading": "Uploading...",
     "error": "Error",
     "success": "Success"
   },
@@ -445,6 +521,7 @@
   "http": {
     "error": {
       "network": "Unable to connect to the server.",
+      "timeout": "The server is taking too long to respond. Please try again.",
       "unknown": "An unexpected error occurred. Please try again.",
       "400": "Invalid data.",
       "401": "Your session has expired. Please log in again.",
@@ -459,33 +536,12 @@
       "504": "The service is temporarily unavailable."
     }
   },
-  "profile": {
-    "title": "Your Profile",
-    "subtitle": "Account information from the system",
-    "common": {
-      "notAvailable": "N/A"
-    },
-    "personalInfo": {
-      "title": "Personal Information",
-      "description": "Basic information from the system",
-      "username": "Username",
-      "email": "Email",
-      "phone": "Phone Number",
-      "dateOfBirth": "Date of Birth",
-      "avatar": "Avatar",
-      "lastSeen": "Last Seen"
-    },
-    "accountInfo": {
-      "title": "Account Information",
-      "description": "Identifier ID from Keycloak",
-      "keycloakId": "Keycloak ID"
-    }
-  },
   "admin": {
     "nav": {
       "dashboard": "Dashboard",
       "products": "Products",
       "orders": "Orders",
+      "users": "Users",
       "customers": "Customers",
       "brands": "Brands",
       "categories": "Categories",
@@ -493,6 +549,7 @@
       "notifications": "Notifications",
       "inventory": "Inventory",
       "analytics": "Analytics",
+      "ai": "AI",
       "settings": "Settings",
       "help": "Help",
       "search": "Search"
@@ -587,16 +644,21 @@
       "filterBrand": "Brand",
       "allStatuses": "All Statuses",
       "allBrands": "All Brands",
+      "allCategories": "All Categories",
       "stats": {
         "total": "Total Products",
         "active": "Active",
         "outOfStock": "Out of Stock",
+        "draft": "Draft",
+        "discontinued": "Discontinued",
         "lowStock": "Low Stock"
       },
       "status": {
         "active": "Active",
         "inactive": "Inactive",
-        "outOfStock": "Out of Stock"
+        "outOfStock": "Out of Stock",
+        "draft": "Draft",
+        "discontinued": "Discontinued"
       },
       "table": {
         "image": "Image",
@@ -611,11 +673,35 @@
       "actions": {
         "view": "View",
         "edit": "Edit",
-        "delete": "Delete"
+        "changeStatus": "Update status",
+        "delete": "Hide from catalog"
       },
       "deleteDialog": {
-        "title": "Delete Product?",
-        "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+        "title": "Hide product from catalog?",
+        "description": "The product \"{{name}}\" will no longer be visible to customers but will remain in the system."
+      },
+      "statusDialog": {
+        "title": "Update product status",
+        "description": "Choose a new status for \"{{name}}\".",
+        "statusLabel": "Status",
+        "tooltip": "Status controls whether the product is visible in the catalog and how customers can interact with it."
+      },
+      "statusHelp": {
+        "active": "Active: Product is visible in the catalog and can be purchased.",
+        "outOfStock": "Out of stock: Product is still visible but cannot be purchased until you restock.",
+        "inactive": "Inactive: Product is hidden from the catalog but kept in the system.",
+        "draft": "Draft: Internal draft state, not visible to customers.",
+        "discontinued": "Discontinued: Permanently stopped selling and hidden from the catalog."
+      },
+      "detail": {
+        "fields": {
+          "status": "Status",
+          "brand": "Brand",
+          "category": "Category",
+          "gender": "Gender",
+          "material": "Material",
+          "basePrice": "Base price"
+        }
       }
     },
     "orders": {
@@ -672,6 +758,96 @@
         "shipping": "Shipping Address",
         "items": "Order Items",
         "total": "Total"
+      }
+    },
+    "users": {
+      "title": "Users Management",
+      "subtitle": "Manage {{count}} users",
+      "searchPlaceholder": "Search by name or email...",
+      "filterRole": "Role",
+      "filterStatus": "Status",
+      "allRoles": "All Roles",
+      "allStatuses": "All Statuses",
+      "addUser": "Add User",
+      "stats": {
+        "total": "Total Users",
+        "admins": "Admins",
+        "managers": "Managers",
+        "customers": "Customers"
+      },
+      "role": {
+        "ROLE_ADMIN": "Admin",
+        "ROLE_MANAGER": "Manager",
+        "ROLE_CUSTOMER": "Customer",
+        "ROLE_SEPAY_WEBHOOK": "Webhook"
+      },
+      "status": {
+        "ACTIVE": "Active",
+        "INACTIVE": "Inactive",
+        "SUSPENDED": "Suspended"
+      },
+      "table": {
+        "user": "User",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "changeRole": "Change Role",
+        "suspend": "Suspend",
+        "activate": "Activate",
+        "delete": "Delete"
+      },
+      "detail": {
+        "title": "User Details",
+        "email": "Email",
+        "phone": "Phone",
+        "dob": "Date of Birth",
+        "joined": "Member Since",
+        "address": "Address",
+        "lastSeen": "Last Seen"
+      },
+      "createDialog": {
+        "title": "Create New User",
+        "description": "Create a new manager or admin account. The user will be prompted to change their password on first login."
+      },
+      "roleDialog": {
+        "title": "Change User Role",
+        "description": "Update the role for {{name}}"
+      },
+      "suspendDialog": {
+        "title": "Suspend User",
+        "description": "Are you sure you want to suspend {{name}}? They will not be able to log in."
+      },
+      "activateDialog": {
+        "title": "Activate User",
+        "description": "Reactivate {{name}}'s account and restore their access."
+      },
+      "deleteDialog": {
+        "title": "Delete User",
+        "description": "Are you sure you want to delete {{name}}? This will permanently remove their account from Keycloak and the database."
+      },
+      "form": {
+        "firstName": "First Name",
+        "firstNamePlaceholder": "Enter first name",
+        "lastName": "Last Name",
+        "lastNamePlaceholder": "Enter last name",
+        "username": "Username",
+        "usernamePlaceholder": "Enter username",
+        "email": "Email",
+        "emailPlaceholder": "Enter email address",
+        "password": "Temporary Password",
+        "passwordPlaceholder": "Min 8 characters",
+        "role": "Role"
+      },
+      "toast": {
+        "created": "User created successfully",
+        "roleUpdated": "Role updated successfully",
+        "statusUpdated": "Status updated successfully",
+        "deleted": "User deleted successfully"
       }
     },
     "customers": {
@@ -756,6 +932,9 @@
         "country": "Country",
         "selectCountry": "Select country",
         "logoUrl": "Logo URL",
+        "uploadLogo": "Upload",
+        "logoPreviewHint": "Preview – file will be uploaded when you Save",
+        "noImage": "No image",
         "description": "Description"
       }
     },
@@ -806,7 +985,15 @@
       "createSuccess": "Category created successfully",
       "updateSuccess": "Category updated successfully",
       "deleteSuccess": "Category deleted successfully",
-      "fillRequired": "Please fill in name and description"
+      "fillRequired": "Please fill in name and description",
+      "deleteHasProducts": "Cannot delete category because it still has products. Please remove or move products to another category first."
+    },
+    "error": {
+      "category": {
+        "delete": {
+          "has_products": "Cannot delete category because it still has products. Please remove or move products to another category first."
+        }
+      }
     },
     "reviews": {
       "title": "Reviews Management",

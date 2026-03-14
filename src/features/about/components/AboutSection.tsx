@@ -26,7 +26,7 @@ export function AboutSection({
   imagePosition = 'right',
   children,
 }: AboutSectionProps) {
-  const Content = () => (
+  const content = (
     <div className='space-y-6'>
       {subtitle && (
         <p className='text-sm font-medium uppercase tracking-wider text-primary'>
@@ -40,10 +40,10 @@ export function AboutSection({
 
       {features && features.length > 0 && (
         <div className='grid gap-4 sm:grid-cols-2'>
-          {features.map((feature, index) => {
+          {features.map((feature) => {
             const Icon = feature.icon;
             return (
-              <Card key={index}>
+              <Card key={feature.title}>
                 <CardContent className='flex items-start gap-4 pt-6'>
                   <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10'>
                     <Icon className='h-5 w-5 text-primary' />
@@ -66,11 +66,7 @@ export function AboutSection({
   );
 
   if (!image) {
-    return (
-      <section className='py-12'>
-        <Content />
-      </section>
-    );
+    return <section className='py-12'>{content}</section>;
   }
 
   return (
@@ -90,7 +86,7 @@ export function AboutSection({
           </div>
         )}
 
-        <Content />
+        {content}
 
         {imagePosition === 'right' && (
           <div className='overflow-hidden rounded-lg'>

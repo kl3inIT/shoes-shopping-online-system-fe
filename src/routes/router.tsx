@@ -1,11 +1,23 @@
 import { createBrowserRouter } from 'react-router';
-import { MainLayout } from '@/layouts/main/MainLayout';
-import { AdminLayout } from '@/layouts/admin/AdminLayout';
-import { ProtectedRoute } from './ProtectedRoute';
-import { RootErrorBoundary } from '@/routes/RootErrorBoundary';
+
+import { PERMISSIONS } from '@/features/auth';
 import { queryClient } from '@/features/queryClient';
+import { AdminLayout } from '@/layouts/admin/AdminLayout';
+import { MainLayout } from '@/layouts/main/MainLayout';
+import { RootErrorBoundary } from '@/routes/RootErrorBoundary';
+
+import { ProtectedRoute } from './ProtectedRoute';
+import { RequirePermission } from './RequirePermission';
 
 export const router = createBrowserRouter([
+  {
+    path: '/403',
+    lazy: async () => {
+      const { default: Component } = await import('@/pages/error/Page403');
+      return { Component };
+    },
+    errorElement: <RootErrorBoundary />,
+  },
   {
     path: '/auth/callback',
     lazy: async () => {
@@ -52,32 +64,16 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: 'payment/qr',
+        path: 'payment/qr/:orderId',
         lazy: async () => {
           const { default: Component } =
             await import('@/pages/main/qr/PaymentQrPage');
           return { Component };
         },
       },
-      // Protected routes - Yêu cầu đăng nhập
       {
         element: <ProtectedRoute />,
         children: [
-          {
-            path: 'profile/:keycloakId',
-            lazy: async () => {
-              const [{ default: Component }, { profileLoader }] =
-                await Promise.all([
-                  import('@/pages/main/profile/ProfilePage'),
-                  import('@/pages/main/profile/profileLoader'),
-                ]);
-              return {
-                Component,
-                loader: profileLoader(queryClient),
-              };
-            },
-            errorElement: <RootErrorBoundary />,
-          },
           {
             path: 'cart',
             lazy: async () => {
@@ -93,6 +89,22 @@ export const router = createBrowserRouter([
                 await import('@/pages/main/wishlist/WishlistPage');
               return { Component };
             },
+          },
+          {
+            path: 'profile',
+            lazy: async () => {
+              const [{ default: Component }, { profileLoader }] =
+                await Promise.all([
+                  import('@/pages/main/profile/ProfilePage'),
+                  import('@/pages/main/profile/profileLoader'),
+                ]);
+
+              return {
+                Component,
+                loader: profileLoader(queryClient),
+              };
+            },
+            errorElement: <RootErrorBoundary />,
           },
           {
             path: 'checkout',
@@ -131,7 +143,13 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <ProtectedRoute>
+        <RequirePermission requirement={PERMISSIONS.dashboardView}>
+          <AdminLayout />
+        </RequirePermission>
+      </ProtectedRoute>
+    ),
     errorElement: <RootErrorBoundary />,
     children: [
       {
@@ -143,60 +161,130 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: 'products',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/admin/products/ProductsPage');
-          return { Component };
-        },
+        element: <RequirePermission requirement={PERMISSIONS.productsManage} />,
+        children: [
+          {
+            path: 'products',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/products/ProductsPage');
+              return { Component };
+            },
+          },
+          {
+            path: 'products/:id',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/products/ProductDetailPage');
+              return { Component };
+            },
+          },
+          {
+            path: 'products/:id/edit',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/products/EditShoePage');
+              return { Component };
+            },
+          },
+          {
+            path: 'addshoe',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/products/AddShoePage');
+              return { Component };
+            },
+          },
+        ],
       },
       {
-        path: 'addshoe',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/admin/products/AddShoePage');
-          return { Component };
-        },
+        element: <RequirePermission requirement={PERMISSIONS.ordersManage} />,
+        children: [
+          {
+            path: 'orders',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/orders/OrdersPage');
+              return { Component };
+            },
+          },
+        ],
       },
       {
-        path: 'orders',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/admin/orders/OrdersPage');
-          return { Component };
-        },
+        element: <RequirePermission requirement={PERMISSIONS.usersManage} />,
+        children: [
+          {
+            path: 'users',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/users/UsersPage');
+              return { Component };
+            },
+          },
+        ],
       },
       {
-        path: 'customers',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/admin/customers/CustomersPage');
-          return { Component };
-        },
+        element: <RequirePermission requirement={PERMISSIONS.brandsManage} />,
+        children: [
+          {
+            path: 'brands',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/brands/BrandsPage');
+              return { Component };
+            },
+          },
+        ],
       },
       {
-        path: 'brands',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/admin/brands/BrandsPage');
-          return { Component };
-        },
+        element: (
+          <RequirePermission requirement={PERMISSIONS.categoriesManage} />
+        ),
+        children: [
+          {
+            path: 'categories',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/categories/CategoriesPage');
+              return { Component };
+            },
+          },
+        ],
       },
       {
-        path: 'categories',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/admin/categories/CategoriesPage');
-          return { Component };
-        },
+        element: (
+          <RequirePermission requirement={PERMISSIONS.reviewsModerate} />
+        ),
+        children: [
+          {
+            path: 'reviews',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/reviews/ReviewsPage');
+              return { Component };
+            },
+          },
+        ],
       },
       {
-        path: 'reviews',
-        lazy: async () => {
-          const { default: Component } =
-            await import('@/pages/admin/reviews/ReviewsPage');
-          return { Component };
-        },
+        element: <RequirePermission requirement={PERMISSIONS.aiManage} />,
+        children: [
+          {
+            path: 'ai',
+            lazy: async () => {
+              const [{ AiAdminPage: Component }, { aiParametersLoader }] =
+                await Promise.all([
+                  import('@/pages/admin/ai'),
+                  import('@/pages/admin/ai/parameters/aiParametersLoader'),
+                ]);
+
+              return {
+                Component,
+                loader: aiParametersLoader(queryClient),
+              };
+            },
+          },
+        ],
       },
       {
         path: 'notifications',

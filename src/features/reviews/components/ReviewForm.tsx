@@ -115,12 +115,12 @@ export function ReviewForm({
             <div className='flex flex-wrap gap-2'>
               {imagePreviews.map((preview, index) => (
                 <div
-                  key={index}
+                  key={preview}
                   className='relative h-20 w-20 overflow-hidden rounded-md'
                 >
                   <img
                     src={preview}
-                    alt={`Preview ${index + 1}`}
+                    alt='Preview'
                     className='h-full w-full object-cover'
                   />
                   <button

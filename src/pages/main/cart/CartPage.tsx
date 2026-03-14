@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { CartItem, CartSummary } from '@/features/cart';
+import {
+  CartItem,
+  CartSummary,
+  useQueryCart,
+  useUpdateCartItemMutation,
+  useRemoveCartItemMutation,
+  useClearCartMutation,
+  mapCartItemDtoToProps,
+} from '@/features/cart';
+import { PageErrorState, PageLoader, ReloadPageButton } from '@/components/app';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, ArrowLeft, Trash2 } from 'lucide-react';
 import {
@@ -12,34 +21,52 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { mockCartItems, calculateCartSummary } from './data';
+
+function computeSummary(subtotal: number, itemCount: number) {
+  const shipping = subtotal >= 100 ? 0 : 10;
+  const tax = 0;
+  const total = subtotal + shipping + tax;
+  return {
+    subtotal,
+    shipping,
+    discount: 0,
+    tax,
+    total,
+    itemCount,
+  };
+}
 
 export function CartPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [items, setItems] = useState(mockCartItems);
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
 
-  const summary = calculateCartSummary(items);
+  const { data, isPending, isError, error } = useQueryCart();
+  const updateMutation = useUpdateCartItemMutation();
+  const removeMutation = useRemoveCartItemMutation();
+  const clearMutation = useClearCartMutation();
 
-  const handleQuantityChange = (id: string, quantity: number) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
-    );
+  const items = data?.items.map(mapCartItemDtoToProps) ?? [];
+  const summary = data
+    ? computeSummary(Number(data.totalPrice), data.totalQuantity)
+    : { subtotal: 0, shipping: 0, discount: 0, tax: 0, total: 0, itemCount: 0 };
+
+  const handleQuantityChange = (cartItemId: string, quantity: number) => {
+    updateMutation.mutate({ cartItemId, body: { quantity } });
   };
 
-  const handleRemove = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const handleRemove = (cartItemId: string) => {
+    removeMutation.mutate(cartItemId);
   };
 
   const handleClearCart = () => {
-    setItems([]);
-    setClearDialogOpen(false);
+    clearMutation.mutate(undefined, {
+      onSettled: () => setClearDialogOpen(false),
+    });
   };
 
   const handleApplyCoupon = (code: string) => {
     console.log('Apply coupon:', code);
-    // TODO: Implement coupon logic
   };
 
   const handleCheckout = () => {
@@ -49,6 +76,30 @@ export function CartPage() {
   const handleProductClick = (productId: string) => {
     navigate(`/products/${productId}`);
   };
+
+  if (isPending) {
+    return (
+      <PageLoader
+        className='container mx-auto px-4 py-16'
+        description='Loading your cart.'
+      />
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className='container mx-auto px-4 py-16'>
+        <PageErrorState
+          description={
+            error instanceof Error
+              ? error.message
+              : t('cart.loadError', { defaultValue: 'Failed to load cart' })
+          }
+          action={<ReloadPageButton />}
+        />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -69,7 +120,6 @@ export function CartPage() {
 
   return (
     <div className='container mx-auto px-4 py-8'>
-      {/* Header */}
       <div className='mb-8 flex items-center justify-between'>
         <div>
           <Button
@@ -96,7 +146,6 @@ export function CartPage() {
       </div>
 
       <div className='grid gap-8 lg:grid-cols-3'>
-        {/* Cart Items */}
         <div className='lg:col-span-2'>
           <div className='divide-y rounded-lg border'>
             {items.map((item) => (
@@ -111,8 +160,6 @@ export function CartPage() {
             ))}
           </div>
         </div>
-
-        {/* Summary */}
         <div className='lg:col-span-1'>
           <div className='sticky top-4'>
             <CartSummary
@@ -124,7 +171,6 @@ export function CartPage() {
         </div>
       </div>
 
-      {/* Clear Cart Dialog */}
       <Dialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -137,7 +183,11 @@ export function CartPage() {
             <Button variant='outline' onClick={() => setClearDialogOpen(false)}>
               {t('common.cancel')}
             </Button>
-            <Button variant='destructive' onClick={handleClearCart}>
+            <Button
+              variant='destructive'
+              onClick={handleClearCart}
+              disabled={clearMutation.isPending}
+            >
               {t('cart.clearCart')}
             </Button>
           </DialogFooter>

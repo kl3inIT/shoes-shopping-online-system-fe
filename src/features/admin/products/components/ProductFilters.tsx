@@ -22,8 +22,11 @@ interface ProductFiltersProps {
   onStatusChange: (value: string) => void;
   brandFilter: string;
   onBrandChange: (value: string) => void;
+  categoryFilter: string;
+  onCategoryChange: (value: string) => void;
   statusOptions: FilterOption[];
   brandOptions: FilterOption[];
+  categoryOptions: FilterOption[];
 }
 
 export function ProductFilters({
@@ -33,14 +36,17 @@ export function ProductFilters({
   onStatusChange,
   brandFilter,
   onBrandChange,
+  categoryFilter,
+  onCategoryChange,
   statusOptions,
   brandOptions,
+  categoryOptions,
 }: ProductFiltersProps) {
   const { t } = useTranslation();
 
   return (
     <div className='flex flex-wrap items-center gap-4'>
-      <div className='relative flex-1 min-w-[200px]'>
+      <div className='relative min-w-[200px] flex-1'>
         <IconSearch className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
         <Input
           placeholder={t('admin.products.searchPlaceholder')}
@@ -49,6 +55,7 @@ export function ProductFilters({
           className='pl-10'
         />
       </div>
+
       <Select value={statusFilter} onValueChange={onStatusChange}>
         <SelectTrigger className='w-[150px]'>
           <SelectValue placeholder={t('admin.products.filterStatus')} />
@@ -62,6 +69,7 @@ export function ProductFilters({
           ))}
         </SelectContent>
       </Select>
+
       <Select value={brandFilter} onValueChange={onBrandChange}>
         <SelectTrigger className='w-[150px]'>
           <SelectValue placeholder={t('admin.products.filterBrand')} />
@@ -69,6 +77,24 @@ export function ProductFilters({
         <SelectContent>
           <SelectItem value='all'>{t('admin.products.allBrands')}</SelectItem>
           {brandOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select value={categoryFilter} onValueChange={onCategoryChange}>
+        <SelectTrigger className='w-[180px]'>
+          <SelectValue
+            placeholder={t('admin.products.filterCategory', 'Category')}
+          />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value='all'>
+            {t('admin.products.allCategories')}
+          </SelectItem>
+          {categoryOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>

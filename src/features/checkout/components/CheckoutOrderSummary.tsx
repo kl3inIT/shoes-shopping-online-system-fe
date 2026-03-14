@@ -1,16 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
-export interface CheckoutItem {
-  id: string;
-  name: string;
-  brand: string;
-  image: string;
-  price: number;
-  size: string;
-  quantity: number;
-}
+import type { CheckoutItem } from '../types';
 
 export interface CheckoutOrderSummaryProps {
   items: CheckoutItem[];
@@ -55,7 +46,7 @@ export function CheckoutOrderSummary({
                     {item.name}
                   </p>
                   <p className='text-xs text-muted-foreground'>
-                    Size: {item.size}
+                    Size: {item.size} · {item.color}
                   </p>
                 </div>
                 <div className='text-sm font-medium'>

@@ -4,6 +4,7 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios';
+import { appEnv } from '@/lib/env';
 import {
   getAccessToken as getAccessTokenFromProvider,
   getIsAuthReady,
@@ -17,22 +18,22 @@ declare module 'axios' {
   }
 }
 
-const getBaseURL = (): string => {
-  // const envUrl = import.meta.env.VITE_API_BASE_URL;
-  // if (envUrl) {
-  //   return envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl;
-  // }
-  return 'http://localhost:8088';
-};
+export const API_BASE_URL = getBaseURL();
+
+function getBaseURL(): string {
+  return appEnv.apiBaseUrl;
+}
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: getBaseURL(),
-  timeout: 30000,
+  baseURL: API_BASE_URL,
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
 });
+
+const isDev = appEnv.isDevelopment;
 
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
@@ -42,28 +43,37 @@ apiClient.interceptors.request.use(
     if (getIsAuthReady()) {
       try {
         const token = await getAccessTokenFromProvider();
-        config.headers.Authorization = `Bearer ${token}`;
-      } catch (error) {
-        console.warn(
-          '[API Client] Failed to get access token, proceeding without token:',
-          error
-        );
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      } catch {
+        // silently proceed without token
       }
-    } else {
-      console.log(
-        `[API Client] Auth not ready, proceeding without token for ${config.method?.toUpperCase()} ${config.url}`
-      );
     }
 
-    (config as unknown as { _metadata?: { startTime: number } })._metadata = {
-      startTime: Date.now(),
-    };
+    // ==== QUAN TRỌNG: xử lý Content-Type ====
+    const isFormData = config.data instanceof FormData;
 
-    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
-      baseURL: config.baseURL,
-      params: config.params as unknown,
-      data: config.data as unknown,
-    });
+    if (!config.headers) {
+      config.headers = axios.defaults.headers
+        .common as InternalAxiosRequestConfig['headers'];
+    }
+
+    if (isFormData) {
+      if ('Content-Type' in config.headers) {
+        delete (config.headers as Record<string, unknown>)['Content-Type'];
+      }
+    } else if (!config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json';
+    }
+
+    config.headers['Accept-Language'] = i18n.language?.split('-')[0] ?? 'en';
+
+    if (isDev) {
+      (config as unknown as { _metadata?: { startTime: number } })._metadata = {
+        startTime: Date.now(),
+      };
+    }
 
     return config;
   },
@@ -74,44 +84,32 @@ apiClient.interceptors.request.use(
 );
 
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
-    const config = response.config as unknown as {
-      _metadata?: { startTime?: number };
-    };
-    const duration = config._metadata?.startTime
-      ? Date.now() - config._metadata.startTime
-      : undefined;
-
-    console.log(
-      `[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} ${response.status}`,
-      {
-        status: response.status,
-        duration: duration ? `${duration}ms` : undefined,
-        data: response.data as unknown,
-      }
-    );
-
-    return response;
-  },
+  (response: AxiosResponse) => response,
   async (error: AxiosError<ProblemDetailPayload>) => {
-    console.error('[API Response Error]', {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      url: error.config?.url,
-      method: error.config?.method,
-      data: error.response?.data,
-    });
+    if (isDev) {
+      console.error('[API Response Error]', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url,
+        method: error.config?.method,
+        data: error.response?.data,
+      });
+    }
 
     if (!error.response) {
-      const networkError = new HttpError(error.config, 0, {
-        detail: i18n.t('http.error.network', 'Không thể kết nối tới máy chủ'),
-        messageKey: 'http.error.network',
+      const isTimeout =
+        error.code === 'ECONNABORTED' || error.message?.includes('timeout');
+      const messageKey = isTimeout
+        ? 'http.error.timeout'
+        : 'http.error.network';
+      const noResponseError = new HttpError(error.config, 0, {
+        detail: i18n.t(messageKey),
+        messageKey,
       });
-      return Promise.reject(networkError);
+      return Promise.reject(noResponseError);
     }
 
     const { status = 0, data } = error.response;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const problemDetail = (data ?? {}) as ProblemDetailPayload;
 
     switch (status) {
@@ -135,17 +133,21 @@ apiClient.interceptors.response.use(
         originalRequest._retry = true;
 
         try {
-          console.log(
-            '[API Client] 401 received, attempting to get fresh token...'
-          );
+          if (isDev) {
+            console.log(
+              '[API Client] 401 received, attempting to get fresh token...'
+            );
+          }
           const freshToken = await getAccessTokenFromProvider();
 
           if (freshToken) {
             originalRequest.headers.Authorization = `Bearer ${freshToken}`;
 
-            console.log(
-              '[API Client] Fresh token obtained, retrying request...'
-            );
+            if (isDev) {
+              console.log(
+                '[API Client] Fresh token obtained, retrying request...'
+              );
+            }
 
             return apiClient(originalRequest);
           } else {
@@ -179,6 +181,10 @@ apiClient.interceptors.response.use(
 
 export function isHttpError(error: unknown): error is HttpError {
   return error instanceof HttpError;
+}
+
+export function isNoResponseError(error: unknown): boolean {
+  return isHttpError(error) && error.status === 0;
 }
 
 export function getErrorMessage(error: unknown): string {

@@ -1,11 +1,14 @@
 import type { ProductDetailProps } from '@/features/products';
 import type { ReviewCardProps } from '@/features/reviews';
 
+/** UUID giày Nike Air Max 270 - khớp với bảng shoes trong DB */
+const MOCK_SHOE_ID = '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d';
+
 export const mockProductDetail: Omit<
   ProductDetailProps,
   'onAddToCart' | 'onAddToWishlist' | 'onShare'
 > = {
-  id: '11111111-1111-1111-1111-111111111111',
+  id: MOCK_SHOE_ID,
   name: 'Nike Air Max 270',
   brand: 'Nike',
   price: 150,
@@ -84,6 +87,7 @@ export const mockProductDetail: Omit<
       inStock: false,
     },
   ],
+  variants: [],
   rating: 4.5,
   reviewCount: 128,
   isNew: true,
