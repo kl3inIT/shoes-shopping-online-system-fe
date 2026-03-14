@@ -14,6 +14,8 @@ export interface OrderTimelineProps {
 
 const statusIcons = {
   order_placed: Package,
+  paid: Check,
+  confirmed: Package,
   processing: Clock,
   shipped: Truck,
   out_for_delivery: Truck,

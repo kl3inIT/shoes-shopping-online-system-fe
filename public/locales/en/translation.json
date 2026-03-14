@@ -323,6 +323,19 @@
   "orders": {
     "title": "Order History",
     "subtitle": "View and track all your orders",
+    "statusLabel": "Status",
+    "filters": {
+      "dateRange": "Date range",
+      "dateRangePlaceholder": "All time",
+      "range": {
+        "all": "All time",
+        "7days": "Last 7 days",
+        "30days": "Last 30 days",
+        "custom": "Custom range"
+      },
+      "from": "From",
+      "to": "To"
+    },
     "empty": {
       "title": "No orders found",
       "allEmpty": "You haven't placed any orders yet",
@@ -335,7 +348,8 @@
       "processing": "Processing",
       "shipped": "Shipped",
       "delivered": "Delivered",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "confirmed": "Confirmed"
     },
     "status": {
       "pending": "Pending",
@@ -355,8 +369,10 @@
       "title": "Track Order #{{number}}",
       "orderPlaced": "Order Placed",
       "orderPlacedDesc": "Your order has been placed successfully",
-      "processing": "Processing",
-      "processingDesc": "We are preparing your order",
+      "paid": "Paid",
+      "paidDesc": "Payment received",
+      "confirmed": "Confirmed",
+      "confirmedDesc": "We are preparing your order",
       "shipped": "Shipped",
       "shippedDesc": "Your order is on the way",
       "outForDelivery": "Out for Delivery",

@@ -30,6 +30,14 @@ export interface OrderResponse {
   paymentMethod: PaymentMethod;
   itemCount: number;
   totalAmount: number;
+  items: {
+    id: string;
+    name: string;
+    image: string;
+    price: number;
+    size: string;
+    quantity: number;
+  }[];
 }
 
 /** Spring Page response – bọc danh sách đơn + metadata phân trang */

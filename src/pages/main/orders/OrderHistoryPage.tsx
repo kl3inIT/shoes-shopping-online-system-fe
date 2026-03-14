@@ -4,30 +4,61 @@ import { useTranslation } from 'react-i18next';
 import {
   OrderList,
   OrderTimeline,
-  type OrderFilterStatus,
+  useOrderHistoryQuery,
+  type OrderDateRangeOption,
 } from '@/features/orders';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { mockOrders, getOrderTimeline } from './data';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { getOrderTimeline } from './data';
 
 export function OrderHistoryPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState<OrderFilterStatus>('all');
   const [trackingDialogOpen, setTrackingDialogOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-  const selectedOrder = mockOrders.find((o) => o.id === selectedOrderId);
-  const timeline = selectedOrder ? getOrderTimeline(selectedOrder.status) : [];
+  const {
+    orders,
+    pagination,
+    activeFilter,
+    setActiveFilter,
+    dateRange,
+    setDateRange,
+    customFrom,
+    customTo,
+    setCustomFrom,
+    setCustomTo,
+    setPage,
+    isLoading,
+    isFetching,
+    error,
+  } = useOrderHistoryQuery(10);
+
+  const selectedOrder = orders.find((o) => o.id === selectedOrderId);
+  const timeline = selectedOrder
+    ? getOrderTimeline(selectedOrder.status, (key) => t(key))
+    : [];
 
   const handleViewDetails = (orderId: string) => {
-    console.log('View details:', orderId);
     navigate(`/orders/${orderId}`);
   };
 
@@ -36,8 +67,7 @@ export function OrderHistoryPage() {
     setTrackingDialogOpen(true);
   };
 
-  const handleReorder = (orderId: string) => {
-    console.log('Reorder:', orderId);
+  const handleReorder = () => {
     navigate('/cart');
   };
 
@@ -57,9 +87,82 @@ export function OrderHistoryPage() {
         <p className='text-muted-foreground'>{t('orders.subtitle')}</p>
       </div>
 
+      {/* Filters */}
+      <div className='mb-4 flex flex-wrap items-end gap-4'>
+        <div className='space-y-1'>
+          <p className='text-sm font-medium'>{t('orders.filters.dateRange')}</p>
+          <Select
+            value={dateRange}
+            onValueChange={(v) => setDateRange(v as OrderDateRangeOption)}
+          >
+            <SelectTrigger className='w-[200px]'>
+              <SelectValue
+                placeholder={t('orders.filters.dateRangePlaceholder')}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>
+                {t('orders.filters.range.all')}
+              </SelectItem>
+              <SelectItem value='LAST_7_DAYS'>
+                {t('orders.filters.range.7days')}
+              </SelectItem>
+              <SelectItem value='LAST_30_DAYS'>
+                {t('orders.filters.range.30days')}
+              </SelectItem>
+              <SelectItem value='CUSTOM'>
+                {t('orders.filters.range.custom')}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {dateRange === 'CUSTOM' && (
+          <div className='flex flex-wrap gap-4'>
+            <div className='space-y-1'>
+              <p className='text-xs text-muted-foreground'>
+                {t('orders.filters.from')}
+              </p>
+              <div className='relative'>
+                <CalendarIcon className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                <Input
+                  type='date'
+                  className='pl-9'
+                  value={customFrom ?? ''}
+                  onChange={(e) =>
+                    setCustomFrom(e.target.value ? e.target.value : null)
+                  }
+                />
+              </div>
+            </div>
+            <div className='space-y-1'>
+              <p className='text-xs text-muted-foreground'>
+                {t('orders.filters.to')}
+              </p>
+              <div className='relative'>
+                <CalendarIcon className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                <Input
+                  type='date'
+                  className='pl-9'
+                  value={customTo ?? ''}
+                  onChange={(e) =>
+                    setCustomTo(e.target.value ? e.target.value : null)
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Order List */}
+      {error && (
+        <p className='mb-4 text-sm text-destructive'>
+          {error instanceof Error ? error.message : t('http.error.unknown')}
+        </p>
+      )}
       <OrderList
-        orders={mockOrders}
+        orders={orders}
         activeFilter={activeFilter}
         onFilterChange={setActiveFilter}
         onViewDetails={handleViewDetails}
@@ -67,6 +170,43 @@ export function OrderHistoryPage() {
         onReorder={handleReorder}
         onContinueShopping={handleContinueShopping}
       />
+
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className='mt-6 flex items-center justify-center gap-4'>
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={pagination.first || isFetching}
+            onClick={() => setPage(pagination.page - 1)}
+          >
+            <ChevronLeft className='h-4 w-4' />
+            {t('common.previous', 'Previous')}
+          </Button>
+          <span className='text-sm text-muted-foreground'>
+            {t('common.pageOf', 'Page {{current}} of {{total}}', {
+              current: pagination.page + 1,
+              total: pagination.totalPages,
+            })}
+          </span>
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={pagination.last || isFetching}
+            onClick={() => setPage(pagination.page + 1)}
+          >
+            {t('common.next', 'Next')}
+            <ChevronRight className='h-4 w-4' />
+          </Button>
+        </div>
+      )}
+
+      {/* Loading overlay khi fetch nền */}
+      {isLoading && (
+        <div className='mt-4 text-center text-sm text-muted-foreground'>
+          {t('common.loading', 'Loading...')}
+        </div>
+      )}
 
       {/* Tracking Dialog */}
       <Dialog open={trackingDialogOpen} onOpenChange={setTrackingDialogOpen}>

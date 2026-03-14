@@ -62,7 +62,7 @@ export function CartSummary({
             })}
             )
           </span>
-          <span>${subtotal.toFixed(2)}</span>
+          <span>{parseFloat(subtotal.toFixed(2)) + ' ₫'}</span>
         </div>
 
         {shipping > 0 && (
@@ -70,7 +70,7 @@ export function CartSummary({
             <span className='text-muted-foreground'>
               {t('cart.summary.shipping', { defaultValue: 'Shipping' })}
             </span>
-            <span>${shipping.toFixed(2)}</span>
+            <span>{parseFloat(subtotal.toFixed(2)) + ' ₫'}</span>
           </div>
         )}
 
@@ -90,7 +90,9 @@ export function CartSummary({
             <span className='text-muted-foreground'>
               {t('cart.summary.discount', { defaultValue: 'Discount' })}
             </span>
-            <span className='text-green-600'>-${discount.toFixed(2)}</span>
+            <span className='text-green-600'>
+              -{parseFloat(subtotal.toFixed(2)) + ' ₫'}
+            </span>
           </div>
         )}
 
@@ -125,7 +127,9 @@ export function CartSummary({
 
         <div className='flex justify-between font-medium'>
           <span>{t('cart.summary.total', { defaultValue: 'Total' })}</span>
-          <span className='text-lg'>${total.toFixed(2)}</span>
+          <span className='text-lg'>
+            {parseFloat(subtotal.toFixed(2)) + ' ₫'}
+          </span>
         </div>
       </CardContent>
       <CardFooter>

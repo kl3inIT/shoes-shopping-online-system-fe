@@ -2,14 +2,10 @@ import { OrderCard, type OrderCardProps } from './OrderCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
-export type OrderFilterStatus =
-  | 'all'
-  | 'pending'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled';
+/** Tab filter: All + Confirmed, Delivered, Cancelled */
+export type OrderFilterStatus = 'all' | 'CONFIRMED' | 'DELIVERED' | 'CANCELLED';
 
 interface EmptyStateProps {
   activeFilter: OrderFilterStatus;
@@ -17,18 +13,27 @@ interface EmptyStateProps {
 }
 
 function EmptyState({ activeFilter, onContinueShopping }: EmptyStateProps) {
+  const { t } = useTranslation();
+  const statusLabelMap: Record<Exclude<OrderFilterStatus, 'all'>, string> = {
+    CONFIRMED: t('orders.filter.confirmed', 'Confirmed'),
+    DELIVERED: t('orders.filter.delivered', 'Delivered'),
+    CANCELLED: t('orders.filter.cancelled', 'Cancelled'),
+  };
+  const statusLabel =
+    activeFilter === 'all' ? '' : statusLabelMap[activeFilter];
+
   return (
     <div className='flex flex-col items-center justify-center py-16 text-center'>
       <Package className='mb-4 h-16 w-16 text-muted-foreground/50' />
-      <h3 className='text-lg font-medium'>No orders found</h3>
+      <h3 className='text-lg font-medium'>{t('orders.empty.title')}</h3>
       <p className='mt-1 text-sm text-muted-foreground'>
         {activeFilter === 'all'
-          ? "You haven't placed any orders yet"
-          : `No ${activeFilter} orders`}
+          ? t('orders.empty.allEmpty')
+          : t('orders.empty.filteredEmpty', { status: statusLabel })}
       </p>
       {onContinueShopping && (
         <Button className='mt-4' onClick={onContinueShopping}>
-          Start Shopping
+          {t('orders.startShopping')}
         </Button>
       )}
     </div>
@@ -57,6 +62,7 @@ export function OrderList({
   onReorder,
   onContinueShopping,
 }: OrderListProps) {
+  const { t } = useTranslation();
   const filteredOrders =
     activeFilter === 'all'
       ? orders
@@ -69,12 +75,16 @@ export function OrderList({
         onValueChange={(v) => onFilterChange?.(v as OrderFilterStatus)}
       >
         <TabsList className='w-full justify-start overflow-x-auto'>
-          <TabsTrigger value='all'>All</TabsTrigger>
-          <TabsTrigger value='pending'>Pending</TabsTrigger>
-          <TabsTrigger value='processing'>Processing</TabsTrigger>
-          <TabsTrigger value='shipped'>Shipped</TabsTrigger>
-          <TabsTrigger value='delivered'>Delivered</TabsTrigger>
-          <TabsTrigger value='cancelled'>Cancelled</TabsTrigger>
+          <TabsTrigger value='all'>{t('orders.filter.all')}</TabsTrigger>
+          <TabsTrigger value='CONFIRMED'>
+            {t('orders.filter.confirmed', 'Confirmed')}
+          </TabsTrigger>
+          <TabsTrigger value='DELIVERED'>
+            {t('orders.filter.delivered')}
+          </TabsTrigger>
+          <TabsTrigger value='CANCELLED'>
+            {t('orders.filter.cancelled')}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeFilter} className='mt-4'>
