@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+
 import type { OrderFilterStatus } from './components/OrderList';
-import { getOrderDetail, getOrderHistory } from './api';
+import { getMyOrders, getOrderDetail, getOrderHistory } from './api';
 import {
   mapFeFilterToBeOrderStatus,
   mapOrderToCardData,
+  type CustomerOrdersQueryParams,
   type OrderDateRangeOption,
   type OrderHistoryParams,
 } from './types';
@@ -31,6 +33,14 @@ export const orderDetailQueryKey = {
   all: ['orders', 'detail'] as const,
   detail: (orderId: string) => [...orderDetailQueryKey.all, orderId] as const,
 };
+
+export function useMyOrders(_params?: CustomerOrdersQueryParams) {
+  return useQuery({
+    queryKey: ['orders', 'me', _params ?? {}],
+    queryFn: () => getMyOrders(_params),
+    enabled: false,
+  });
+}
 
 export function useOrderHistoryQuery(pageSize = DEFAULT_PAGE_SIZE) {
   const [page, setPage] = useState(0);

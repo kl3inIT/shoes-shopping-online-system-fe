@@ -18,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { formatCurrency } from '@/lib/utils';
 
 export interface ProductVariant {
   id: string;
@@ -137,11 +138,21 @@ export function ProductTable({
             <TableRow key={product.id}>
               <TableCell>
                 {product.imageUrl ? (
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className='h-12 w-12 rounded-md object-cover'
-                  />
+                  <a
+                    href={`/products/${product.id}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onView?.(product);
+                    }}
+                    className='inline-block'
+                  >
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      draggable={false}
+                      className='h-12 w-12 rounded-md object-cover'
+                    />
+                  </a>
                 ) : (
                   <div className='h-12 w-12 rounded-md bg-muted' />
                 )}
@@ -156,7 +167,9 @@ export function ProductTable({
               </TableCell>
               <TableCell>{product.brand.name}</TableCell>
               <TableCell>{product.category.name}</TableCell>
-              <TableCell className='text-right'>${product.basePrice}</TableCell>
+              <TableCell className='text-right'>
+                {formatCurrency(product.basePrice)}
+              </TableCell>
               <TableCell className='text-center'>
                 <span
                   className={

@@ -2,24 +2,20 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  OrderList,
-  OrderTimeline,
-  useOrderHistoryQuery,
-  type OrderDateRangeOption,
-} from '@/features/orders';
-import { Button } from '@/components/ui/button';
-import {
   ArrowLeft,
   Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -27,7 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+import {
+  OrderList,
+  OrderTimeline,
+  useOrderHistoryQuery,
+  type OrderDateRangeOption,
+} from '@/features/orders';
+
 import { getOrderTimeline } from './data';
 
 export function OrderHistoryPage() {
@@ -53,7 +55,7 @@ export function OrderHistoryPage() {
     error,
   } = useOrderHistoryQuery(10);
 
-  const selectedOrder = orders.find((o) => o.id === selectedOrderId);
+  const selectedOrder = orders.find((order) => order.id === selectedOrderId);
   const timeline = selectedOrder
     ? getOrderTimeline(selectedOrder.status, (key) => t(key))
     : [];
@@ -77,7 +79,6 @@ export function OrderHistoryPage() {
 
   return (
     <div className='container mx-auto px-4 py-8'>
-      {/* Header */}
       <div className='mb-8'>
         <Button variant='ghost' className='mb-2' onClick={() => navigate(-1)}>
           <ArrowLeft className='mr-2 h-4 w-4' />
@@ -87,13 +88,12 @@ export function OrderHistoryPage() {
         <p className='text-muted-foreground'>{t('orders.subtitle')}</p>
       </div>
 
-      {/* Filters */}
       <div className='mb-4 flex flex-wrap items-end gap-4'>
         <div className='space-y-1'>
           <p className='text-sm font-medium'>{t('orders.filters.dateRange')}</p>
           <Select
             value={dateRange}
-            onValueChange={(v) => setDateRange(v as OrderDateRangeOption)}
+            onValueChange={(value) => setDateRange(value as OrderDateRangeOption)}
           >
             <SelectTrigger className='w-[200px]'>
               <SelectValue
@@ -155,12 +155,12 @@ export function OrderHistoryPage() {
         )}
       </div>
 
-      {/* Order List */}
       {error && (
         <p className='mb-4 text-sm text-destructive'>
           {error instanceof Error ? error.message : t('http.error.unknown')}
         </p>
       )}
+
       <OrderList
         orders={orders}
         activeFilter={activeFilter}
@@ -171,7 +171,6 @@ export function OrderHistoryPage() {
         onContinueShopping={handleContinueShopping}
       />
 
-      {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
         <div className='mt-6 flex items-center justify-center gap-4'>
           <Button
@@ -201,14 +200,12 @@ export function OrderHistoryPage() {
         </div>
       )}
 
-      {/* Loading overlay khi fetch nền */}
       {isLoading && (
         <div className='mt-4 text-center text-sm text-muted-foreground'>
           {t('common.loading', 'Loading...')}
         </div>
       )}
 
-      {/* Tracking Dialog */}
       <Dialog open={trackingDialogOpen} onOpenChange={setTrackingDialogOpen}>
         <DialogContent className='sm:max-w-md'>
           <DialogHeader>

@@ -562,6 +562,7 @@
       "brands": "Brands",
       "categories": "Categories",
       "reviews": "Reviews",
+      "notifications": "Notifications",
       "inventory": "Inventory",
       "analytics": "Analytics",
       "ai": "AI",
@@ -659,6 +660,7 @@
       "filterBrand": "Brand",
       "allStatuses": "All Statuses",
       "allBrands": "All Brands",
+      "allCategories": "All Categories",
       "stats": {
         "total": "Total Products",
         "active": "Active",
@@ -706,6 +708,16 @@
         "inactive": "Inactive: Product is hidden from the catalog but kept in the system.",
         "draft": "Draft: Internal draft state, not visible to customers.",
         "discontinued": "Discontinued: Permanently stopped selling and hidden from the catalog."
+      },
+      "detail": {
+        "fields": {
+          "status": "Status",
+          "brand": "Brand",
+          "category": "Category",
+          "gender": "Gender",
+          "material": "Material",
+          "basePrice": "Base price"
+        }
       }
     },
     "orders": {
@@ -989,7 +1001,15 @@
       "createSuccess": "Category created successfully",
       "updateSuccess": "Category updated successfully",
       "deleteSuccess": "Category deleted successfully",
-      "fillRequired": "Please fill in name and description"
+      "fillRequired": "Please fill in name and description",
+      "deleteHasProducts": "Cannot delete category because it still has products. Please remove or move products to another category first."
+    },
+    "error": {
+      "category": {
+        "delete": {
+          "has_products": "Cannot delete category because it still has products. Please remove or move products to another category first."
+        }
+      }
     },
     "reviews": {
       "title": "Reviews Management",

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IconSearch } from '@tabler/icons-react';
 import { Calendar as CalendarIcon } from 'lucide-react';
@@ -13,12 +13,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { useQueryOrders } from '@/features/admin/orders';
 import type { OrderResponse, OrderStatus } from '@/features/admin/orders';
+import { useQueryOrders } from '@/features/admin/orders';
 import {
-  OrderTable,
-  OrderStatsCards,
   OrderDetailDialog,
+  OrderStatsCards,
+  OrderTable,
 } from '@/features/admin/orders/components';
 
 import { statusOptions } from './data';
@@ -87,7 +87,7 @@ export default function AdminOrdersPage() {
   );
 
   const { data, isPending } = useQueryOrders(requestParams);
-  const orders = data?.content ?? [];
+  const orders = useMemo(() => data?.content ?? [], [data?.content]);
   const totalElements = data?.totalElements ?? 0;
   const totalPages = data?.totalPages ?? 1;
 
@@ -212,7 +212,7 @@ export default function AdminOrdersPage() {
           </>
         )}
 
-        <div className='relative flex-1 min-w-[200px]'>
+        <div className='relative min-w-[200px] flex-1'>
           <IconSearch className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
           <Input
             placeholder={t('admin.orders.searchPlaceholder')}

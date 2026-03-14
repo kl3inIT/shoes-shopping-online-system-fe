@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { PageErrorState, PageLoader, ReloadPageButton } from '@/components/app';
 import {
   WishlistGrid,
   useQueryWishlist,
@@ -38,25 +39,22 @@ export function WishlistPage() {
 
   if (isPending) {
     return (
-      <div className='container mx-auto flex justify-center px-4 py-16'>
-        <div className='h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent' />
-      </div>
+      <PageLoader
+        className='container mx-auto px-4 py-16'
+        description='Loading your wishlist.'
+      />
     );
   }
 
   if (isError) {
     return (
-      <div className='container mx-auto px-4 py-16 text-center'>
-        <p className='text-destructive'>
-          {error instanceof Error ? error.message : t('wishlist.loadError')}
-        </p>
-        <button
-          type='button'
-          className='mt-4 text-sm underline'
-          onClick={() => navigate('/products')}
-        >
-          {t('wishlist.continueShopping')}
-        </button>
+      <div className='container mx-auto px-4 py-16'>
+        <PageErrorState
+          description={
+            error instanceof Error ? error.message : t('wishlist.loadError')
+          }
+          action={<ReloadPageButton />}
+        />
       </div>
     );
   }

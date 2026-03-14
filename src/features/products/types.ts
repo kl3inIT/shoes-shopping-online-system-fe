@@ -40,6 +40,13 @@ export interface ShoeResponse {
   updatedAt: string;
 }
 
+export interface ShoeStockSummaryResponse {
+  total: number;
+  selling: number;
+  outOfStock: number;
+  lowStock: number;
+}
+
 export interface ResponseGeneral<T> {
   status: number;
   message: string;

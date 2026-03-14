@@ -1,6 +1,6 @@
 import { use, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

@@ -1,7 +1,21 @@
 import type { OrderFilterStatus } from './components/OrderList';
 import type { OrderItem, OrderStatus } from './components/OrderCard';
 
-/** Raw item from BE */
+export type CustomerOrderSummary = {
+  createdAt: string;
+  id: string;
+  orderNumber: string;
+  paymentStatus: string;
+  shippingStatus?: string;
+  totalAmount: number;
+};
+
+export type CustomerOrdersQueryParams = {
+  page?: number;
+  size?: number;
+  status?: string;
+};
+
 export interface CustomerOrderItemResponse {
   id: string;
   name: string;
@@ -11,7 +25,6 @@ export interface CustomerOrderItemResponse {
   quantity: number;
 }
 
-/** Raw order from BE */
 export interface CustomerOrderHistoryResponse {
   id: string;
   orderNumber: string;
@@ -21,7 +34,6 @@ export interface CustomerOrderHistoryResponse {
   total: number;
 }
 
-/** Spring Page shape (BE trả về trong data) */
 export interface OrderHistoryPageResponse {
   content: CustomerOrderHistoryResponse[];
   number: number;
@@ -32,14 +44,12 @@ export interface OrderHistoryPageResponse {
   last: boolean;
 }
 
-/** Kiểu filter khoảng thời gian */
 export type OrderDateRangeOption =
   | 'all'
   | 'LAST_7_DAYS'
   | 'LAST_30_DAYS'
   | 'CUSTOM';
 
-/** Query params cho GET /api/orders */
 export interface OrderHistoryParams {
   page: number;
   size: number;
@@ -59,7 +69,6 @@ const VALID_ORDER_STATUSES: OrderStatus[] = [
   'REFUNDED',
 ];
 
-/** BE trả về đúng enum string; giữ nguyên, chỉ validate. */
 export function mapBeStatusToFe(beStatus: string): OrderStatus {
   if (VALID_ORDER_STATUSES.includes(beStatus as OrderStatus)) {
     return beStatus as OrderStatus;
@@ -67,14 +76,12 @@ export function mapBeStatusToFe(beStatus: string): OrderStatus {
   return 'PENDING_PAYMENT';
 }
 
-/** Map FE filter tab sang BE orderStatus. 'all' => undefined; còn lại là đúng enum. */
 export function mapFeFilterToBeOrderStatus(
   filter: OrderFilterStatus
 ): string | undefined {
   return filter === 'all' ? undefined : filter;
 }
 
-/** Chuyển 1 đơn từ BE sang dạng OrderCard (id/createdAt string, items với id string, status FE). */
 export function mapOrderToCardData(order: CustomerOrderHistoryResponse): {
   id: string;
   orderNumber: string;

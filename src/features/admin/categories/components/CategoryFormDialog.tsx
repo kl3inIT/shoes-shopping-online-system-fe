@@ -53,6 +53,8 @@ export function CategoryFormDialog({
             <Label>{t('admin.categories.form.name')}</Label>
             <Input
               value={formData.name}
+              maxLength={50}
+              className='truncate'
               onChange={(e) =>
                 onFormChange({ ...formData, name: e.target.value })
               }
@@ -62,6 +64,8 @@ export function CategoryFormDialog({
             <Label>{t('admin.categories.form.description')}</Label>
             <Textarea
               value={formData.description}
+              maxLength={200}
+              className='break-all'
               onChange={(e) =>
                 onFormChange({ ...formData, description: e.target.value })
               }

@@ -229,14 +229,6 @@ export const router = createBrowserRouter([
               return { Component };
             },
           },
-          {
-            path: 'customers',
-            lazy: async () => {
-              const { default: Component } =
-                await import('@/pages/admin/customers/CustomersPage');
-              return { Component };
-            },
-          },
         ],
       },
       {
@@ -277,6 +269,21 @@ export const router = createBrowserRouter([
             lazy: async () => {
               const { default: Component } =
                 await import('@/pages/admin/reviews/ReviewsPage');
+              return { Component };
+            },
+          },
+        ],
+      },
+      {
+        element: (
+          <RequirePermission requirement={PERMISSIONS.notificationsManage} />
+        ),
+        children: [
+          {
+            path: 'notifications',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/notifications/AdminNotificationsPage');
               return { Component };
             },
           },

@@ -1,16 +1,16 @@
 import apiClient from '@/features/apiClient';
 import type { ApiSuccessResponse } from '@/types';
+
 import type {
   CustomerOrderHistoryResponse,
+  CustomerOrdersQueryParams,
+  CustomerOrderSummary,
   OrderHistoryPageResponse,
   OrderHistoryParams,
 } from './types';
 
 const ORDERS_BASE = '/api/orders';
 
-/**
- * Lấy danh sách đơn hàng theo customer (có phân trang, filter theo status).
- */
 export async function getOrderHistory(
   params: OrderHistoryParams
 ): Promise<OrderHistoryPageResponse> {
@@ -34,9 +34,6 @@ export async function getOrderHistory(
   return response.data.data;
 }
 
-/**
- * Lấy chi tiết 1 đơn hàng theo ID cho customer hiện tại.
- */
 export async function getOrderDetail(
   orderId: string
 ): Promise<CustomerOrderHistoryResponse> {
@@ -45,4 +42,15 @@ export async function getOrderDetail(
   >(`${ORDERS_BASE}/${orderId}`);
 
   return response.data.data;
+}
+
+export async function getMyOrders(
+  // TODO: Confirm customer order-history endpoint contract before enabling this query.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _params?: CustomerOrdersQueryParams
+): Promise<CustomerOrderSummary[]> {
+  const response = await apiClient.get<CustomerOrderSummary[]>(
+    `${ORDERS_BASE}/my-orders`
+  );
+  return response.data;
 }

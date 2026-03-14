@@ -4,6 +4,7 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios';
+import { appEnv } from '@/lib/env';
 import {
   getAccessToken as getAccessTokenFromProvider,
   getIsAuthReady,
@@ -20,11 +21,7 @@ declare module 'axios' {
 export const API_BASE_URL = getBaseURL();
 
 function getBaseURL(): string {
-  const envUrl = import.meta.env.VITE_API_BASE_URL;
-  if (envUrl) {
-    return envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl;
-  }
-  return 'http://localhost:8088';
+  return appEnv.apiBaseUrl;
 }
 
 const apiClient: AxiosInstance = axios.create({
@@ -36,7 +33,7 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-const isDev = import.meta.env.DEV;
+const isDev = appEnv.isDevelopment;
 
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
@@ -113,7 +110,6 @@ apiClient.interceptors.response.use(
     }
 
     const { status = 0, data } = error.response;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const problemDetail = (data ?? {}) as ProblemDetailPayload;
 
     switch (status) {

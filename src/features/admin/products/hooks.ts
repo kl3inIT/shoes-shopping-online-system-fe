@@ -10,12 +10,25 @@ import type {
   ShoeResponse,
   ShoeCreateRequestDto,
   ShoeUpdateRequestDto,
+  ShoeStockSummaryResponse,
 } from '@/features/products';
 import { createShoe, updateShoe } from './api';
-import { adminShoesQueryKey, adminShoesQueryOptions } from './queryOptions';
+import {
+  adminShoesQueryKey,
+  adminShoesQueryOptions,
+  adminShoeStockSummaryQueryKey,
+  adminShoeStockSummaryQueryOptions,
+} from './queryOptions';
 
 export function useAdminShoes(): UseQueryResult<ShoeResponse[], Error> {
   return useQuery(adminShoesQueryOptions());
+}
+
+export function useAdminShoeStockSummary(
+  threshold = 10,
+  enabled = true
+): UseQueryResult<ShoeStockSummaryResponse, Error> {
+  return useQuery(adminShoeStockSummaryQueryOptions(threshold, enabled));
 }
 
 export function useCreateShoeMutation(): UseMutationResult<
@@ -40,6 +53,9 @@ export function useCreateShoeMutation(): UseMutationResult<
         (current = []) => [createdShoe, ...current]
       );
       void queryClient.invalidateQueries({ queryKey: adminShoesQueryKey });
+      void queryClient.invalidateQueries({
+        queryKey: adminShoeStockSummaryQueryKey,
+      });
     },
   });
 }
@@ -102,6 +118,9 @@ export function useUpdateShoeMutation(): UseMutationResult<
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: adminShoesQueryKey });
+      void queryClient.invalidateQueries({
+        queryKey: adminShoeStockSummaryQueryKey,
+      });
     },
   });
 }

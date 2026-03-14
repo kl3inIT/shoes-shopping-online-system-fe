@@ -176,9 +176,13 @@ export default function HomePage() {
         <div className='mx-auto max-w-7xl px-6 lg:px-10'>
           <div className='flex items-center justify-center gap-10 overflow-x-auto md:gap-16'>
             {loadingBrands
-              ? Array.from({ length: 5 }).map((_, i) => (
+              ? Array.from(
+                  { length: 5 },
+                  (_, placeholderIndex) =>
+                    `brand-placeholder-${placeholderIndex + 1}`
+                ).map((placeholderKey) => (
                   <div
-                    key={i}
+                    key={placeholderKey}
                     className='h-5 w-20 animate-pulse rounded bg-muted'
                   />
                 ))
@@ -353,8 +357,11 @@ function ProductRow({
   if (loading) {
     return (
       <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className='animate-pulse'>
+        {Array.from(
+          { length: 5 },
+          (_, placeholderIndex) => `product-placeholder-${placeholderIndex + 1}`
+        ).map((placeholderKey) => (
+          <div key={placeholderKey} className='animate-pulse'>
             <div className='aspect-[4/5] bg-muted' />
             <div className='mt-3 h-3 w-3/4 bg-muted' />
             <div className='mt-2 h-3 w-1/3 bg-muted' />

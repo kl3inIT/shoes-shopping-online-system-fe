@@ -102,27 +102,6 @@ export async function getShoeVariants(
   return response.data.data;
 }
 
-export async function getAdminShoesAll(): Promise<ShoeResponse[]> {
-  const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
-    `${SHOES_ENDPOINT}/admin/all`
-  );
-  return response.data.data;
-}
-
-export async function getAdminShoesDeleted(): Promise<ShoeResponse[]> {
-  const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
-    `${SHOES_ENDPOINT}/admin/deleted`
-  );
-  return response.data.data;
-}
-
-export async function getAdminShoesNotDeleted(): Promise<ShoeResponse[]> {
-  const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
-    `${SHOES_ENDPOINT}/admin/not-deleted`
-  );
-  return response.data.data;
-}
-
 export async function getBestSellers(limit = 5): Promise<ShoeResponse[]> {
   const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
     `${SHOES_ENDPOINT}/best-sellers`,

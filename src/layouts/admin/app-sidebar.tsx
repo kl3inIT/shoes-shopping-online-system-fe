@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconShoe } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
+import { Link } from 'react-router';
 
 import { useAuthorizedItems } from '@/features/auth';
-import { adminNavigationItems } from '@/layouts/admin/navigation.config';
 import { NavMain } from '@/layouts/admin/nav-main';
+import { adminNavigationItems } from '@/layouts/admin/navigation.config';
 import { NavUser } from '@/layouts/admin/nav-user';
 import {
   Sidebar,

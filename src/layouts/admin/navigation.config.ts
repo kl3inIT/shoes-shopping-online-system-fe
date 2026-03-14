@@ -1,4 +1,5 @@
 import {
+  IconBell,
   IconBrandProducthunt,
   IconCategory,
   IconDashboard,
@@ -7,7 +8,6 @@ import {
   IconShoe,
   IconStar,
   IconUserCog,
-  IconUsers,
   type Icon,
 } from '@tabler/icons-react';
 
@@ -44,20 +44,6 @@ export const adminNavigationItems: readonly AdminNavigationItem[] = [
     requirement: PERMISSIONS.ordersManage,
   },
   {
-    titleKey: 'admin.nav.users',
-    defaultTitle: 'Users',
-    url: '/admin/users',
-    icon: IconUserCog,
-    requirement: PERMISSIONS.usersManage,
-  },
-  {
-    titleKey: 'admin.nav.customers',
-    defaultTitle: 'Customers',
-    url: '/admin/customers',
-    icon: IconUsers,
-    requirement: PERMISSIONS.usersManage,
-  },
-  {
     titleKey: 'admin.nav.brands',
     defaultTitle: 'Brands',
     url: '/admin/brands',
@@ -77,6 +63,20 @@ export const adminNavigationItems: readonly AdminNavigationItem[] = [
     url: '/admin/reviews',
     icon: IconStar,
     requirement: PERMISSIONS.reviewsModerate,
+  },
+  {
+    titleKey: 'admin.nav.notifications',
+    defaultTitle: 'Notifications',
+    url: '/admin/notifications',
+    icon: IconBell,
+    requirement: PERMISSIONS.notificationsManage,
+  },
+  {
+    titleKey: 'admin.nav.users',
+    defaultTitle: 'Users',
+    url: '/admin/users',
+    icon: IconUserCog,
+    requirement: PERMISSIONS.usersManage,
   },
   {
     titleKey: 'admin.nav.ai',

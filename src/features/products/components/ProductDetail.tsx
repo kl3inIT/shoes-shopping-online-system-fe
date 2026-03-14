@@ -13,6 +13,7 @@ export interface ProductImage {
 }
 
 export interface ProductSize {
+  id?: string;
   value: string;
   label: string;
   inStock?: boolean;
@@ -50,6 +51,7 @@ export interface ProductDetailProps {
   ) => void;
   onAddToWishlist?: (id: string) => void;
   onShare?: (id: string) => void;
+  onVariantChange?: (variantId: string) => void;
 }
 
 export function ProductDetail({
@@ -150,11 +152,18 @@ export function ProductDetail({
       {/* Images Gallery */}
       <div className='space-y-4'>
         <div className='relative aspect-square overflow-hidden rounded-lg bg-muted'>
-          <img
-            src={allImages[activeImageIndex]?.url}
-            alt={allImages[activeImageIndex]?.alt}
-            className='h-full w-full object-contain'
-          />
+          <a
+            href={`/products/${id}`}
+            onClick={(event) => event.preventDefault()}
+            className='block h-full w-full'
+          >
+            <img
+              src={allImages[activeImageIndex]?.url}
+              alt={allImages[activeImageIndex]?.alt}
+              draggable={false}
+              className='h-full w-full object-contain'
+            />
+          </a>
           <div className='absolute left-4 top-4 flex flex-col gap-2'>
             {isSale && discount > 0 && (
               <Badge variant='destructive'>-{discount}%</Badge>
@@ -172,11 +181,18 @@ export function ProductDetail({
                   : 'border-transparent hover:border-muted-foreground/50'
               }`}
             >
-              <img
-                src={image.url}
-                alt={image.alt}
-                className='h-full w-full object-contain'
-              />
+              <a
+                href={`/products/${id}`}
+                onClick={(event) => event.preventDefault()}
+                className='block h-full w-full'
+              >
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                  draggable={false}
+                  className='h-full w-full object-contain'
+                />
+              </a>
             </button>
           ))}
         </div>
@@ -190,16 +206,20 @@ export function ProductDetail({
           {rating !== undefined && (
             <div className='mt-2 flex items-center gap-2'>
               <div className='flex items-center'>
-                {[...Array(5)].map((_, i) => (
-                  <span
-                    key={i}
-                    className={
-                      i < Math.round(rating) ? 'text-yellow-500' : 'text-muted'
-                    }
-                  >
-                    ★
-                  </span>
-                ))}
+                {Array.from({ length: 5 }, (_, starIndex) => starIndex + 1).map(
+                  (starValue) => (
+                    <span
+                      key={starValue}
+                      className={
+                        starValue <= Math.round(rating)
+                          ? 'text-yellow-500'
+                          : 'text-muted'
+                      }
+                    >
+                      ★
+                    </span>
+                  )
+                )}
               </div>
               <span className='text-sm text-muted-foreground'>
                 {rating.toFixed(1)} (
