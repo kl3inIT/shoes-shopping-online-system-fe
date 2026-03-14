@@ -6,10 +6,10 @@ import {
   type NotificationType,
 } from '@/features/notifications/components/NotificationItem';
 
-export interface UserNotification extends Omit<
+export type UserNotification = Omit<
   NotificationItemProps,
   'onClick' | 'onMarkAsRead'
-> {}
+>;
 
 export const userNotificationKeys = {
   all: ['user', 'notifications'] as const,

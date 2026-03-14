@@ -13,6 +13,7 @@ export interface ProductImage {
 }
 
 export interface ProductSize {
+  id?: string;
   value: string;
   label: string;
   inStock?: boolean;

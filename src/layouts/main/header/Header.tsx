@@ -26,12 +26,14 @@ import {
   useUserNotifications,
   useMarkNotificationAsRead,
 } from '@/features/notifications/api/userNotificationApi';
+import { useAuth } from 'react-oidc-context';
 
 export function Header() {
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const isMenuOpen = isMobile && mobileMenuOpen;
 

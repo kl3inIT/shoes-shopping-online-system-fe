@@ -6,10 +6,10 @@ import {
   type NotificationItemProps,
 } from '@/features/notifications/components/NotificationItem';
 
-export interface AdminNotification extends Omit<
+export type AdminNotification = Omit<
   NotificationItemProps,
   'onClick' | 'onMarkAsRead'
-> {}
+>;
 
 export interface NotificationBroadcastRequest {
   title: string;

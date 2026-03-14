@@ -27,7 +27,6 @@ import { ArrowLeft } from 'lucide-react';
 import { resolveImageUrl } from '@/lib/image';
 
 export function ShoeDetailPage() {
-  const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const auth = useAuth();
@@ -200,7 +199,6 @@ export function ShoeDetailPage() {
         onAddToCart={handleAddToCart}
         onAddToWishlist={handleAddToWishlist}
         onShare={handleShare}
-        onVariantChange={setSelectedVariantId}
       />
 
       <Separator className='my-12' />

@@ -144,7 +144,7 @@ export function ChartAreaInteractive() {
   const [timeRange, setTimeRange] = React.useState('90d');
 
   const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
-  const { data: apiData = [], isLoading } = useDashboardChart(days);
+  const { data: apiData = [] } = useDashboardChart(days);
 
   React.useEffect(() => {
     if (isMobile) {

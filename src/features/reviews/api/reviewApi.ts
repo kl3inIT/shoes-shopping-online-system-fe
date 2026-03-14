@@ -81,9 +81,10 @@ export const useShoeReviews = (shoeId: string) => {
   });
 };
 
-// Mutation tạo review chỉ giả lập, không gọi backend
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useCreateReview = (_shoeId: string) => {
   return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mutationFn: async (_data: CreateReviewRequest) => {
       // Trả về một review giả lập, FE chỉ cần để hiện toast thành công
       return mockShoeReviews[0];
