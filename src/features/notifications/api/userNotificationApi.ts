@@ -16,9 +16,10 @@ export const userNotificationKeys = {
   list: () => [...userNotificationKeys.all, 'list'] as const,
 };
 
-export const useUserNotifications = () => {
+export const useUserNotifications = (enabled = true) => {
   return useQuery({
     queryKey: userNotificationKeys.list(),
+    enabled,
     queryFn: async () => {
       const response = await apiClient.get<
         ApiSuccessResponse<

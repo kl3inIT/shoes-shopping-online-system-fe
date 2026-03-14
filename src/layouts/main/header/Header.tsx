@@ -1,5 +1,5 @@
 import { Menu, X, ShoppingCart, Heart, Bell } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQueryCart } from '@/features/cart';
@@ -42,8 +42,14 @@ export function Header() {
   const cartItemCount = cartData?.items.length ?? 0;
   const wishlistCount = wishlistData?.length ?? 0;
 
-  const { data: notifications = [] } = useUserNotifications();
+  const { data: notifications = [] } = useUserNotifications(
+    auth.isAuthenticated
+  );
   const markAsReadMutation = useMarkNotificationAsRead();
+  const unreadNotificationsCount = useMemo(
+    () => notifications.filter((notification) => !notification.isRead).length,
+    [notifications]
+  );
 
   const mainNavigation = [
     { to: '/', label: t('nav.home') },
@@ -100,16 +106,12 @@ export function Header() {
                     className='relative hidden sm:flex'
                   >
                     <Bell className='h-5 w-5' />
-                    {notifications.some((n) => !n.isRead) && (
+                    {unreadNotificationsCount > 0 && (
                       <Badge
                         variant='destructive'
                         className='absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs'
                       >
-                        {
-                          notifications.filter(
-                            (notification) => !notification.isRead
-                          ).length
-                        }
+                        {unreadNotificationsCount}
                       </Badge>
                     )}
                   </Button>

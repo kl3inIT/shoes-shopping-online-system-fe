@@ -50,7 +50,7 @@ export const useAdminNotifications = (type?: NotificationType | 'all') => {
         title: n.title,
         message: n.message,
         createdAt: n.createdAt,
-        isRead: false,
+        isRead: true,
       })) as AdminNotification[];
     },
   });

@@ -3,6 +3,7 @@ import {
   IconCategory,
   IconDashboard,
   IconHelp,
+  IconBell,
   IconPackage,
   IconShoe,
   IconStar,
@@ -62,6 +63,13 @@ export const adminNavigationItems: readonly AdminNavigationItem[] = [
     url: '/admin/reviews',
     icon: IconStar,
     requirement: PERMISSIONS.reviewsModerate,
+  },
+  {
+    titleKey: 'admin.nav.notifications',
+    defaultTitle: 'Notifications',
+    url: '/admin/notifications',
+    icon: IconBell,
+    requirement: PERMISSIONS.notificationsManage,
   },
   {
     titleKey: 'admin.nav.users',

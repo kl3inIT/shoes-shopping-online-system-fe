@@ -42,12 +42,18 @@ export function NotificationItem({
   onClick,
   onMarkAsRead,
 }: NotificationItemProps) {
-  const config = typeConfig[type];
+  const config = typeConfig[type] ?? typeConfig.SYSTEM;
   const Icon = config.icon;
+  const isInteractive = Boolean(onClick || onMarkAsRead);
 
   const timeAgo = (dateString: string) => {
     const now = new Date();
     const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
     const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (diff < 60) return 'Just now';
@@ -66,9 +72,10 @@ export function NotificationItem({
 
   return (
     <div
-      onClick={handleClick}
+      onClick={isInteractive ? handleClick : undefined}
       className={cn(
-        'flex cursor-pointer gap-3 rounded-lg p-3 transition-colors hover:bg-muted/50',
+        'flex gap-3 rounded-lg p-3 transition-colors',
+        isInteractive && 'cursor-pointer hover:bg-muted/50',
         !isRead && 'bg-primary/5'
       )}
     >
