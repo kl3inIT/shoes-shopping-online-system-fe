@@ -48,3 +48,10 @@ export interface CreateAdminUserPayload {
   password: string;
   role: 'ROLE_MANAGER' | 'ROLE_ADMIN';
 }
+
+export interface AdminUserStats {
+  total: number;
+  admins: number;
+  managers: number;
+  customers: number;
+}

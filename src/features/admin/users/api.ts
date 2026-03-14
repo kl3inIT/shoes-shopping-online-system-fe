@@ -3,6 +3,7 @@ import apiClient from '@/features/apiClient';
 import type {
   AdminUser,
   AdminUserPageResponse,
+  AdminUserStats,
   CreateAdminUserPayload,
   GetAdminUsersParams,
   UserRole,
@@ -60,4 +61,18 @@ export async function updateUserStatus(
 
 export async function deleteAdminUser(keycloakId: string): Promise<void> {
   await apiClient.delete(`/api/admin/users/${keycloakId}`);
+}
+
+export async function getAdminUserStats(): Promise<AdminUserStats> {
+  const response = await apiClient.get<ApiSuccessResponse<AdminUserStats>>(
+    '/api/admin/users/stats'
+  );
+  return response.data.data;
+}
+
+export async function toggleUserStatus(keycloakId: string): Promise<AdminUser> {
+  const response = await apiClient.post<ApiSuccessResponse<AdminUser>>(
+    `/api/admin/users/${keycloakId}/status/toggle`
+  );
+  return response.data.data;
 }

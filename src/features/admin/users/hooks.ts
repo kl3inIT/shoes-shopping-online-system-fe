@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createAdminUser,
   deleteAdminUser,
+  toggleUserStatus,
   updateUserRole,
   updateUserStatus,
 } from './api';
@@ -11,7 +12,10 @@ import type {
   UserRole,
   UserStatus,
 } from './types';
-import { adminUsersQueryOptions } from './queryOptions';
+import {
+  adminUsersQueryOptions,
+  adminUserStatsQueryOptions,
+} from './queryOptions';
 
 export function useQueryAdminUsers(params: GetAdminUsersParams) {
   return useQuery(adminUsersQueryOptions(params));
@@ -63,6 +67,20 @@ export function useDeleteAdminUserMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (keycloakId: string) => deleteAdminUser(keycloakId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    },
+  });
+}
+
+export function useQueryAdminUserStats() {
+  return useQuery(adminUserStatsQueryOptions());
+}
+
+export function useToggleUserStatusMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (keycloakId: string) => toggleUserStatus(keycloakId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
