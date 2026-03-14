@@ -39,7 +39,6 @@ import {
   useQueryAdminUserStats,
   useCreateAdminUserMutation,
   useUpdateUserRoleMutation,
-  useUpdateUserStatusMutation,
   useToggleUserStatusMutation,
   useDeleteAdminUserMutation,
   type AdminUser,
@@ -76,7 +75,6 @@ export default function UsersPage() {
   const { data: statsData } = useQueryAdminUserStats();
   const createMutation = useCreateAdminUserMutation();
   const updateRoleMutation = useUpdateUserRoleMutation();
-  const updateStatusMutation = useUpdateUserStatusMutation();
   const toggleStatusMutation = useToggleUserStatusMutation();
   const deleteMutation = useDeleteAdminUserMutation();
 
