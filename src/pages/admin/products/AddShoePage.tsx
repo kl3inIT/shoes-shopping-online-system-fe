@@ -64,7 +64,7 @@ export default function AddShoePage() {
     description: '',
   });
 
-  const [variants, setVariants] = useState<VariantFormState[]>([
+  const [variants, setVariants] = useState<VariantFormState[]>(() => [
     createEmptyVariant(1),
   ]);
   const createShoeMutation = useCreateShoeMutation();
@@ -72,13 +72,18 @@ export default function AddShoePage() {
   const [shoeImages, setShoeImages] = useState<File[]>([]);
   const [shoePreviewUrls, setShoePreviewUrls] = useState<string[]>([]);
   const mainImageInputRef = useRef<HTMLInputElement | null>(null);
+  const shoePreviewUrlsRef = useRef<string[]>([]);
+  const variantPreviewUrlsRef = useRef<string[]>([]);
+
+  shoePreviewUrlsRef.current = shoePreviewUrls;
+  variantPreviewUrlsRef.current = variants.flatMap(
+    (variant) => variant.previewUrls
+  );
 
   useEffect(() => {
     return () => {
-      shoePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
-      variants.forEach((v) =>
-        v.previewUrls.forEach((url) => URL.revokeObjectURL(url))
-      );
+      shoePreviewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      variantPreviewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     };
   }, []);
 

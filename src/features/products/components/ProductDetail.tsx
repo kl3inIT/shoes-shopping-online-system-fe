@@ -204,16 +204,20 @@ export function ProductDetail({
           {rating !== undefined && (
             <div className='mt-2 flex items-center gap-2'>
               <div className='flex items-center'>
-                {[...Array(5)].map((_, i) => (
-                  <span
-                    key={i}
-                    className={
-                      i < Math.round(rating) ? 'text-yellow-500' : 'text-muted'
-                    }
-                  >
-                    ★
-                  </span>
-                ))}
+                {Array.from({ length: 5 }, (_, starIndex) => starIndex + 1).map(
+                  (starValue) => (
+                    <span
+                      key={starValue}
+                      className={
+                        starValue <= Math.round(rating)
+                          ? 'text-yellow-500'
+                          : 'text-muted'
+                      }
+                    >
+                      ★
+                    </span>
+                  )
+                )}
               </div>
               <span className='text-sm text-muted-foreground'>
                 {rating.toFixed(1)} (

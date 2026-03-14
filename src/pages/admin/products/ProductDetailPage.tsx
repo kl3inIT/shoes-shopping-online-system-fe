@@ -112,20 +112,17 @@ export default function ProductDetailPage() {
               </div>
             ) : (
               <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
-                {gallery.map((url, index) => (
-                  <a
-                    key={`${url}-${index}`}
-                    href={`/products/${shoe.id}`}
-                    onClick={(event) => event.preventDefault()}
+                {gallery.map((url) => (
+                  <div
+                    key={url}
                     className='aspect-square overflow-hidden rounded-md border bg-muted'
                   >
                     <img
                       src={url}
-                      alt={`${shoe.name}-${index}`}
-                      draggable={false}
+                      alt={shoe.name}
                       className='h-full w-full object-cover'
                     />
-                  </a>
+                  </div>
                 ))}
               </div>
             )}
@@ -140,41 +137,29 @@ export default function ProductDetailPage() {
           </CardHeader>
           <CardContent className='space-y-3 text-sm'>
             <div className='flex items-center justify-between gap-3'>
-              <span className='text-muted-foreground'>
-                {t('admin.products.detail.fields.status')}
-              </span>
+              <span className='text-muted-foreground'>Status</span>
               <Badge variant={getStatusVariant(shoe.status)}>
                 {shoe.status}
               </Badge>
             </div>
             <div className='flex items-center justify-between gap-3'>
-              <span className='text-muted-foreground'>
-                {t('admin.products.detail.fields.brand')}
-              </span>
+              <span className='text-muted-foreground'>Brand</span>
               <span className='font-medium'>{shoe.brandName}</span>
             </div>
             <div className='flex items-center justify-between gap-3'>
-              <span className='text-muted-foreground'>
-                {t('admin.products.detail.fields.category')}
-              </span>
+              <span className='text-muted-foreground'>Category</span>
               <span className='font-medium'>{shoe.categoryName}</span>
             </div>
             <div className='flex items-center justify-between gap-3'>
-              <span className='text-muted-foreground'>
-                {t('admin.products.detail.fields.gender')}
-              </span>
+              <span className='text-muted-foreground'>Gender</span>
               <span className='font-medium'>{shoe.gender}</span>
             </div>
             <div className='flex items-center justify-between gap-3'>
-              <span className='text-muted-foreground'>
-                {t('admin.products.detail.fields.material')}
-              </span>
+              <span className='text-muted-foreground'>Material</span>
               <span className='font-medium'>{shoe.material || '-'}</span>
             </div>
             <div className='flex items-center justify-between gap-3'>
-              <span className='text-muted-foreground'>
-                {t('admin.products.detail.fields.basePrice')}
-              </span>
+              <span className='text-muted-foreground'>Base price</span>
               <span className='font-semibold'>{shoe.price}</span>
             </div>
           </CardContent>
@@ -222,22 +207,15 @@ export default function ProductDetailPage() {
                     </TableCell>
                     <TableCell>
                       <div className='flex flex-wrap gap-2'>
-                        {(variant.imageUrls ?? []).slice(0, 4).map((u, idx) => {
+                        {(variant.imageUrls ?? []).slice(0, 4).map((u) => {
                           const src = resolveImageUrl(u) ?? u;
                           return (
-                            <a
-                              key={`${variant.id}-${idx}`}
-                              href={`/products/${shoe.id}`}
-                              onClick={(event) => event.preventDefault()}
-                              className='inline-block'
-                            >
-                              <img
-                                src={src}
-                                alt={`${shoe.name}-variant-${idx}`}
-                                draggable={false}
-                                className='h-10 w-10 rounded object-cover'
-                              />
-                            </a>
+                            <img
+                              key={src}
+                              src={src}
+                              alt={`${shoe.name}-variant`}
+                              className='h-10 w-10 rounded object-cover'
+                            />
                           );
                         })}
                         {(variant.imageUrls?.length ?? 0) === 0 && (

@@ -28,7 +28,11 @@ import {
   updateCategory,
   deleteCategory,
 } from '@/features/admin/categories/api';
-import { getErrorMessage, isNoResponseError } from '@/features/apiClient';
+import {
+  getErrorMessage,
+  isNoResponseError,
+  isHttpError,
+} from '@/features/apiClient';
 
 export default function AdminCategoriesPage() {
   const { t } = useTranslation();
@@ -122,7 +126,18 @@ export default function AdminCategoriesPage() {
       setSelectedCategory(null);
     } catch (error) {
       if (!isNoResponseError(error)) {
-        toast.error(getErrorMessage(error));
+        if (isHttpError(error) && error.messageKey) {
+          const translated = t(error.messageKey, {
+            defaultValue: t(
+              'http.error.unknown',
+              'An unexpected error occurred.'
+            ),
+            ...(error.params ?? {}),
+          });
+          toast.error(translated);
+        } else {
+          toast.error(getErrorMessage(error));
+        }
       }
     } finally {
       setDeleting(false);

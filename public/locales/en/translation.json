@@ -984,7 +984,15 @@
       "createSuccess": "Category created successfully",
       "updateSuccess": "Category updated successfully",
       "deleteSuccess": "Category deleted successfully",
-      "fillRequired": "Please fill in name and description"
+      "fillRequired": "Please fill in name and description",
+      "deleteHasProducts": "Cannot delete category because it still has products. Please remove or move products to another category first."
+    },
+    "error": {
+      "category": {
+        "delete": {
+          "has_products": "Cannot delete category because it still has products. Please remove or move products to another category first."
+        }
+      }
     },
     "reviews": {
       "title": "Reviews Management",

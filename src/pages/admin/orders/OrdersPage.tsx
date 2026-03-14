@@ -43,7 +43,7 @@ export default function AdminOrdersPage() {
   });
 
   const { data, isPending } = useQueryOrders(params);
-  const orders = data?.content ?? [];
+  const orders = useMemo(() => data?.content ?? [], [data?.content]);
   const totalElements = data?.totalElements ?? 0;
   const totalPages = data?.totalPages ?? 1;
 
@@ -53,7 +53,7 @@ export default function AdminOrdersPage() {
       processing: orders.filter((o) => o.orderStatus === 'CONFIRMED').length,
       shipped: orders.filter((o) => o.orderStatus === 'SHIPPED').length,
       revenue: orders
-        .filter((o) => o.orderStatus === 'DELIVERED')
+        .filter((o) => o.paymentStatus === 'PAID')
         .reduce((sum, o) => sum + o.totalAmount, 0),
     };
   }, [orders]);

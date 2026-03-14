@@ -26,7 +26,6 @@ export const aiParametersLoader =
     } catch (error) {
       if (isHttpError(error)) {
         // React Router expects Response
-        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw new Response(error.userMessage(), {
           status: error.status,
           statusText: error.status === 401 ? 'Unauthorized' : 'Forbidden',

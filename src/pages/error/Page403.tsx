@@ -1,27 +1,29 @@
+import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from '@/components/ui/card';
-import { useAuth } from 'react-oidc-context';
-import { Link } from 'react-router';
-import { useTranslation } from 'react-i18next';
 
 const Page403 = () => {
-  const auth = useAuth();
+  const location = useLocation();
   const { t } = useTranslation();
-  const keycloakId =
-    typeof auth.user?.profile.sub === 'string'
-      ? auth.user.profile.sub
+  const from =
+    typeof location.state === 'object' &&
+    location.state !== null &&
+    'from' in location.state &&
+    typeof location.state.from === 'string'
+      ? location.state.from
       : undefined;
-  const profilePath = keycloakId ? `/profile/${keycloakId}` : '/';
 
   return (
     <div className='flex min-h-screen items-center justify-center bg-background px-4'>
-      <Card className='max-w-xl w-full text-center'>
+      <Card className='w-full max-w-xl text-center'>
         <CardHeader>
           <CardTitle className='text-4xl font-bold tracking-tight'>
             {t('error.page.403.code', '403')}
@@ -29,7 +31,7 @@ const Page403 = () => {
           <CardDescription className='text-lg'>
             {t(
               'error.page.403.description',
-              'Bạn không có quyền truy cập trang này.'
+              'You do not have permission to access this page.'
             )}
           </CardDescription>
         </CardHeader>
@@ -37,16 +39,24 @@ const Page403 = () => {
           <p className='text-muted-foreground'>
             {t(
               'error.page.403.hint',
-              'Hãy đăng nhập với tài khoản có đủ quyền hoặc quay lại trang chủ.'
+              'Try another account with the required access or go back to a page you can use.'
             )}
           </p>
+          {from && (
+            <p className='text-sm text-muted-foreground'>
+              {t('error.page.403.from', {
+                defaultValue: 'Requested page: {{path}}',
+                path: from,
+              })}
+            </p>
+          )}
           <div className='flex gap-3'>
             <Button asChild variant='outline'>
-              <Link to='/'>{t('error.page.403.backHome', 'Về trang chủ')}</Link>
+              <Link to='/'>{t('error.page.403.backHome', 'Back to home')}</Link>
             </Button>
             <Button asChild>
-              <Link to={profilePath}>
-                {t('error.page.403.viewProfile', 'Xem hồ sơ của tôi')}
+              <Link to='/profile'>
+                {t('error.page.403.viewProfile', 'View my profile')}
               </Link>
             </Button>
           </div>

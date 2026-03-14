@@ -982,7 +982,15 @@
       "createSuccess": "Đã tạo danh mục thành công",
       "updateSuccess": "Đã cập nhật danh mục thành công",
       "deleteSuccess": "Đã xóa danh mục thành công",
-      "fillRequired": "Vui lòng điền đầy đủ tên và mô tả"
+      "fillRequired": "Vui lòng điền đầy đủ tên và mô tả",
+      "deleteHasProducts": "Không thể xóa danh mục vì vẫn còn sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển sản phẩm sang danh mục khác trước."
+    },
+    "error": {
+      "category": {
+        "delete": {
+          "has_products": "Không thể xóa danh mục vì vẫn còn sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển sản phẩm sang danh mục khác trước."
+        }
+      }
     },
     "reviews": {
       "title": "Quản Lý Đánh Giá",

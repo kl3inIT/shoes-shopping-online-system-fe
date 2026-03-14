@@ -37,6 +37,9 @@ export function useAudioRecording({
       recordAudio.stop();
       // Wait for the recording promise to resolve with the final blob
       const recording = await activeRecordingRef.current;
+      if (!recording) {
+        return;
+      }
       if (transcribeAudio) {
         const text = await transcribeAudio(recording);
         onTranscriptionComplete?.(text);
