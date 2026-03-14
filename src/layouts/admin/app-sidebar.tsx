@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconShoe } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
+import { Link } from 'react-router';
 
 import { useAuthorizedItems } from '@/features/auth';
 import { NavMain } from '@/layouts/admin/nav-main';
@@ -29,7 +29,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       auth.user?.profile.preferred_username?.toString() ||
       'User',
     email: auth.user?.profile.email?.toString() || '',
-    avatar: '',
+    avatar: auth.user?.profile.picture?.toString() || '',
   };
 
   return (

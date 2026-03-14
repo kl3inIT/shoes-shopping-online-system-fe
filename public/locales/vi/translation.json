@@ -323,6 +323,19 @@
   "orders": {
     "title": "Lịch Sử Đơn Hàng",
     "subtitle": "Xem và theo dõi tất cả đơn hàng của bạn",
+    "statusLabel": "Trạng thái",
+    "filters": {
+      "dateRange": "Khoảng thời gian",
+      "dateRangePlaceholder": "Tất cả",
+      "range": {
+        "all": "Tất cả",
+        "7days": "7 ngày gần nhất",
+        "30days": "30 ngày gần nhất",
+        "custom": "Tùy chọn"
+      },
+      "from": "Từ ngày",
+      "to": "Đến ngày"
+    },
     "empty": {
       "title": "Không tìm thấy đơn hàng",
       "allEmpty": "Bạn chưa đặt đơn hàng nào",
@@ -335,7 +348,8 @@
       "processing": "Đang xử lý",
       "shipped": "Đang giao",
       "delivered": "Đã giao",
-      "cancelled": "Đã hủy"
+      "cancelled": "Đã hủy",
+      "confirmed": "Đã xác nhận"
     },
     "status": {
       "pending": "Chờ xử lý",
@@ -355,8 +369,10 @@
       "title": "Theo dõi đơn hàng #{{number}}",
       "orderPlaced": "Đã Đặt Hàng",
       "orderPlacedDesc": "Đơn hàng của bạn đã được đặt thành công",
-      "processing": "Đang Xử Lý",
-      "processingDesc": "Chúng tôi đang chuẩn bị đơn hàng của bạn",
+      "paid": "Đã Thanh Toán",
+      "paidDesc": "Thanh toán đã được ghi nhận",
+      "confirmed": "Đã Xác Nhận",
+      "confirmedDesc": "Chúng tôi đang chuẩn bị đơn hàng của bạn",
       "shipped": "Đang Giao Hàng",
       "shippedDesc": "Đơn hàng đang trên đường đến bạn",
       "outForDelivery": "Sắp Giao",

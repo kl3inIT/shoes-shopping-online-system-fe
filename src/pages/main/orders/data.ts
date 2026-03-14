@@ -11,7 +11,7 @@ export const mockOrders: Omit<
   {
     id: 'order-1',
     orderNumber: 'ORD-2024-001234',
-    status: 'shipped' as OrderStatus,
+    status: 'SHIPPED' as OrderStatus,
     createdAt: '2024-01-25T10:30:00Z',
     items: [
       {
@@ -38,7 +38,7 @@ export const mockOrders: Omit<
   {
     id: 'order-2',
     orderNumber: 'ORD-2024-001198',
-    status: 'delivered' as OrderStatus,
+    status: 'DELIVERED' as OrderStatus,
     createdAt: '2024-01-20T14:15:00Z',
     items: [
       {
@@ -56,7 +56,7 @@ export const mockOrders: Omit<
   {
     id: 'order-3',
     orderNumber: 'ORD-2024-001156',
-    status: 'processing' as OrderStatus,
+    status: 'CONFIRMED' as OrderStatus,
     createdAt: '2024-01-28T09:00:00Z',
     items: [
       {
@@ -74,7 +74,7 @@ export const mockOrders: Omit<
   {
     id: 'order-4',
     orderNumber: 'ORD-2024-001089',
-    status: 'cancelled' as OrderStatus,
+    status: 'CANCELLED' as OrderStatus,
     createdAt: '2024-01-15T16:45:00Z',
     items: [
       {
@@ -92,7 +92,7 @@ export const mockOrders: Omit<
   {
     id: 'order-5',
     orderNumber: 'ORD-2024-000987',
-    status: 'pending' as OrderStatus,
+    status: 'PENDING_PAYMENT' as OrderStatus,
     createdAt: '2024-01-29T08:30:00Z',
     items: [
       {
@@ -109,57 +109,67 @@ export const mockOrders: Omit<
   },
 ];
 
-export const getOrderTimeline = (status: OrderStatus): TimelineStep[] => {
+/** Thứ tự trạng thái để hiển thị timeline (bỏ qua trạng thái kết thúc/hủy). */
+const TIMELINE_STATUS_ORDER: OrderStatus[] = [
+  'PENDING_PAYMENT',
+  'PAID',
+  'CONFIRMED',
+  'SHIPPED',
+  'DELIVERED',
+];
+
+type TranslateFn = (key: string) => string;
+
+export const getOrderTimeline = (
+  status: OrderStatus,
+  t: TranslateFn
+): TimelineStep[] => {
   const baseSteps: TimelineStep[] = [
     {
       id: 'order_placed',
-      title: 'Order Placed',
-      description: 'Your order has been placed successfully',
-      timestamp: '2024-01-25T10:30:00Z',
+      title: t('orders.timeline.orderPlaced'),
+      description: t('orders.timeline.orderPlacedDesc'),
+      timestamp: '',
       status: 'completed',
     },
     {
-      id: 'processing',
-      title: 'Processing',
-      description: 'We are preparing your order',
-      timestamp: '2024-01-25T14:00:00Z',
-      status: 'completed',
+      id: 'paid',
+      title: t('orders.timeline.paid'),
+      description: t('orders.timeline.paidDesc'),
+      timestamp: '',
+      status: 'upcoming',
+    },
+    {
+      id: 'confirmed',
+      title: t('orders.timeline.confirmed'),
+      description: t('orders.timeline.confirmedDesc'),
+      timestamp: '',
+      status: 'upcoming',
     },
     {
       id: 'shipped',
-      title: 'Shipped',
-      description: 'Your order is on the way',
-      timestamp: '2024-01-26T09:00:00Z',
-      status: 'completed',
-    },
-    {
-      id: 'out_for_delivery',
-      title: 'Out for Delivery',
-      description: 'Your order will be delivered today',
-      status: 'current',
+      title: t('orders.timeline.shipped'),
+      description: t('orders.timeline.shippedDesc'),
+      timestamp: '',
+      status: 'upcoming',
     },
     {
       id: 'delivered',
-      title: 'Delivered',
-      description: 'Order delivered successfully',
+      title: t('orders.timeline.delivered'),
+      description: t('orders.timeline.deliveredDesc'),
       status: 'upcoming',
     },
   ];
 
-  const statusOrder: OrderStatus[] = [
-    'pending',
-    'processing',
-    'shipped',
-    'delivered',
-  ];
-  const currentIndex = statusOrder.indexOf(status);
+  const currentIndex = TIMELINE_STATUS_ORDER.indexOf(status);
+  const stepIndex = currentIndex >= 0 ? currentIndex : 0;
 
   return baseSteps.map((step, index) => ({
     ...step,
     status:
-      index < currentIndex
+      index < stepIndex
         ? 'completed'
-        : index === currentIndex
+        : index === stepIndex
           ? 'current'
           : 'upcoming',
   }));

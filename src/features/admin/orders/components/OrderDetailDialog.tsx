@@ -86,18 +86,42 @@ export function OrderDetailDialog({
 
           <Separator />
 
-          <div className='flex items-center justify-between text-sm'>
-            <span className='text-muted-foreground'>
+          <div>
+            <h4 className='mb-2 font-semibold'>
               {t('admin.orders.detail.items')}
-            </span>
-            <span>{order.itemCount}</span>
+            </h4>
+            <div className='space-y-3'>
+              {(order.items ?? []).map((item) => (
+                <div
+                  key={item.id}
+                  className='flex items-center gap-3 rounded-md border p-3'
+                >
+                  <div className='h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-muted'>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className='h-full w-full object-cover'
+                    />
+                  </div>
+                  <div className='flex-1 text-sm'>
+                    <p className='font-medium'>{item.name}</p>
+                    <p className='text-xs text-muted-foreground'>
+                      {t('cart.item.size')}: {item.size} × {item.quantity}
+                    </p>
+                  </div>
+                  <div className='text-right text-sm font-semibold'>
+                    {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <Separator />
 
           <div className='flex items-center justify-between text-lg font-bold'>
             <span>{t('admin.orders.detail.total')}</span>
-            <span>${order.totalAmount}</span>
+            <span>{order.totalAmount.toLocaleString('vi-VN')} ₫</span>
           </div>
         </div>
       </DialogContent>

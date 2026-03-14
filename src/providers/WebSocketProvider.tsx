@@ -1,6 +1,6 @@
+import { Client } from '@stomp/stompjs';
 import { createContext, use, type ReactNode, useEffect, useState } from 'react';
 import SockJS from 'sockjs-client';
-import { Client } from '@stomp/stompjs';
 
 type WebSocketContextValue = Client | null;
 
@@ -10,37 +10,32 @@ interface WebSocketProviderProps {
   children: ReactNode;
 }
 
-/**
- * WebSocketProvider
- * - Khởi tạo kết nối SockJS + STOMP tới backend
- * - Cung cấp `Client` của `@stomp/stompjs` qua React context
- */
 export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const [client, setClient] = useState<Client | null>(null);
+  const wsBaseUrl =
+    import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8088';
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8088/ws');
-
     const stompClient = new Client({
-      webSocketFactory: () => socket,
+      webSocketFactory: () => new SockJS(`${wsBaseUrl}/ws`),
       reconnectDelay: 5000,
       onConnect: () => {
+        setClient(stompClient);
         console.log('WebSocket connected');
       },
       onDisconnect: () => {
+        setClient(null);
         console.log('WebSocket disconnected');
       },
     });
 
-    // Lưu client để các component dùng subscribe/send
-    setClient(stompClient);
     stompClient.activate();
 
     return () => {
       void stompClient.deactivate();
       setClient(null);
     };
-  }, []);
+  }, [wsBaseUrl]);
 
   return <WebSocketContext value={client}>{children}</WebSocketContext>;
 }

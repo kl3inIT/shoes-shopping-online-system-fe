@@ -1,9 +1,9 @@
 import {
+  IconBell,
   IconBrandProducthunt,
   IconCategory,
   IconDashboard,
   IconHelp,
-  IconBell,
   IconPackage,
   IconShoe,
   IconStar,

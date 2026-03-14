@@ -1,7 +1,7 @@
-import { useNavigate, useParams } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { ArrowLeft } from 'lucide-react';
 import { use, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -32,8 +32,8 @@ export function PaymentQrPage() {
     if (!stompClient) return;
 
     const subscription = stompClient.subscribe('/topic/orders', (msg) => {
-      navigate('/orders');
       console.log('QR nhận:', msg.body);
+      navigate('/orders');
     });
 
     return () => {

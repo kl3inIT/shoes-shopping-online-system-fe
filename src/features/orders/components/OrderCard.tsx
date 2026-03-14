@@ -3,13 +3,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Package, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
+/** Khớp enum BE: PENDING_PAYMENT, PAYMENT_EXPIRED, PAID, CONFIRMED, SHIPPED, DELIVERED, CANCELLED, REFUNDED */
 export type OrderStatus =
-  | 'pending'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled';
+  | 'PENDING_PAYMENT'
+  | 'PAYMENT_EXPIRED'
+  | 'PAID'
+  | 'CONFIRMED'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'CANCELLED'
+  | 'REFUNDED';
 
 export interface OrderItem {
   id: string;
@@ -39,11 +44,14 @@ const statusConfig: Record<
     variant: 'default' | 'secondary' | 'destructive' | 'outline';
   }
 > = {
-  pending: { label: 'Pending', variant: 'secondary' },
-  processing: { label: 'Processing', variant: 'default' },
-  shipped: { label: 'Shipped', variant: 'default' },
-  delivered: { label: 'Delivered', variant: 'outline' },
-  cancelled: { label: 'Cancelled', variant: 'destructive' },
+  PENDING_PAYMENT: { label: 'Pending Payment', variant: 'secondary' },
+  PAYMENT_EXPIRED: { label: 'Payment Expired', variant: 'destructive' },
+  PAID: { label: 'Paid', variant: 'default' },
+  CONFIRMED: { label: 'Confirmed', variant: 'default' },
+  SHIPPED: { label: 'Shipped', variant: 'default' },
+  DELIVERED: { label: 'Delivered', variant: 'outline' },
+  CANCELLED: { label: 'Cancelled', variant: 'destructive' },
+  REFUNDED: { label: 'Refunded', variant: 'destructive' },
 };
 
 export function OrderCard({
@@ -57,7 +65,12 @@ export function OrderCard({
   onTrackOrder,
   onReorder,
 }: OrderCardProps) {
-  const statusInfo = statusConfig[status];
+  const { t } = useTranslation();
+  const statusInfo = statusConfig[status] ?? statusConfig.PENDING_PAYMENT;
+  const locale =
+    t('appName') && typeof navigator !== 'undefined'
+      ? navigator.language
+      : 'en-US';
   const displayItems = items.slice(0, 2);
   const remainingCount = items.length - 2;
 
@@ -67,16 +80,19 @@ export function OrderCard({
         <div className='flex flex-wrap items-center justify-between gap-2'>
           <div className='flex items-center gap-2'>
             <Package className='h-4 w-4 text-muted-foreground' />
-            <span className='font-medium'>Order #{orderNumber}</span>
+            <span className='font-medium'>
+              {t('orders.orderNumber', { number: orderNumber })}
+            </span>
           </div>
           <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
         </div>
         <p className='text-sm text-muted-foreground'>
-          Placed on{' '}
-          {new Date(createdAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
+          {t('orders.placedOn', {
+            date: new Date(createdAt).toLocaleDateString(locale, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }),
           })}
         </p>
       </CardHeader>
@@ -95,17 +111,17 @@ export function OrderCard({
               <div className='flex-1'>
                 <p className='line-clamp-1 font-medium'>{item.name}</p>
                 <p className='text-sm text-muted-foreground'>
-                  Size: {item.size} × {item.quantity}
+                  {t('cart.item.size')}: {item.size} × {item.quantity}
                 </p>
                 <p className='text-sm font-medium'>
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {`${(item.price * item.quantity).toLocaleString('vi-VN')} ₫`}
                 </p>
               </div>
             </div>
           ))}
           {remainingCount > 0 && (
             <p className='text-sm text-muted-foreground'>
-              +{remainingCount} more item{remainingCount > 1 ? 's' : ''}
+              {t('orders.moreItems', { count: remainingCount })}
             </p>
           )}
         </div>
@@ -114,26 +130,28 @@ export function OrderCard({
 
         <div className='flex items-center justify-between'>
           <div>
-            <p className='text-sm text-muted-foreground'>Total</p>
-            <p className='text-lg font-bold'>${total.toFixed(2)}</p>
+            <p className='text-sm text-muted-foreground'>{t('orders.total')}</p>
+            <p className='text-lg font-bold'>
+              {total.toLocaleString('vi-VN')} ₫
+            </p>
           </div>
           <div className='flex flex-wrap gap-2'>
-            {status === 'shipped' && onTrackOrder && (
+            {status === 'SHIPPED' && onTrackOrder && (
               <Button
                 size='sm'
                 variant='outline'
                 onClick={() => onTrackOrder(id)}
               >
-                Track Order
+                {t('orders.trackOrder')}
               </Button>
             )}
-            {status === 'delivered' && onReorder && (
+            {status === 'DELIVERED' && onReorder && (
               <Button size='sm' variant='outline' onClick={() => onReorder(id)}>
-                Reorder
+                {t('orders.reorder')}
               </Button>
             )}
             <Button size='sm' onClick={() => onViewDetails?.(id)}>
-              View Details
+              {t('orders.viewDetails')}
               <ChevronRight className='ml-1 h-4 w-4' />
             </Button>
           </div>

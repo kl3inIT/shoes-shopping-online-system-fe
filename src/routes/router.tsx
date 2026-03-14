@@ -130,6 +130,14 @@ export const router = createBrowserRouter([
               return { Component };
             },
           },
+          {
+            path: 'orders/:orderId',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/main/orders/OrderDetailPage');
+              return { Component };
+            },
+          },
         ],
       },
       {
@@ -267,6 +275,21 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        element: (
+          <RequirePermission requirement={PERMISSIONS.notificationsManage} />
+        ),
+        children: [
+          {
+            path: 'notifications',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/notifications/AdminNotificationsPage');
+              return { Component };
+            },
+          },
+        ],
+      },
+      {
         element: <RequirePermission requirement={PERMISSIONS.aiManage} />,
         children: [
           {
@@ -282,21 +305,6 @@ export const router = createBrowserRouter([
                 Component,
                 loader: aiParametersLoader(queryClient),
               };
-            },
-          },
-        ],
-      },
-      {
-        element: (
-          <RequirePermission requirement={PERMISSIONS.notificationsManage} />
-        ),
-        children: [
-          {
-            path: 'notifications',
-            lazy: async () => {
-              const { default: Component } =
-                await import('@/pages/admin/notifications/AdminNotificationsPage');
-              return { Component };
             },
           },
         ],

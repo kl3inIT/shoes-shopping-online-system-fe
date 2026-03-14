@@ -10,6 +10,8 @@ function ordersQueryKey(params: OrderHistoryRequest) {
     params.size,
     params.nameSearch ?? '',
     params.orderStatus ?? '',
+    params.dateFrom ?? '',
+    params.dateTo ?? '',
   ] as const;
 }
 

@@ -118,6 +118,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
   }
 
   const displayName = getDisplayName(auth);
+  const profilePath = '/profile';
   const dashboardLabel = permission.hasRole('admin')
     ? t('auth.adminDashboard', { defaultValue: 'Admin Dashboard' })
     : t('auth.dashboard', { defaultValue: 'Dashboard' });
@@ -165,7 +166,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         size='sm'
         onClick={onAfterAction}
       >
-        <Link to='/profile'>
+        <Link to={profilePath}>
           <UserCircle className='mr-2 h-4 w-4' />
           {t('auth.profile', { defaultValue: 'Profile' })}
         </Link>
@@ -238,7 +239,7 @@ export function UserMenu({ mobile = false, onAfterAction }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className='cursor-pointer'>
-          <Link to='/profile'>
+          <Link to={profilePath}>
             <UserCircle className='mr-2 h-4 w-4' />
             <span>{t('auth.profile', { defaultValue: 'Profile' })}</span>
           </Link>

@@ -50,7 +50,7 @@ export function CheckoutOrderSummary({
                   </p>
                 </div>
                 <div className='text-sm font-medium'>
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {parseFloat(subtotal.toFixed(2)) + ' ₫'}
                 </div>
               </div>
             ))}
@@ -62,22 +62,28 @@ export function CheckoutOrderSummary({
         <div className='space-y-2 text-sm'>
           <div className='flex justify-between'>
             <span className='text-muted-foreground'>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>{parseFloat(subtotal.toFixed(2)) + ' ₫'}</span>
           </div>
           <div className='flex justify-between'>
             <span className='text-muted-foreground'>Shipping</span>
-            <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+            <span>
+              {shipping === 0
+                ? 'Free'
+                : `${parseFloat(shipping.toFixed(2)) + ' ₫'}`}
+            </span>
           </div>
           {discount > 0 && (
             <div className='flex justify-between'>
               <span className='text-muted-foreground'>Discount</span>
-              <span className='text-green-600'>-${discount.toFixed(2)}</span>
+              <span className='text-green-600'>
+                -{parseFloat(discount.toFixed(2)) + ' ₫'}
+              </span>
             </div>
           )}
           {tax > 0 && (
             <div className='flex justify-between'>
               <span className='text-muted-foreground'>Tax</span>
-              <span>${tax.toFixed(2)}</span>
+              <span>{parseFloat(tax.toFixed(2)) + ' ₫'}</span>
             </div>
           )}
         </div>
@@ -86,7 +92,7 @@ export function CheckoutOrderSummary({
 
         <div className='flex justify-between font-medium'>
           <span>Total</span>
-          <span className='text-lg'>${total.toFixed(2)}</span>
+          <span className='text-lg'>{parseFloat(total.toFixed(2)) + ' ₫'}</span>
         </div>
       </CardContent>
     </Card>
