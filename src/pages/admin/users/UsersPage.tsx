@@ -36,9 +36,11 @@ import {
   UserFormDialog,
   UserRoleDialog,
   useQueryAdminUsers,
+  useQueryAdminUserStats,
   useCreateAdminUserMutation,
   useUpdateUserRoleMutation,
   useUpdateUserStatusMutation,
+  useToggleUserStatusMutation,
   useDeleteAdminUserMutation,
   type AdminUser,
   type UserRole,
@@ -71,9 +73,11 @@ export default function UsersPage() {
   };
 
   const { data, isPending, isError, error } = useQueryAdminUsers(queryParams);
+  const { data: statsData } = useQueryAdminUserStats();
   const createMutation = useCreateAdminUserMutation();
   const updateRoleMutation = useUpdateUserRoleMutation();
   const updateStatusMutation = useUpdateUserStatusMutation();
+  const toggleStatusMutation = useToggleUserStatusMutation();
   const deleteMutation = useDeleteAdminUserMutation();
 
   const users = data?.content ?? [];
@@ -81,10 +85,10 @@ export default function UsersPage() {
   const totalElements = data?.totalElements ?? 0;
 
   const stats = {
-    total: totalElements,
-    admins: users.filter((u) => u.role === 'ROLE_ADMIN').length,
-    managers: users.filter((u) => u.role === 'ROLE_MANAGER').length,
-    customers: users.filter((u) => u.role === 'ROLE_CUSTOMER').length,
+    total: statsData?.total ?? 0,
+    admins: statsData?.admins ?? 0,
+    managers: statsData?.managers ?? 0,
+    customers: statsData?.customers ?? 0,
   };
 
   const handleSearch = () => {
@@ -148,18 +152,13 @@ export default function UsersPage() {
 
   const handleConfirmStatusChange = () => {
     if (!selectedUser) return;
-    const newStatus: UserStatus =
-      selectedUser.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-    updateStatusMutation.mutate(
-      { keycloakId: selectedUser.keycloakId, status: newStatus },
-      {
-        onSuccess: () => {
-          setStatusDialogOpen(false);
-          toast.success(t('admin.users.toast.statusUpdated'));
-        },
-        onError: (err) => toast.error(getErrorMessage(err)),
-      }
-    );
+    toggleStatusMutation.mutate(selectedUser.keycloakId, {
+      onSuccess: () => {
+        setStatusDialogOpen(false);
+        toast.success(t('admin.users.toast.statusUpdated'));
+      },
+      onError: (err) => toast.error(getErrorMessage(err)),
+    });
   };
 
   const handleConfirmDelete = () => {
@@ -375,9 +374,9 @@ export default function UsersPage() {
                 selectedUser?.status === 'ACTIVE' ? 'destructive' : 'default'
               }
               onClick={handleConfirmStatusChange}
-              disabled={updateStatusMutation.isPending}
+              disabled={toggleStatusMutation.isPending}
             >
-              {updateStatusMutation.isPending
+              {toggleStatusMutation.isPending
                 ? t('common.saving', 'Saving...')
                 : selectedUser?.status === 'ACTIVE'
                   ? t('admin.users.actions.suspend')
