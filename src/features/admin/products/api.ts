@@ -5,6 +5,7 @@ import type {
   ShoeCreateRequestDto,
   ShoeResponse,
   ShoeUpdateRequestDto,
+  ShoeStockSummaryResponse,
 } from '@/features/products';
 
 export async function getAdminShoes(): Promise<ShoeResponse[]> {
@@ -77,4 +78,18 @@ export async function updateShoe(
     formData
   );
   return response.data;
+}
+
+export async function getAdminShoeStockSummary(
+  threshold = 10
+): Promise<ShoeStockSummaryResponse> {
+  const response = await apiClient.get<
+    ResponseGeneral<ShoeStockSummaryResponse>
+  >('/api/shoes/stock-summary', {
+    params: {
+      threshold,
+    },
+  });
+
+  return response.data.data;
 }

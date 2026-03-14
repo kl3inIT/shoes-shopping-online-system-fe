@@ -42,6 +42,7 @@ import {
 } from '@/features/admin/products';
 import {
   useAdminShoes,
+  useAdminShoeStockSummary,
   useUpdateShoeMutation,
 } from '@/features/admin/products';
 import {
@@ -198,14 +199,33 @@ export default function AdminProductsPage() {
   const getTotalStock = (product: Product) =>
     product.variants.reduce((sum, v) => sum + v.stockQuantity, 0);
 
+  const isFiltering =
+    searchQuery !== '' ||
+    statusFilter !== 'all' ||
+    brandFilter !== 'all' ||
+    categoryFilter !== 'all';
+
+  const { data: stockSummary } = useAdminShoeStockSummary(10, !isFiltering);
+
   const stats = {
-    total: filteredProducts.length,
-    active: filteredProducts.filter((p) => p.status === 'ACTIVE').length,
-    outOfStock: filteredProducts.filter((p) => p.status === 'OUT_OF_STOCK')
-      .length,
-    lowStock: filteredProducts.filter(
-      (p) => getTotalStock(p) > 0 && getTotalStock(p) < 10
-    ).length,
+    total:
+      !isFiltering && stockSummary?.total !== undefined
+        ? stockSummary.total
+        : filteredProducts.length,
+    active:
+      !isFiltering && stockSummary?.selling !== undefined
+        ? stockSummary.selling
+        : filteredProducts.filter((p) => p.status === 'ACTIVE').length,
+    outOfStock:
+      !isFiltering && stockSummary?.outOfStock !== undefined
+        ? stockSummary.outOfStock
+        : filteredProducts.filter((p) => p.status === 'OUT_OF_STOCK').length,
+    lowStock:
+      !isFiltering && stockSummary?.lowStock !== undefined
+        ? stockSummary.lowStock
+        : filteredProducts.filter(
+            (p) => getTotalStock(p) > 0 && getTotalStock(p) < 10
+          ).length,
   };
 
   const handleView = (product: Product) => {
