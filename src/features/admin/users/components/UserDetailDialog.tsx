@@ -65,7 +65,7 @@ export function UserDetailDialog({
               className={
                 user.status === 'ACTIVE'
                   ? 'bg-green-500 text-white'
-                  : user.status === 'SUSPENDED'
+                  : user.status === 'INACTIVE'
                     ? 'bg-red-500 text-white'
                     : ''
               }

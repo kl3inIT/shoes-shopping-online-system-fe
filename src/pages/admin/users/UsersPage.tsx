@@ -260,9 +260,6 @@ export default function UsersPage() {
             <SelectItem value='INACTIVE'>
               {t('admin.users.status.INACTIVE')}
             </SelectItem>
-            <SelectItem value='SUSPENDED'>
-              {t('admin.users.status.SUSPENDED')}
-            </SelectItem>
           </SelectContent>
         </Select>
         {searchInput && (
@@ -343,12 +340,12 @@ export default function UsersPage() {
           <DialogHeader>
             <DialogTitle>
               {selectedUser?.status === 'ACTIVE'
-                ? t('admin.users.suspendDialog.title')
+                ? t('admin.users.deactivateDialog.title')
                 : t('admin.users.activateDialog.title')}
             </DialogTitle>
             <DialogDescription>
               {selectedUser?.status === 'ACTIVE'
-                ? t('admin.users.suspendDialog.description', {
+                ? t('admin.users.deactivateDialog.description', {
                     name: selectedUser
                       ? `${selectedUser.firstName} ${selectedUser.lastName}`
                       : '',
@@ -377,7 +374,7 @@ export default function UsersPage() {
               {toggleStatusMutation.isPending
                 ? t('common.saving', 'Saving...')
                 : selectedUser?.status === 'ACTIVE'
-                  ? t('admin.users.actions.suspend')
+                  ? t('admin.users.actions.deactivate')
                   : t('admin.users.actions.activate')}
             </Button>
           </DialogFooter>

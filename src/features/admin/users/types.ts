@@ -3,7 +3,7 @@ export type UserRole =
   | 'ROLE_MANAGER'
   | 'ROLE_CUSTOMER'
   | 'ROLE_SEPAY_WEBHOOK';
-export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+export type UserStatus = 'ACTIVE' | 'INACTIVE';
 
 export interface AdminUser {
   id: string;

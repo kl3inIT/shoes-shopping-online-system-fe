@@ -797,8 +797,7 @@
       },
       "status": {
         "ACTIVE": "Hoạt động",
-        "INACTIVE": "Không hoạt động",
-        "SUSPENDED": "Bị đình chỉ"
+        "INACTIVE": "Không hoạt động"
       },
       "table": {
         "user": "Người dùng",
@@ -811,8 +810,8 @@
       "actions": {
         "viewDetails": "Xem chi tiết",
         "changeRole": "Đổi vai trò",
-        "suspend": "Đình chỉ",
         "activate": "Kích hoạt",
+        "deactivate": "Vô hiệu hóa",
         "delete": "Xóa"
       },
       "detail": {
@@ -832,9 +831,9 @@
         "title": "Đổi Vai Trò",
         "description": "Cập nhật vai trò cho {{name}}"
       },
-      "suspendDialog": {
-        "title": "Đình Chỉ Người Dùng",
-        "description": "Bạn có chắc muốn đình chỉ {{name}}? Họ sẽ không thể đăng nhập."
+      "deactivateDialog": {
+        "title": "Vô Hiệu Hóa Người Dùng",
+        "description": "Bạn có chắc muốn vô hiệu hóa {{name}}? Họ sẽ không thể đăng nhập."
       },
       "activateDialog": {
         "title": "Kích Hoạt Người Dùng",
