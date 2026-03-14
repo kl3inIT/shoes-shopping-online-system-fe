@@ -6,7 +6,7 @@ export const mockCartItems: Omit<
 >[] = [
   {
     id: 'cart-1',
-    productId: '1',
+    productId: '11111111-1111-1111-1111-111111111111',
     name: 'Nike Air Max 270',
     brand: 'Nike',
     image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
@@ -16,7 +16,7 @@ export const mockCartItems: Omit<
   },
   {
     id: 'cart-2',
-    productId: '2',
+    productId: '22222222-2222-2222-2222-222222222222',
     name: 'Adidas Ultraboost 22',
     brand: 'Adidas',
     image: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
@@ -26,7 +26,7 @@ export const mockCartItems: Omit<
   },
   {
     id: 'cart-3',
-    productId: '5',
+    productId: '55555555-5555-5555-5555-555555555555',
     name: 'Converse Chuck Taylor',
     brand: 'Converse',
     image: 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=400',

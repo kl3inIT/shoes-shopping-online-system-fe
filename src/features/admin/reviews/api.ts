@@ -6,6 +6,7 @@ import type {
 } from './types';
 
 export async function getAdminReviews(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _params?: AdminReviewsQueryParams
 ): Promise<AdminReviewModerationItem[]> {
   // TODO: Confirm moderation list endpoint and mutation contract before enabling this query.

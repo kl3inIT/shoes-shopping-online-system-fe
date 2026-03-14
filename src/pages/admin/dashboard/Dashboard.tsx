@@ -1,17 +1,47 @@
-import { FeaturePlaceholder } from '@/components/app';
+import { ChartAreaInteractive } from '@/components/chart-area-interactive';
+import { LowStockAlertTable } from '@/components/low-stock-alert-table';
+import { RecentOrdersTable } from '@/components/recent-orders-table';
+import { SectionCards } from '@/components/section-cards';
+import { TopSellingShoesTable } from '@/components/top-selling-shoes-table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function DashboardPage() {
   return (
-    <div className='px-4 py-4 lg:px-6'>
-      <FeaturePlaceholder
-        title='Admin dashboard foundation is in place'
-        description='This route is protected and mounted, but its current shadcn sample analytics have been removed so the dashboard does not present fake business data.'
-        items={[
-          'Connect real KPI queries for revenue, orders, customers, and inventory.',
-          'Decide which charts are actually useful for operations before reintroducing analytics widgets.',
-          'Add server-driven loading and empty states per dashboard section.',
-        ]}
-      />
-    </div>
+    <>
+      <SectionCards />
+      <div className='px-4 lg:px-6 mb-4'>
+        <ChartAreaInteractive />
+      </div>
+      <div className='px-4 lg:px-6'>
+        <Tabs
+          defaultValue='recent-orders'
+          className='w-full border rounded-lg p-4 bg-card text-card-foreground'
+        >
+          <TabsList className='mb-4 bg-muted'>
+            <TabsTrigger value='recent-orders'>Recent Orders</TabsTrigger>
+            <TabsTrigger value='top-selling'>Top Selling</TabsTrigger>
+            <TabsTrigger value='low-stock'>Low Stock Alerts</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value='recent-orders' className='mt-0'>
+            <div className='-mx-4 -mb-8 lg:-mx-6'>
+              <RecentOrdersTable />
+            </div>
+          </TabsContent>
+
+          <TabsContent value='top-selling' className='mt-0'>
+            <div className='-mx-4 -mb-8 lg:-mx-6'>
+              <TopSellingShoesTable />
+            </div>
+          </TabsContent>
+
+          <TabsContent value='low-stock' className='mt-0'>
+            <div className='-mx-4 -mb-8 lg:-mx-6'>
+              <LowStockAlertTable />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </>
   );
 }

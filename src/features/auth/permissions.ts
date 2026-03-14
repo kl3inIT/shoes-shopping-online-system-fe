@@ -8,6 +8,7 @@ export type AppRole = (typeof APP_ROLES)[number];
 
 export const PERMISSIONS = {
   dashboardView: 'dashboard.view',
+  notificationsManage: 'notifications.manage',
   productsManage: 'products.manage',
   ordersManage: 'orders.manage',
   brandsManage: 'brands.manage',
@@ -58,6 +59,7 @@ const ROLE_PERMISSION_MAP: Record<AppRole, readonly AppPermission[]> = {
   admin: Object.values(PERMISSIONS),
   manager: [
     PERMISSIONS.dashboardView,
+    PERMISSIONS.notificationsManage,
     PERMISSIONS.productsManage,
     PERMISSIONS.ordersManage,
     PERMISSIONS.brandsManage,

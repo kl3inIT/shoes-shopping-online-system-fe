@@ -286,6 +286,21 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      {
+        element: (
+          <RequirePermission requirement={PERMISSIONS.notificationsManage} />
+        ),
+        children: [
+          {
+            path: 'notifications',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/notifications/AdminNotificationsPage');
+              return { Component };
+            },
+          },
+        ],
+      },
     ],
   },
 ]);

@@ -3,6 +3,7 @@ import apiClient from '@/features/apiClient';
 import type { CustomerOrderSummary, CustomerOrdersQueryParams } from './types';
 
 export async function getMyOrders(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _params?: CustomerOrdersQueryParams
 ): Promise<CustomerOrderSummary[]> {
   // TODO: Confirm customer order-history endpoint contract before enabling this query.

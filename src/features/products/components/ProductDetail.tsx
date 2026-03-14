@@ -13,6 +13,7 @@ export interface ProductImage {
 }
 
 export interface ProductSize {
+  id?: string;
   value: string;
   label: string;
   inStock?: boolean;
@@ -50,6 +51,7 @@ export interface ProductDetailProps {
   ) => void;
   onAddToWishlist?: (id: string) => void;
   onShare?: (id: string) => void;
+  onVariantChange?: (variantId: string) => void;
 }
 
 export function ProductDetail({
