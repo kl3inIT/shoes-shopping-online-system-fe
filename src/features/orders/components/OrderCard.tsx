@@ -1,11 +1,11 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Package, ChevronRight } from 'lucide-react';
+import { ChevronRight, Package } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-/** Khớp enum BE: PENDING_PAYMENT, PAYMENT_EXPIRED, PAID, CONFIRMED, SHIPPED, DELIVERED, CANCELLED, REFUNDED */
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+
 export type OrderStatus =
   | 'PENDING_PAYMENT'
   | 'PAYMENT_EXPIRED'
@@ -111,10 +111,10 @@ export function OrderCard({
               <div className='flex-1'>
                 <p className='line-clamp-1 font-medium'>{item.name}</p>
                 <p className='text-sm text-muted-foreground'>
-                  {t('cart.item.size')}: {item.size} × {item.quantity}
+                  {t('cart.item.size')}: {item.size} x {item.quantity}
                 </p>
                 <p className='text-sm font-medium'>
-                  {`${(item.price * item.quantity).toLocaleString('vi-VN')} ₫`}
+                  {(item.price * item.quantity).toLocaleString('vi-VN')} VND
                 </p>
               </div>
             </div>
@@ -132,7 +132,7 @@ export function OrderCard({
           <div>
             <p className='text-sm text-muted-foreground'>{t('orders.total')}</p>
             <p className='text-lg font-bold'>
-              {total.toLocaleString('vi-VN')} ₫
+              {total.toLocaleString('vi-VN')} VND
             </p>
           </div>
           <div className='flex flex-wrap gap-2'>
