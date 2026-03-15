@@ -13,17 +13,11 @@ import {
 import { getErrorMessage } from '@/features/apiClient';
 import { useDashboardMetrics } from '@/features/admin/dashboard/api/dashboardApi';
 
-const formatCurrency = (value: number, locale: string) =>
-  new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(value);
+import { formatCurrency } from '@/lib/utils';
 
 export function SectionCards() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data, error, isError, isLoading } = useDashboardMetrics();
-  const locale = i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US';
 
   const totalRevenue = data?.totalRevenue ?? 0;
   const totalCustomers = data?.totalCustomers ?? 0;
@@ -33,7 +27,7 @@ export function SectionCards() {
   const metricTrendLabel = isError
     ? getErrorMessage(error)
     : t('admin.dashboard.cards.liveData', {
-        defaultValue: 'Live backend data',
+        defaultValue: 'Real-time updates',
       });
 
   return (
@@ -46,7 +40,7 @@ export function SectionCards() {
             })}
           </CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            {isLoading ? '...' : formatCurrency(totalRevenue, locale)}
+            {isLoading ? '...' : formatCurrency(totalRevenue)}
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
@@ -74,7 +68,7 @@ export function SectionCards() {
             })}
           </CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            {isLoading ? '...' : totalCustomers.toLocaleString(locale)}
+            {isLoading ? '...' : totalCustomers.toLocaleString()}
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
@@ -102,7 +96,7 @@ export function SectionCards() {
             })}
           </CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            {isLoading ? '...' : totalOrders.toLocaleString(locale)}
+            {isLoading ? '...' : totalOrders.toLocaleString()}
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
@@ -130,7 +124,7 @@ export function SectionCards() {
             })}
           </CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            {isLoading ? '...' : productsSold.toLocaleString(locale)}
+            {isLoading ? '...' : productsSold.toLocaleString()}
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>

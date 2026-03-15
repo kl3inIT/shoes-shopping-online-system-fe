@@ -608,7 +608,7 @@
         "badge": {
           "live": "Trực tiếp"
         },
-        "liveData": "Dữ liệu trực tiếp từ backend"
+        "liveData": "Cập nhật theo thời gian thực"
       },
       "chart": {
         "title": "Tổng doanh thu và lợi nhuận",
