@@ -1289,6 +1289,75 @@
           "close": "Close"
         }
       },
+      "checks": {
+        "section": {
+          "definitions": "Check Definitions",
+          "runHistory": "Run History"
+        },
+        "button": {
+          "addDefinition": "Add Definition",
+          "runChecks": "Run Checks",
+          "running": "Running...",
+          "viewResults": "View Results"
+        },
+        "badge": {
+          "latestScore": "Latest: {{score}} ✓"
+        },
+        "dialog": {
+          "deleteTitle": "Delete Check Definition",
+          "deleteBody": "Delete this check definition? This cannot be undone.",
+          "deleteConfirm": "Delete",
+          "cancel": "Cancel",
+          "addDef": "Add Check Definition",
+          "editDef": "Edit Check Definition",
+          "save": "Save",
+          "saving": "Saving...",
+          "resultsTitle": "Run Results",
+          "field": {
+            "category": "Category",
+            "question": "Question",
+            "referenceAnswer": "Reference Answer",
+            "active": "Active"
+          }
+        },
+        "table": {
+          "defs": {
+            "category": "Category",
+            "question": "Question",
+            "active": "Active",
+            "actions": "Actions",
+            "edit": "Edit",
+            "delete": "Delete",
+            "empty": "No check definitions"
+          },
+          "runs": {
+            "score": "Score",
+            "date": "Date",
+            "by": "By",
+            "actions": "Actions",
+            "empty": "No check runs yet"
+          },
+          "results": {
+            "question": "Question",
+            "refAnswer": "Ref Answer",
+            "actualAnswer": "Actual Answer",
+            "score": "Score",
+            "verdict": "Verdict"
+          }
+        },
+        "toast": {
+          "created": "Definition created",
+          "updated": "Definition updated",
+          "deleted": "Definition deleted",
+          "runComplete": "Run complete — score: {{score}}",
+          "noActiveDefs": "No active definitions to run"
+        },
+        "fetchError": "Failed to load check definitions",
+        "totalDefs": "{{count}} definition(s)",
+        "pagination": {
+          "pageOf": "Page {{page}} of {{total}}"
+        }
+      },
       "page": {
         "title": "Assistant Operations",
         "description": "Configure prompts, knowledge indexing, conversation logs, and assistant response testing."
@@ -1297,7 +1366,8 @@
         "configuration": "Configuration",
         "knowledgeBase": "Knowledge Base",
         "conversations": "Conversations",
-        "playground": "Playground"
+        "playground": "Playground",
+        "checks": "Checks"
       },
       "parameters": {
         "target": {

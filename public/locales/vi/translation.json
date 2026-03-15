@@ -1287,6 +1287,75 @@
           "close": "Đóng"
         }
       },
+      "checks": {
+        "section": {
+          "definitions": "Định nghĩa kiểm tra",
+          "runHistory": "Lịch sử chạy"
+        },
+        "button": {
+          "addDefinition": "Thêm định nghĩa",
+          "runChecks": "Chạy kiểm tra",
+          "running": "Đang chạy...",
+          "viewResults": "Xem kết quả"
+        },
+        "badge": {
+          "latestScore": "Mới nhất: {{score}} ✓"
+        },
+        "dialog": {
+          "deleteTitle": "Xóa định nghĩa kiểm tra",
+          "deleteBody": "Xóa định nghĩa kiểm tra này? Hành động này không thể hoàn tác.",
+          "deleteConfirm": "Xóa",
+          "cancel": "Hủy",
+          "addDef": "Thêm định nghĩa kiểm tra",
+          "editDef": "Chỉnh sửa định nghĩa kiểm tra",
+          "save": "Lưu",
+          "saving": "Đang lưu...",
+          "resultsTitle": "Kết quả chạy",
+          "field": {
+            "category": "Danh mục",
+            "question": "Câu hỏi",
+            "referenceAnswer": "Câu trả lời tham chiếu",
+            "active": "Kích hoạt"
+          }
+        },
+        "table": {
+          "defs": {
+            "category": "Danh mục",
+            "question": "Câu hỏi",
+            "active": "Kích hoạt",
+            "actions": "Thao tác",
+            "edit": "Chỉnh sửa",
+            "delete": "Xóa",
+            "empty": "Chưa có định nghĩa kiểm tra"
+          },
+          "runs": {
+            "score": "Điểm",
+            "date": "Ngày",
+            "by": "Bởi",
+            "actions": "Thao tác",
+            "empty": "Chưa có lần chạy kiểm tra"
+          },
+          "results": {
+            "question": "Câu hỏi",
+            "refAnswer": "Câu trả lời tham chiếu",
+            "actualAnswer": "Câu trả lời thực tế",
+            "score": "Điểm",
+            "verdict": "Kết luận"
+          }
+        },
+        "toast": {
+          "created": "Đã tạo định nghĩa",
+          "updated": "Đã cập nhật định nghĩa",
+          "deleted": "Đã xóa định nghĩa",
+          "runComplete": "Hoàn thành — điểm: {{score}}",
+          "noActiveDefs": "Không có định nghĩa nào đang hoạt động"
+        },
+        "fetchError": "Không thể tải định nghĩa kiểm tra",
+        "totalDefs": "{{count}} định nghĩa",
+        "pagination": {
+          "pageOf": "Trang {{page}} / {{total}}"
+        }
+      },
       "page": {
         "title": "Vận hành trợ lý",
         "description": "Cấu hình prompt, lập chỉ mục tri thức, nhật ký hội thoại và kiểm thử phản hồi trợ lý."
@@ -1295,7 +1364,8 @@
         "configuration": "Cấu hình",
         "knowledgeBase": "Kho tri thức",
         "conversations": "Hội thoại",
-        "playground": "Kiểm thử"
+        "playground": "Kiểm thử",
+        "checks": "Kiểm tra"
       },
       "parameters": {
         "target": {
