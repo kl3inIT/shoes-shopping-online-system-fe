@@ -1234,6 +1234,52 @@
           "ingested": "Nhập liệu hoàn tất",
           "ingestError": "Nhập liệu thất bại"
         }
+      },
+      "chatLogs": {
+        "title": "Nhật Ký Chat",
+        "table": {
+          "date": "Ngày",
+          "conversationId": "ID Cuộc trò chuyện",
+          "promptTokens": "Token Prompt",
+          "completionTokens": "Token Hoàn thành",
+          "responseTime": "Thời gian phản hồi (ms)",
+          "content": "Nội dung",
+          "sources": "Nguồn",
+          "actions": "Hành động",
+          "errorState": "Không thể tải nhật ký chat"
+        },
+        "pagination": {
+          "pageOf": "Trang {{page}} / {{total}}"
+        },
+        "totalLogs": "{{count}} nhật ký",
+        "fetchError": "Không thể tải nhật ký chat",
+        "filter": {
+          "conversationId": "ID Cuộc trò chuyện",
+          "conversationIdPlaceholder": "vd. abc-123",
+          "apply": "Áp dụng",
+          "clearAll": "Xóa tất cả",
+          "datePreset": {
+            "today": "Hôm nay",
+            "last7d": "7 ngày qua",
+            "last30d": "30 ngày qua",
+            "custom": "Tùy chỉnh"
+          },
+          "customFrom": "Từ",
+          "customTo": "Đến"
+        },
+        "actions": {
+          "viewDetail": "Xem chi tiết"
+        },
+        "detail": {
+          "title": "Chi tiết nhật ký chat",
+          "response": "Phản hồi",
+          "sources": "Nguồn",
+          "metadata": "Metadata",
+          "promptTokens": "Token prompt",
+          "completionTokens": "Token hoàn thành",
+          "responseTime": "Thời gian phản hồi",
+          "close": "Đóng"
+        }
       }
     },
     "reviews": {
