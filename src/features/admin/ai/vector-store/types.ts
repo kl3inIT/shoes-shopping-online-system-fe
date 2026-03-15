@@ -4,10 +4,7 @@ export interface VectorDocument {
   metadata: Record<string, unknown>;
 }
 
-export interface VectorDocumentFull extends VectorDocument {
-  // getDocument endpoint returns full content in contentExcerpt field (same record shape)
-  // no additional fields — contentExcerpt contains full content when from detail endpoint
-}
+export type VectorDocumentFull = VectorDocument;
 
 export interface VectorDocumentPage {
   content: VectorDocument[];

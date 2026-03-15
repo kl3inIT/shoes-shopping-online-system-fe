@@ -27,16 +27,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-function targetToLabel(type: AiTargetType) {
-  switch (type) {
-    case 'SEARCH':
-      return 'Search';
-    case 'CHAT':
-    default:
-      return 'Chat';
-  }
-}
-
 export function AiParametersTab() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -73,6 +63,18 @@ export function AiParametersTab() {
     activateMutation.isPending ||
     copyMutation.isPending ||
     deleteMutation.isPending;
+
+  const targetToLabel = (type: AiTargetType) => {
+    switch (type) {
+      case 'SEARCH':
+        return t('admin.ai.parameters.target.search', {
+          defaultValue: 'Search',
+        });
+      case 'CHAT':
+      default:
+        return t('admin.ai.parameters.target.chat', { defaultValue: 'Chat' });
+    }
+  };
 
   const makeTypeUrl = (type: AiTargetType) => {
     const next = new URLSearchParams(searchParams);
@@ -202,7 +204,10 @@ export function AiParametersTab() {
                           className='flex flex-col gap-1'
                         >
                           <span className='text-sm font-medium'>
-                            {p.description || '(no description)'}
+                            {p.description ||
+                              t('admin.ai.parameters.noDescription', {
+                                defaultValue: '(no description)',
+                              })}
                           </span>
                           <span className='text-xs text-muted-foreground'>
                             {p.id}

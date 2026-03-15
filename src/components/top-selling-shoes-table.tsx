@@ -8,11 +8,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { getErrorMessage } from '@/features/apiClient';
 import { useDashboardTopSelling } from '@/features/admin/dashboard/api/dashboardApi';
 
 export function TopSellingShoesTable() {
   const { t } = useTranslation();
-  const { data: topSelling = [], isLoading } = useDashboardTopSelling();
+  const {
+    data: topSelling = [],
+    error,
+    isError,
+    isLoading,
+    refetch,
+  } = useDashboardTopSelling();
 
   return (
     <div className='px-4 lg:px-6 mb-8'>
@@ -57,6 +65,21 @@ export function TopSellingShoesTable() {
                   className='text-center py-6 text-muted-foreground'
                 >
                   {t('common.loading', { defaultValue: 'Loading...' })}
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={4} className='text-center py-6'>
+                  <div className='flex flex-col items-center gap-2 text-sm'>
+                    <p className='text-destructive'>{getErrorMessage(error)}</p>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => refetch()}
+                    >
+                      {t('common.retry', { defaultValue: 'Retry' })}
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : topSelling.length === 0 ? (

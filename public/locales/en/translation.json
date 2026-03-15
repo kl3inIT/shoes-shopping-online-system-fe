@@ -510,7 +510,8 @@
     "loadError": "Failed to load data",
     "uploading": "Uploading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "retry": "Retry"
   },
   "error": {
     "page": {
@@ -567,7 +568,7 @@
       "notifications": "Notifications",
       "inventory": "Inventory",
       "analytics": "Analytics",
-      "ai": "AI",
+      "ai": "Assistant Ops",
       "settings": "Settings",
       "account": "Account",
       "help": "Help",
@@ -603,7 +604,11 @@
           "title": "Products Sold",
           "trend": "High product demand",
           "description": "All delivered line items"
-        }
+        },
+        "badge": {
+          "live": "Live"
+        },
+        "liveData": "Live backend data"
       },
       "chart": {
         "title": "Total Revenue & Profit",
@@ -621,7 +626,8 @@
           "visitors": "Visitors",
           "revenue": "Revenue",
           "profit": "Profit"
-        }
+        },
+        "empty": "No chart data available for this period."
       },
       "recentOrders": {
         "title": "Recent Orders",
@@ -1282,6 +1288,23 @@
           "responseTime": "Response time",
           "close": "Close"
         }
+      },
+      "page": {
+        "title": "Assistant Operations",
+        "description": "Configure prompts, knowledge indexing, conversation logs, and assistant response testing."
+      },
+      "tabs": {
+        "configuration": "Configuration",
+        "knowledgeBase": "Knowledge Base",
+        "conversations": "Conversations",
+        "playground": "Playground"
+      },
+      "parameters": {
+        "target": {
+          "chat": "Chat",
+          "search": "Search"
+        },
+        "noDescription": "(no description)"
       }
     },
     "reviews": {

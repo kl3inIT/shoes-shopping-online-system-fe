@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { getErrorMessage } from '@/features/apiClient';
 import { useDashboardMetrics } from '@/features/admin/dashboard/api/dashboardApi';
 
 const formatCurrency = (value: number, locale: string) =>
@@ -21,13 +22,19 @@ const formatCurrency = (value: number, locale: string) =>
 
 export function SectionCards() {
   const { t, i18n } = useTranslation();
-  const { data, isLoading } = useDashboardMetrics();
+  const { data, error, isError, isLoading } = useDashboardMetrics();
   const locale = i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US';
 
   const totalRevenue = data?.totalRevenue ?? 0;
   const totalCustomers = data?.totalCustomers ?? 0;
   const totalOrders = data?.totalOrders ?? 0;
   const productsSold = data?.productsSold ?? 0;
+
+  const metricTrendLabel = isError
+    ? getErrorMessage(error)
+    : t('admin.dashboard.cards.liveData', {
+        defaultValue: 'Live backend data',
+      });
 
   return (
     <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4'>
@@ -44,17 +51,13 @@ export function SectionCards() {
           <CardAction>
             <Badge variant='outline'>
               <IconTrendingUp />
-              {/* Placeholder growth - real % có thể tính sau */}
-              +12.5%
+              {t('admin.dashboard.cards.badge.live', { defaultValue: 'Live' })}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className='flex-col items-start gap-1.5 text-sm'>
           <div className='line-clamp-1 flex gap-2 font-medium'>
-            {t('admin.dashboard.cards.totalRevenue.trend', {
-              defaultValue: 'Trending up this month',
-            })}{' '}
-            <IconTrendingUp className='size-4' />
+            {metricTrendLabel} <IconTrendingUp className='size-4' />
           </div>
           <div className='text-muted-foreground'>
             {t('admin.dashboard.cards.totalRevenue.description', {
@@ -76,16 +79,13 @@ export function SectionCards() {
           <CardAction>
             <Badge variant='outline'>
               <IconTrendingUp />
-              +15%
+              {t('admin.dashboard.cards.badge.live', { defaultValue: 'Live' })}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className='flex-col items-start gap-1.5 text-sm'>
           <div className='line-clamp-1 flex gap-2 font-medium'>
-            {t('admin.dashboard.cards.totalCustomers.trend', {
-              defaultValue: 'Up 15% this month',
-            })}{' '}
-            <IconTrendingUp className='size-4' />
+            {metricTrendLabel} <IconTrendingUp className='size-4' />
           </div>
           <div className='text-muted-foreground'>
             {t('admin.dashboard.cards.totalCustomers.description', {
@@ -107,16 +107,13 @@ export function SectionCards() {
           <CardAction>
             <Badge variant='outline'>
               <IconTrendingUp />
-              +8.5%
+              {t('admin.dashboard.cards.badge.live', { defaultValue: 'Live' })}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className='flex-col items-start gap-1.5 text-sm'>
           <div className='line-clamp-1 flex gap-2 font-medium'>
-            {t('admin.dashboard.cards.totalOrders.trend', {
-              defaultValue: 'Strong order volume',
-            })}{' '}
-            <IconTrendingUp className='size-4' />
+            {metricTrendLabel} <IconTrendingUp className='size-4' />
           </div>
           <div className='text-muted-foreground'>
             {t('admin.dashboard.cards.totalOrders.description', {
@@ -138,16 +135,13 @@ export function SectionCards() {
           <CardAction>
             <Badge variant='outline'>
               <IconTrendingUp />
-              +10.2%
+              {t('admin.dashboard.cards.badge.live', { defaultValue: 'Live' })}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className='flex-col items-start gap-1.5 text-sm'>
           <div className='line-clamp-1 flex gap-2 font-medium'>
-            {t('admin.dashboard.cards.productsSold.trend', {
-              defaultValue: 'High product demand',
-            })}{' '}
-            <IconTrendingUp className='size-4' />
+            {metricTrendLabel} <IconTrendingUp className='size-4' />
           </div>
           <div className='text-muted-foreground'>
             {t('admin.dashboard.cards.productsSold.description', {
