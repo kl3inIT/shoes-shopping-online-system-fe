@@ -1354,6 +1354,21 @@
             "verdict": "Verdict"
           }
         },
+        "results": {
+          "subtitle": "Review a compact preview in the table and open details for the full answer.",
+          "viewDetails": "View details",
+          "detailTitle": "Result details",
+          "detailDescription": "Review the full question, reference answer, actual answer, and log for this result.",
+          "referenceAnswer": "Reference answer",
+          "referenceAnswerEmpty": "No reference answer",
+          "actualAnswerEmpty": "No actual answer",
+          "log": "Log",
+          "summary": {
+            "total": "Total results",
+            "averageScore": "Average score",
+            "passRate": "Pass rate"
+          }
+        },
         "toast": {
           "created": "Definition created",
           "updated": "Definition updated",

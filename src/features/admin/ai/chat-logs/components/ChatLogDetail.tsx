@@ -64,9 +64,9 @@ export function ChatLogDetail({ log, open, onOpenChange }: ChatLogDetailProps) {
                   {t('admin.ai.chatLogs.detail.sources', 'Sources')}
                 </h3>
                 <ul className='list-disc list-inside space-y-1'>
-                  {sources.map((src, i) => (
+                  {sources.map((src) => (
                     <li
-                      key={i}
+                      key={src}
                       className='text-sm text-muted-foreground break-all'
                     >
                       {src}

@@ -2,6 +2,10 @@ import React, { Suspense } from 'react';
 import Markdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { ExtraProps } from 'react-markdown';
+import {
+  createSingletonShorthands,
+  createdBundledHighlighter,
+} from 'shiki/core';
 
 import { cn } from '@/lib/utils';
 import { CopyButton } from '@/components/ui/copy-button';
@@ -25,16 +29,78 @@ interface HighlightedPre extends React.HTMLAttributes<HTMLPreElement> {
   language: string;
 }
 
+const SHIKI_LANG_LOADERS = {
+  bash: () => import('shiki/dist/langs/bash.mjs'),
+  css: () => import('shiki/dist/langs/css.mjs'),
+  html: () => import('shiki/dist/langs/html.mjs'),
+  javascript: () => import('shiki/dist/langs/javascript.mjs'),
+  json: () => import('shiki/dist/langs/json.mjs'),
+  jsx: () => import('shiki/dist/langs/jsx.mjs'),
+  markdown: () => import('shiki/dist/langs/markdown.mjs'),
+  shellscript: () => import('shiki/dist/langs/shellscript.mjs'),
+  sql: () => import('shiki/dist/langs/sql.mjs'),
+  ts: () => import('shiki/dist/langs/ts.mjs'),
+  tsx: () => import('shiki/dist/langs/tsx.mjs'),
+  xml: () => import('shiki/dist/langs/xml.mjs'),
+  yaml: () => import('shiki/dist/langs/yaml.mjs'),
+} as const;
+
+type SupportedHighlightLanguage = keyof typeof SHIKI_LANG_LOADERS;
+
+const SHIKI_LANGUAGE_ALIASES: Record<string, SupportedHighlightLanguage> = {
+  bash: 'bash',
+  css: 'css',
+  html: 'html',
+  javascript: 'javascript',
+  js: 'javascript',
+  json: 'json',
+  jsx: 'jsx',
+  markdown: 'markdown',
+  md: 'markdown',
+  sh: 'shellscript',
+  shell: 'shellscript',
+  shellscript: 'shellscript',
+  sql: 'sql',
+  ts: 'ts',
+  tsx: 'tsx',
+  typescript: 'ts',
+  xml: 'xml',
+  yaml: 'yaml',
+  yml: 'yaml',
+};
+
+const createCodeHighlighter = createdBundledHighlighter({
+  langs: SHIKI_LANG_LOADERS,
+  themes: {
+    'github-light': () => import('shiki/dist/themes/github-light.mjs'),
+    'github-dark': () => import('shiki/dist/themes/github-dark.mjs'),
+  },
+  engine: async () => {
+    const { createJavaScriptRegexEngine } =
+      await import('shiki/engine/javascript');
+
+    return createJavaScriptRegexEngine();
+  },
+});
+
+const { codeToTokens } = createSingletonShorthands(createCodeHighlighter);
+
+function resolveHighlightLanguage(
+  language: string
+): SupportedHighlightLanguage | null {
+  return SHIKI_LANGUAGE_ALIASES[language.toLowerCase()] ?? null;
+}
+
 const HighlightedPre = React.memo(
   async ({ children, language, ...props }: HighlightedPre) => {
-    const { codeToTokens, bundledLanguages } = await import('shiki');
+    const resolvedLanguage = resolveHighlightLanguage(language);
 
-    if (!(language in bundledLanguages)) {
+    if (!resolvedLanguage) {
       return <pre {...props}>{children}</pre>;
     }
 
     const { tokens } = await codeToTokens(children, {
-      lang: language as keyof typeof bundledLanguages,
+      lang: resolvedLanguage,
       defaultColor: false,
       themes: {
         light: 'github-light',

@@ -1352,6 +1352,21 @@
             "verdict": "Kết luận"
           }
         },
+        "results": {
+          "subtitle": "Xem bản rút gọn ngay trên bảng và mở chi tiết để đọc toàn bộ câu trả lời.",
+          "viewDetails": "Xem chi tiết",
+          "detailTitle": "Chi tiết kết quả",
+          "detailDescription": "Xem đầy đủ câu hỏi, câu trả lời tham chiếu, câu trả lời thực tế và log của kết quả này.",
+          "referenceAnswer": "Câu trả lời tham chiếu",
+          "referenceAnswerEmpty": "Chưa có câu trả lời tham chiếu",
+          "actualAnswerEmpty": "Chưa có câu trả lời thực tế",
+          "log": "Log",
+          "summary": {
+            "total": "Tổng kết quả",
+            "averageScore": "Điểm trung bình",
+            "passRate": "Tỷ lệ đạt"
+          }
+        },
         "toast": {
           "created": "Đã tạo định nghĩa",
           "updated": "Đã cập nhật định nghĩa",

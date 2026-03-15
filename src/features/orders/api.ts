@@ -45,8 +45,6 @@ export async function getOrderDetail(
 }
 
 export async function getMyOrders(
-  // TODO: Confirm customer order-history endpoint contract before enabling this query.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _params?: CustomerOrdersQueryParams
 ): Promise<CustomerOrderSummary[]> {
   const response = await apiClient.get<

@@ -13,6 +13,13 @@ export default defineConfig(async () => ({
       presets: [reactCompilerPreset()],
     } as Parameters<typeof babel>[0]),
   ],
+  build: {
+    rolldownOptions: {
+      checks: {
+        pluginTimings: false,
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

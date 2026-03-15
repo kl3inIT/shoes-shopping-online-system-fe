@@ -4,6 +4,8 @@ import { PERMISSIONS } from '@/features/auth';
 import { queryClient } from '@/features/queryClient';
 import { AdminLayout } from '@/layouts/admin/AdminLayout';
 import { MainLayout } from '@/layouts/main/MainLayout';
+import Page403 from '@/pages/error/Page403';
+import Page404 from '@/pages/error/Page404';
 import { RootErrorBoundary } from '@/routes/RootErrorBoundary';
 
 import { ProtectedRoute } from './ProtectedRoute';
@@ -12,10 +14,7 @@ import { RequirePermission } from './RequirePermission';
 export const router = createBrowserRouter([
   {
     path: '/403',
-    lazy: async () => {
-      const { default: Component } = await import('@/pages/error/Page403');
-      return { Component };
-    },
+    Component: Page403,
     errorElement: <RootErrorBoundary />,
   },
   {
@@ -142,10 +141,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '*',
-        lazy: async () => {
-          const { default: Component } = await import('@/pages/error/Page404');
-          return { Component };
-        },
+        Component: Page404,
       },
     ],
   },
