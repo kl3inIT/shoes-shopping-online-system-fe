@@ -1236,6 +1236,52 @@
           "ingested": "Ingestion completed",
           "ingestError": "Ingestion failed"
         }
+      },
+      "chatLogs": {
+        "title": "Chat Logs",
+        "table": {
+          "date": "Date",
+          "conversationId": "Conversation ID",
+          "promptTokens": "Prompt Tokens",
+          "completionTokens": "Completion Tokens",
+          "responseTime": "Response Time (ms)",
+          "content": "Content",
+          "sources": "Sources",
+          "actions": "Actions",
+          "errorState": "Could not load chat logs"
+        },
+        "pagination": {
+          "pageOf": "Page {{page}} of {{total}}"
+        },
+        "totalLogs": "{{count}} log(s) total",
+        "fetchError": "Failed to load chat logs",
+        "filter": {
+          "conversationId": "Conversation ID",
+          "conversationIdPlaceholder": "e.g. abc-123",
+          "apply": "Apply",
+          "clearAll": "Clear all",
+          "datePreset": {
+            "today": "Today",
+            "last7d": "Last 7 days",
+            "last30d": "Last 30 days",
+            "custom": "Custom"
+          },
+          "customFrom": "From",
+          "customTo": "To"
+        },
+        "actions": {
+          "viewDetail": "View detail"
+        },
+        "detail": {
+          "title": "Chat Log Detail",
+          "response": "Response",
+          "sources": "Sources",
+          "metadata": "Metadata",
+          "promptTokens": "Prompt tokens",
+          "completionTokens": "Completion tokens",
+          "responseTime": "Response time",
+          "close": "Close"
+        }
       }
     },
     "reviews": {
