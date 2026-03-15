@@ -9,11 +9,19 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { getErrorMessage } from '@/features/apiClient';
 import { useDashboardLowStock } from '@/features/admin/dashboard/api/dashboardApi';
 
 export function LowStockAlertTable() {
   const { t } = useTranslation();
-  const { data: lowStockItems = [], isLoading } = useDashboardLowStock();
+  const {
+    data: lowStockItems = [],
+    error,
+    isError,
+    isLoading,
+    refetch,
+  } = useDashboardLowStock();
 
   return (
     <div className='px-4 lg:px-6 mb-8'>
@@ -58,6 +66,21 @@ export function LowStockAlertTable() {
                   className='text-center py-6 text-muted-foreground'
                 >
                   {t('common.loading', { defaultValue: 'Loading...' })}
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={4} className='text-center py-6'>
+                  <div className='flex flex-col items-center gap-2 text-sm'>
+                    <p className='text-destructive'>{getErrorMessage(error)}</p>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => refetch()}
+                    >
+                      {t('common.retry', { defaultValue: 'Retry' })}
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : lowStockItems.length === 0 ? (

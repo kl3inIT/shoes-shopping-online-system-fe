@@ -510,7 +510,8 @@
     "loadError": "Không tải được dữ liệu",
     "uploading": "Đang tải lên...",
     "error": "Lỗi",
-    "success": "Thành công"
+    "success": "Thành công",
+    "retry": "Thử lại"
   },
   "error": {
     "page": {
@@ -567,7 +568,7 @@
       "notifications": "Thông báo",
       "inventory": "Kho hàng",
       "analytics": "Phân tích",
-      "ai": "AI",
+      "ai": "Vận hành trợ lý",
       "settings": "Cài đặt",
       "account": "Tài khoản",
       "help": "Trợ giúp",
@@ -603,7 +604,11 @@
           "title": "Sản phẩm đã bán",
           "trend": "Nhu cầu sản phẩm đang cao",
           "description": "Tính trên toàn bộ dòng sản phẩm đã giao"
-        }
+        },
+        "badge": {
+          "live": "Trực tiếp"
+        },
+        "liveData": "Dữ liệu trực tiếp từ backend"
       },
       "chart": {
         "title": "Tổng doanh thu và lợi nhuận",
@@ -621,7 +626,8 @@
           "visitors": "Lượt truy cập",
           "revenue": "Doanh thu",
           "profit": "Lợi nhuận"
-        }
+        },
+        "empty": "Không có dữ liệu biểu đồ cho giai đoạn này."
       },
       "recentOrders": {
         "title": "Đơn hàng gần đây",
@@ -1280,6 +1286,23 @@
           "responseTime": "Thời gian phản hồi",
           "close": "Đóng"
         }
+      },
+      "page": {
+        "title": "Vận hành trợ lý",
+        "description": "Cấu hình prompt, lập chỉ mục tri thức, nhật ký hội thoại và kiểm thử phản hồi trợ lý."
+      },
+      "tabs": {
+        "configuration": "Cấu hình",
+        "knowledgeBase": "Kho tri thức",
+        "conversations": "Hội thoại",
+        "playground": "Kiểm thử"
+      },
+      "parameters": {
+        "target": {
+          "chat": "Chat",
+          "search": "Tìm kiếm"
+        },
+        "noDescription": "(không có mô tả)"
       }
     },
     "reviews": {

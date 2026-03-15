@@ -9,6 +9,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { getErrorMessage } from '@/features/apiClient';
 import { useDashboardRecentOrders } from '@/features/admin/dashboard/api/dashboardApi';
 
 const formatCurrency = (value: number, locale: string) =>
@@ -20,7 +22,13 @@ const formatCurrency = (value: number, locale: string) =>
 
 export function RecentOrdersTable() {
   const { t, i18n } = useTranslation();
-  const { data: recentOrders = [], isLoading } = useDashboardRecentOrders();
+  const {
+    data: recentOrders = [],
+    error,
+    isError,
+    isLoading,
+    refetch,
+  } = useDashboardRecentOrders();
   const locale = i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US';
 
   return (
@@ -71,6 +79,21 @@ export function RecentOrdersTable() {
                   className='text-center py-6 text-muted-foreground'
                 >
                   {t('common.loading', { defaultValue: 'Loading...' })}
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={5} className='text-center py-6'>
+                  <div className='flex flex-col items-center gap-2 text-sm'>
+                    <p className='text-destructive'>{getErrorMessage(error)}</p>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => refetch()}
+                    >
+                      {t('common.retry', { defaultValue: 'Retry' })}
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : recentOrders.length === 0 ? (

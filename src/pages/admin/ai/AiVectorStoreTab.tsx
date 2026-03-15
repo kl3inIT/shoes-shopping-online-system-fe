@@ -37,7 +37,7 @@ export function AiVectorStoreTab() {
   const [filterError, setFilterError] = useState<string | null>(null);
 
   // Selection state — clear when filter or page changes
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
 
   // Dialog open state
   const [detailDoc, setDetailDoc] = useState<VectorDocument | null>(null);
@@ -67,7 +67,11 @@ export function AiVectorStoreTab() {
   const toggleSelectOne = (id: string, checked: boolean) =>
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      checked ? next.add(id) : next.delete(id);
+      if (checked) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
       return next;
     });
 
