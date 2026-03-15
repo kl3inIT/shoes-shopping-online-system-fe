@@ -1,6 +1,5 @@
 import { keepPreviousData, queryOptions } from '@tanstack/react-query';
 import { getCheckDefs, getCheckRuns, getCheckResults } from './api';
-import type { GetCheckRunsParams } from './types';
 
 export const adminCheckDefsQueryOptions = () =>
   queryOptions({
