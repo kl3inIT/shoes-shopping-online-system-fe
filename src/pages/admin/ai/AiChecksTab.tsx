@@ -88,10 +88,6 @@ export function AiChecksTab() {
     setDeleteDialogOpen(false);
   };
 
-  const handleViewResults = (runId: string) => {
-    window.open(`/admin/ai/checks/runs/${runId}`, '_blank');
-  };
-
   return (
     <div className='space-y-6'>
       {/* Section 1 — Check Definitions */}
@@ -171,7 +167,6 @@ export function AiChecksTab() {
         <CheckRunHistoryTable
           runs={runsData?.content ?? []}
           isLoading={runsLoading}
-          onViewResults={handleViewResults}
         />
         {totalRunPages > 0 && (
           <Pagination>

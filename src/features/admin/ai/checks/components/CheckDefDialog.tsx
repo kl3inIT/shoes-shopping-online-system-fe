@@ -63,14 +63,14 @@ export function CheckDefDialog({
         <DialogHeader>
           <DialogTitle>
             {isEditMode
-              ? t('admin.ai.checks.dialog.editTitle', 'Edit Check Definition')
-              : t('admin.ai.checks.dialog.createTitle', 'Add Check Definition')}
+              ? t('admin.ai.checks.dialog.editDef', 'Edit Check Definition')
+              : t('admin.ai.checks.dialog.addDef', 'Add Check Definition')}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className='space-y-4'>
           <div className='space-y-1'>
             <label className='text-sm font-medium'>
-              {t('admin.ai.checks.dialog.categoryLabel', 'Category')}
+              {t('admin.ai.checks.dialog.field.category', 'Category')}
               <span className='ml-1 text-xs text-muted-foreground'>
                 {t('admin.ai.checks.dialog.optional', '(optional)')}
               </span>
@@ -86,7 +86,7 @@ export function CheckDefDialog({
           </div>
           <div className='space-y-1'>
             <label className='text-sm font-medium'>
-              {t('admin.ai.checks.dialog.questionLabel', 'Question')}
+              {t('admin.ai.checks.dialog.field.question', 'Question')}
               <span className='ml-1 text-destructive'>*</span>
             </label>
             <Textarea
@@ -103,7 +103,7 @@ export function CheckDefDialog({
           <div className='space-y-1'>
             <label className='text-sm font-medium'>
               {t(
-                'admin.ai.checks.dialog.referenceAnswerLabel',
+                'admin.ai.checks.dialog.field.referenceAnswer',
                 'Reference Answer'
               )}
               {!isEditMode && <span className='ml-1 text-destructive'>*</span>}
@@ -133,7 +133,7 @@ export function CheckDefDialog({
               onCheckedChange={setActive}
             />
             <label htmlFor='check-def-active' className='text-sm font-medium'>
-              {t('admin.ai.checks.dialog.activeLabel', 'Active')}
+              {t('admin.ai.checks.dialog.field.active', 'Active')}
             </label>
           </div>
           <DialogFooter>

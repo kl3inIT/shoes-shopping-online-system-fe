@@ -117,10 +117,16 @@ export function useTriggerRunMutation(options?: {
       if (data !== null) {
         options?.onScore?.(data.score);
         toast.success(
-          t('admin.ai.checks.toast.runCompleted', 'Check run completed') +
-            (data.score !== null
-              ? ` — ${t('admin.ai.checks.toast.score', 'Score')}: ${data.score.toFixed(2)}`
-              : '')
+          data.score !== null
+            ? t(
+                'admin.ai.checks.toast.runComplete',
+                'Run complete — score: {{score}}',
+                { score: data.score.toFixed(2) }
+              )
+            : t(
+                'admin.ai.checks.toast.runCompleteNoScore',
+                'Check run completed'
+              )
         );
       } else {
         toast.warning(

@@ -41,14 +41,16 @@ export function CheckDefTable({
         <TableHeader>
           <TableRow>
             <TableHead>
-              {t('admin.ai.checks.table.category', 'Category')}
+              {t('admin.ai.checks.table.defs.category', 'Category')}
             </TableHead>
             <TableHead>
-              {t('admin.ai.checks.table.question', 'Question')}
+              {t('admin.ai.checks.table.defs.question', 'Question')}
             </TableHead>
-            <TableHead>{t('admin.ai.checks.table.active', 'Active')}</TableHead>
+            <TableHead>
+              {t('admin.ai.checks.table.defs.active', 'Active')}
+            </TableHead>
             <TableHead className='text-right'>
-              {t('admin.ai.checks.table.actions', 'Actions')}
+              {t('admin.ai.checks.table.defs.actions', 'Actions')}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -69,7 +71,7 @@ export function CheckDefTable({
                 colSpan={4}
                 className='py-12 text-center text-muted-foreground'
               >
-                {t('admin.ai.checks.table.emptyState', 'No check definitions')}
+                {t('admin.ai.checks.table.defs.empty', 'No check definitions')}
               </TableCell>
             </TableRow>
           ) : (
@@ -93,21 +95,24 @@ export function CheckDefTable({
                       <Button variant='ghost' size='icon' className='h-8 w-8'>
                         <IconDots className='h-4 w-4' />
                         <span className='sr-only'>
-                          {t('admin.ai.checks.table.openMenu', 'Open menu')}
+                          {t(
+                            'admin.ai.checks.table.defs.openMenu',
+                            'Open menu'
+                          )}
                         </span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align='end'>
                       <DropdownMenuItem onClick={() => onEdit(def)}>
                         <IconPencil className='mr-2 h-4 w-4' />
-                        {t('admin.ai.checks.actions.edit', 'Edit')}
+                        {t('admin.ai.checks.table.defs.edit', 'Edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className='text-destructive focus:text-destructive'
                         onClick={() => onDelete(def.id)}
                       >
                         <IconTrash className='mr-2 h-4 w-4' />
-                        {t('admin.ai.checks.actions.delete', 'Delete')}
+                        {t('admin.ai.checks.table.defs.delete', 'Delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

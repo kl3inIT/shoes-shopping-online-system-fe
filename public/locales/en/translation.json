@@ -539,9 +539,6 @@
   },
   "http": {
     "error": {
-      "network": "Unable to connect to the server.",
-      "timeout": "The server is taking too long to respond. Please try again.",
-      "unknown": "An unexpected error occurred. Please try again.",
       "400": "Invalid data.",
       "401": "Your session has expired. Please log in again.",
       "403": "You do not have permission to access this resource.",
@@ -552,7 +549,10 @@
       "500": "Server error. Please try again later.",
       "502": "The service is temporarily unavailable.",
       "503": "The service is temporarily unavailable.",
-      "504": "The service is temporarily unavailable."
+      "504": "The service is temporarily unavailable.",
+      "network": "Unable to connect to the server.",
+      "timeout": "The server is taking too long to respond. Please try again.",
+      "unknown": "An unexpected error occurred. Please try again."
     }
   },
   "admin": {
@@ -1318,7 +1318,12 @@
             "question": "Question",
             "referenceAnswer": "Reference Answer",
             "active": "Active"
-          }
+          },
+          "optional": "(optional)",
+          "categoryPlaceholder": "e.g. product, policy",
+          "questionPlaceholder": "Enter the check question",
+          "referenceAnswerPlaceholder": "Enter the expected reference answer",
+          "referenceAnswerEditPlaceholder": "Enter new reference answer (optional)"
         },
         "table": {
           "defs": {
@@ -1328,7 +1333,8 @@
             "actions": "Actions",
             "edit": "Edit",
             "delete": "Delete",
-            "empty": "No check definitions"
+            "empty": "No check definitions",
+            "openMenu": "Open menu"
           },
           "runs": {
             "score": "Score",
@@ -1350,12 +1356,24 @@
           "updated": "Definition updated",
           "deleted": "Definition deleted",
           "runComplete": "Run complete — score: {{score}}",
-          "noActiveDefs": "No active definitions to run"
+          "noActiveDefs": "No active definitions to run",
+          "runCompleteNoScore": "Check run completed"
         },
         "fetchError": "Failed to load check definitions",
         "totalDefs": "{{count}} definition(s)",
         "pagination": {
           "pageOf": "Page {{page}} of {{total}}"
+        },
+        "results": {
+          "title": "Run Results",
+          "loading": "Loading results...",
+          "back": "Back",
+          "emptyState": "No results found",
+          "viewLog": "View log"
+        },
+        "verdict": {
+          "pass": "PASS",
+          "fail": "FAIL"
         }
       },
       "page": {

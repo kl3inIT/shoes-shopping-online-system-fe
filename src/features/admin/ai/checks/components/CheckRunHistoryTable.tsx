@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 import { IconEye } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,13 +15,11 @@ import type { CheckRunSummaryResponse } from '../types';
 interface CheckRunHistoryTableProps {
   runs: CheckRunSummaryResponse[];
   isLoading: boolean;
-  onViewResults: (runId: string) => void;
 }
 
 export function CheckRunHistoryTable({
   runs,
   isLoading,
-  onViewResults,
 }: CheckRunHistoryTableProps) {
   const { t } = useTranslation();
 
@@ -30,14 +29,14 @@ export function CheckRunHistoryTable({
         <TableHeader>
           <TableRow>
             <TableHead>
-              {t('admin.ai.checks.runs.table.score', 'Score')}
+              {t('admin.ai.checks.table.runs.score', 'Score')}
             </TableHead>
             <TableHead>
-              {t('admin.ai.checks.runs.table.date', 'Date')}
+              {t('admin.ai.checks.table.runs.date', 'Date')}
             </TableHead>
-            <TableHead>{t('admin.ai.checks.runs.table.by', 'By')}</TableHead>
+            <TableHead>{t('admin.ai.checks.table.runs.by', 'By')}</TableHead>
             <TableHead className='text-right'>
-              {t('admin.ai.checks.runs.table.actions', 'Actions')}
+              {t('admin.ai.checks.table.runs.actions', 'Actions')}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -58,10 +57,7 @@ export function CheckRunHistoryTable({
                 colSpan={4}
                 className='py-12 text-center text-muted-foreground'
               >
-                {t(
-                  'admin.ai.checks.runs.table.emptyState',
-                  'No check runs yet'
-                )}
+                {t('admin.ai.checks.table.runs.empty', 'No check runs yet')}
               </TableCell>
             </TableRow>
           ) : (
@@ -79,17 +75,15 @@ export function CheckRunHistoryTable({
                   {run.createdByUsername ?? '—'}
                 </TableCell>
                 <TableCell className='text-right'>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='gap-1.5'
-                    onClick={() => onViewResults(run.id)}
-                  >
-                    <IconEye className='h-4 w-4' />
-                    {t(
-                      'admin.ai.checks.runs.table.viewResults',
-                      'View Results'
-                    )}
+                  <Button variant='ghost' size='sm' className='gap-1.5' asChild>
+                    <Link
+                      to={`/admin/ai/checks/runs/${run.id}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      <IconEye className='h-4 w-4' />
+                      {t('admin.ai.checks.button.viewResults', 'View Results')}
+                    </Link>
                   </Button>
                 </TableCell>
               </TableRow>
