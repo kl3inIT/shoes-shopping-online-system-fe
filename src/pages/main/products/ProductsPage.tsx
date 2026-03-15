@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { SlidersHorizontal, X } from 'lucide-react';
 
@@ -9,6 +9,7 @@ import {
   PageEmptyState,
   PageErrorState,
   PageLoader,
+  PaginationControls,
   ReloadPageButton,
 } from '@/components/app';
 import {
@@ -18,14 +19,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
 
 import {
   ProductGrid,
@@ -44,9 +37,10 @@ import {
   useRemoveFromWishlistMutation,
 } from '@/features/wishlist';
 import { useIsMobile } from '@/hooks/useMobile';
+import { getErrorMessage } from '@/features/apiClient';
 import { resolveImageUrl } from '@/lib/image';
 
-import { sortOptions, priceRange } from './data';
+import { priceRange, sizeOptions } from './data';
 
 type MappedProduct = {
   id: string;
@@ -73,6 +67,8 @@ type FilterState = {
   min?: number;
   max?: number;
   sort?: string;
+  page?: number;
+  size?: number;
 };
 
 type FilterSidebarProps = {
@@ -82,45 +78,97 @@ type FilterSidebarProps = {
   dynamicBrandOptions: {
     value: string;
     label: string;
-    count: number;
+    count?: number;
   }[];
   selectedBrands: string[];
   onBrandsChange: (brands: string[]) => void;
   dynamicCategoryOptions: {
     value: string;
     label: string;
-    count: number;
+    count?: number;
   }[];
   selectedCategories: string[];
   onCategoriesChange: (categories: string[]) => void;
   dynamicSizeOptions: {
     value: string;
     label: string;
-    count: number;
+    count?: number;
   }[];
   selectedSizes: string[];
   onSizesChange: (sizes: string[]) => void;
   dynamicGenderOptions: {
     value: string;
     label: string;
-    count: number;
+    count?: number;
   }[];
   selectedGenders: string[];
   onGendersChange: (genders: string[]) => void;
-  dynamicPriceRange: {
-    min: number;
-    max: number;
-  };
   selectedPriceRange: {
     min: number;
     max: number;
   };
   onPriceRangeChange: (range: { min: number; max: number }) => void;
-  sortOptions: typeof sortOptions;
+  sortOptions: {
+    value: string;
+    label: string;
+  }[];
   selectedSort: string;
   onSortChange: (sort: string) => void;
   onClearFilters: () => void;
 };
+
+const GENDER_OPTIONS = ['MEN', 'WOMEN', 'UNISEX'] as const;
+const DEFAULT_PAGE_SIZE = 20;
+const PAGE_SIZE_OPTIONS = [10, 20, 40];
+
+function parseListParam(value: string | null) {
+  return value ? value.split(',').filter(Boolean) : [];
+}
+
+function parseNumberParam(value: string | null) {
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function parsePageParam(value: string | null, fallback: number) {
+  const parsed = parseNumberParam(value);
+  return parsed !== undefined && parsed >= 0 ? parsed : fallback;
+}
+
+function parseFilterState(searchParams: URLSearchParams): FilterState {
+  return {
+    q: searchParams.get('q') ?? undefined,
+    brands: parseListParam(searchParams.get('brands')),
+    sizes: parseListParam(searchParams.get('sizes')),
+    categories: parseListParam(searchParams.get('categories')),
+    genders: parseListParam(searchParams.get('genders')),
+    min: parseNumberParam(searchParams.get('min')),
+    max: parseNumberParam(searchParams.get('max')),
+    sort: searchParams.get('sort') ?? undefined,
+    page: parsePageParam(searchParams.get('page'), 0),
+    size: parsePageParam(searchParams.get('size'), DEFAULT_PAGE_SIZE),
+  };
+}
+
+function mapSortToApiSort(sort: string) {
+  switch (sort) {
+    case 'price-asc':
+      return 'price,asc';
+    case 'price-desc':
+      return 'price,desc';
+    case 'rating':
+      return 'rating,desc';
+    case 'popular':
+      return 'popular,desc';
+    case 'newest':
+    default:
+      return 'createdAt,desc';
+  }
+}
 
 function FilterSidebar({
   searchValue,
@@ -138,10 +186,9 @@ function FilterSidebar({
   dynamicGenderOptions,
   selectedGenders,
   onGendersChange,
-  dynamicPriceRange,
   selectedPriceRange,
   onPriceRangeChange,
-  sortOptions: filterSortOptions,
+  sortOptions,
   selectedSort,
   onSortChange,
   onClearFilters,
@@ -163,10 +210,10 @@ function FilterSidebar({
       genders={dynamicGenderOptions}
       selectedGenders={selectedGenders}
       onGendersChange={onGendersChange}
-      priceRange={dynamicPriceRange}
+      priceRange={priceRange}
       selectedPriceRange={selectedPriceRange}
       onPriceRangeChange={onPriceRangeChange}
-      sortOptions={filterSortOptions}
+      sortOptions={sortOptions}
       selectedSort={selectedSort}
       onSortChange={onSortChange}
       onClearFilters={onClearFilters}
@@ -177,7 +224,7 @@ function FilterSidebar({
 export default function ProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isMobile = useIsMobile();
   const [cartOpen, setCartOpen] = useState(false);
   const [cartProduct, setCartProduct] = useState<AddToCartDialogProduct | null>(
@@ -187,41 +234,13 @@ export default function ProductsPage() {
   const { data: wishlistData = [] } = useQueryWishlist();
   const removeFromWishlistMutation = useRemoveFromWishlistMutation();
 
-  const parseListParam = (value: string | null) =>
-    value ? value.split(',').filter(Boolean) : [];
+  const initialFilters = useMemo(
+    () => parseFilterState(searchParams),
+    [searchParams]
+  );
 
-  const parseNumberParam = (value: string | null) => {
-    if (!value) {
-      return undefined;
-    }
-
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : undefined;
-  };
-
-  const parseFilterState = (): FilterState => {
-    const params = new URLSearchParams(location.search);
-
-    return {
-      q: params.get('q') ?? undefined,
-      brands: parseListParam(params.get('brands')),
-      sizes: parseListParam(params.get('sizes')),
-      categories: parseListParam(params.get('categories')),
-      genders: parseListParam(params.get('genders')),
-      min: parseNumberParam(params.get('min')),
-      max: parseNumberParam(params.get('max')),
-      sort: params.get('sort') ?? undefined,
-    };
-  };
-
-  const initialFilters = parseFilterState();
-
-  const { data: shoesData = [], isLoading, error } = useShoes();
-  const { data: brands = [] } = useBrands();
-  const { data: categories = [] } = useCategories();
-
-  // Filter states
-  const [searchValue, setSearchValue] = useState(initialFilters.q ?? '');
+  const [searchDraft, setSearchDraft] = useState(initialFilters.q ?? '');
+  const [searchQuery, setSearchQuery] = useState(initialFilters.q ?? '');
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
     initialFilters.brands ?? []
   );
@@ -238,212 +257,229 @@ export default function ProductsPage() {
     min: initialFilters.min ?? priceRange.min,
     max: initialFilters.max ?? priceRange.max,
   });
-  const [hasAdjustedPriceRange, setHasAdjustedPriceRange] = useState(
-    initialFilters.min !== undefined || initialFilters.max !== undefined
-  );
   const [selectedSort, setSelectedSort] = useState(
     initialFilters.sort ?? 'newest'
   );
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  // Map ShoeResponse to view model for filters + ProductGrid
-  const mappedProducts: MappedProduct[] = shoesData.map(
-    (shoe: ShoeResponse) => ({
-      id: shoe.id,
-      name: shoe.name,
-      price: shoe.price,
-      image:
-        shoe.imageUrls && shoe.imageUrls.length > 0
-          ? (resolveImageUrl(shoe.imageUrls[0]) ?? '')
-          : '',
-      brand: shoe.brandName,
-      brandSlug: shoe.brandSlug,
-      rating: shoe.avgRating ?? 0,
-      reviewCount: shoe.reviewCount ?? 0,
-      categorySlug: shoe.categorySlug,
-      gender: shoe.gender,
-      createdAt: shoe.createdAt,
-      variants: shoe.variants ?? [],
-    })
+  const [currentPage, setCurrentPage] = useState(initialFilters.page ?? 0);
+  const [pageSize, setPageSize] = useState(
+    initialFilters.size ?? DEFAULT_PAGE_SIZE
   );
 
-  const wishlistIds = new Set(wishlistData.map((w) => w.shoeId));
-  mappedProducts.forEach((p) => {
-    p.isInWishlist = wishlistIds.has(p.id);
+  const { data: brands = [] } = useBrands();
+  const { data: categories = [] } = useCategories();
+
+  const selectedBrandIds = useMemo(
+    () =>
+      brands
+        .filter((brand) => selectedBrands.includes(brand.slug))
+        .map((brand) => brand.id),
+    [brands, selectedBrands]
+  );
+
+  const selectedCategoryIds = useMemo(
+    () =>
+      categories
+        .filter((category) => selectedCategories.includes(category.slug))
+        .map((category) => category.id),
+    [categories, selectedCategories]
+  );
+
+  const shoesQuery = useShoes({
+    page: currentPage,
+    size: pageSize,
+    sort: mapSortToApiSort(selectedSort),
+    search: searchQuery || undefined,
+    brandIds: selectedBrandIds.length > 0 ? selectedBrandIds : undefined,
+    sizes: selectedSizes.length > 0 ? selectedSizes : undefined,
+    categoryIds:
+      selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
+    minPrice:
+      selectedPriceRange.min > priceRange.min
+        ? selectedPriceRange.min
+        : undefined,
+    maxPrice:
+      selectedPriceRange.max < priceRange.max
+        ? selectedPriceRange.max
+        : undefined,
+    statuses: ['ACTIVE', 'OUT_OF_STOCK'],
+    genders: selectedGenders.length > 0 ? selectedGenders : undefined,
   });
 
-  const dynamicPriceRange = mappedProducts.reduce(
-    (range, product) => ({
-      min: Math.min(range.min, product.price),
-      max: Math.max(range.max, product.price),
-    }),
-    { min: priceRange.min, max: priceRange.max }
-  );
+  const shoesPage = shoesQuery.data;
+  const shoesData = shoesPage?.content ?? [];
 
-  const effectivePriceRange = hasAdjustedPriceRange
-    ? selectedPriceRange
-    : dynamicPriceRange;
-
-  // Filter products based on search and filters
-  const filteredProducts = mappedProducts.filter((product: MappedProduct) => {
-    // Search filter
-    if (
-      searchValue &&
-      !product.name.toLowerCase().includes(searchValue.toLowerCase()) &&
-      !product.brand.toLowerCase().includes(searchValue.toLowerCase())
-    ) {
-      return false;
+  useEffect(() => {
+    if (!shoesPage || shoesPage.totalPages === 0) {
+      return;
     }
 
-    // Brand filter
-    if (
-      selectedBrands.length > 0 &&
-      !selectedBrands.includes(product.brandSlug)
-    ) {
-      return false;
+    if (currentPage > shoesPage.totalPages - 1) {
+      setCurrentPage(Math.max(0, shoesPage.totalPages - 1));
     }
+  }, [currentPage, shoesPage]);
 
-    // Category filter
-    if (
-      selectedCategories.length > 0 &&
-      !selectedCategories.includes(product.categorySlug)
-    ) {
-      return false;
+  useEffect(() => {
+    const nextSearchParams = new URLSearchParams();
+
+    if (searchQuery) nextSearchParams.set('q', searchQuery);
+    if (selectedBrands.length > 0) {
+      nextSearchParams.set('brands', selectedBrands.join(','));
     }
-
-    // Size filter
     if (selectedSizes.length > 0) {
-      const availableSizes = product.variants.map((variant) => variant.size);
-      if (!selectedSizes.some((size) => availableSizes.includes(size))) {
-        return false;
-      }
+      nextSearchParams.set('sizes', selectedSizes.join(','));
+    }
+    if (selectedCategories.length > 0) {
+      nextSearchParams.set('categories', selectedCategories.join(','));
+    }
+    if (selectedGenders.length > 0) {
+      nextSearchParams.set('genders', selectedGenders.join(','));
+    }
+    if (selectedPriceRange.min > priceRange.min) {
+      nextSearchParams.set('min', String(selectedPriceRange.min));
+    }
+    if (selectedPriceRange.max < priceRange.max) {
+      nextSearchParams.set('max', String(selectedPriceRange.max));
+    }
+    if (selectedSort !== 'newest') {
+      nextSearchParams.set('sort', selectedSort);
+    }
+    if (currentPage > 0) {
+      nextSearchParams.set('page', String(currentPage));
+    }
+    if (pageSize !== DEFAULT_PAGE_SIZE) {
+      nextSearchParams.set('size', String(pageSize));
     }
 
-    // Gender filter
-    if (
-      selectedGenders.length > 0 &&
-      !selectedGenders.includes(product.gender)
-    ) {
-      return false;
+    if (nextSearchParams.toString() !== searchParams.toString()) {
+      setSearchParams(nextSearchParams, { replace: true });
     }
+  }, [
+    currentPage,
+    pageSize,
+    searchParams,
+    searchQuery,
+    selectedBrands,
+    selectedCategories,
+    selectedGenders,
+    selectedPriceRange,
+    selectedSizes,
+    selectedSort,
+    setSearchParams,
+  ]);
 
-    // Price filter
-    if (
-      product.price < effectivePriceRange.min ||
-      product.price > effectivePriceRange.max
-    ) {
-      return false;
-    }
-
-    return true;
-  });
-
-  // Sort products
-  const sortedProducts = [...filteredProducts].sort(
-    (a: MappedProduct, b: MappedProduct) => {
-      switch (selectedSort) {
-        case 'newest':
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-        case 'price-asc':
-          return a.price - b.price;
-        case 'price-desc':
-          return b.price - a.price;
-        case 'rating':
-          return b.rating - a.rating;
-        default:
-          return 0;
-      }
-    }
+  const mappedProducts: MappedProduct[] = useMemo(
+    () =>
+      shoesData.map((shoe: ShoeResponse) => ({
+        id: shoe.id,
+        name: shoe.name,
+        price: shoe.price,
+        image:
+          shoe.imageUrls && shoe.imageUrls.length > 0
+            ? (resolveImageUrl(shoe.imageUrls[0]) ?? '')
+            : '',
+        brand: shoe.brandName,
+        brandSlug: shoe.brandSlug,
+        rating: shoe.avgRating ?? 0,
+        reviewCount: shoe.reviewCount ?? 0,
+        categorySlug: shoe.categorySlug,
+        gender: shoe.gender,
+        createdAt: shoe.createdAt,
+        variants: shoe.variants ?? [],
+      })),
+    [shoesData]
   );
 
-  // Client-side Paginate
-  const totalPages = Math.max(
-    1,
-    Math.ceil(sortedProducts.length / itemsPerPage)
+  const wishlistIds = useMemo(
+    () => new Set(wishlistData.map((wishlist) => wishlist.shoeId)),
+    [wishlistData]
   );
 
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-
-  const paginatedProducts = sortedProducts.slice(
-    (safeCurrentPage - 1) * itemsPerPage,
-    safeCurrentPage * itemsPerPage
+  const products = useMemo(
+    () =>
+      mappedProducts.map((product) => ({
+        ...product,
+        isInWishlist: wishlistIds.has(product.id),
+      })),
+    [mappedProducts, wishlistIds]
   );
 
-  // Dynamic filter options from backend data
-  const productSizeCounts = mappedProducts.reduce((acc, product) => {
-    product.variants.forEach((variant) => {
-      if (!variant.size) {
-        return;
-      }
-      acc.set(variant.size, (acc.get(variant.size) ?? 0) + variant.quantity);
-    });
-    return acc;
-  }, new Map<string, number>());
+  const localizedSortOptions = useMemo(
+    () => [
+      { value: 'newest', label: t('products.sort.newest') },
+      { value: 'price-asc', label: t('products.sort.priceAsc') },
+      { value: 'price-desc', label: t('products.sort.priceDesc') },
+      { value: 'rating', label: t('products.sort.rating') },
+      { value: 'popular', label: t('products.sort.popular') },
+    ],
+    [t]
+  );
 
-  const dynamicSizeOptions = Array.from(productSizeCounts.entries())
-    .map(([size, count]) => ({
-      value: size,
-      label: size,
-      count,
-    }))
-    .sort((a, b) => Number(a.value) - Number(b.value));
+  const brandOptions = useMemo(
+    () =>
+      brands
+        .map((brand: BrandResponse) => ({
+          value: brand.slug,
+          label: brand.name,
+        }))
+        .sort((left, right) => left.label.localeCompare(right.label)),
+    [brands]
+  );
 
-  const dynamicBrandOptions = brands.map((b: BrandResponse) => {
-    const count = mappedProducts.filter(
-      (product) => product.brandSlug === b.slug
-    ).length;
+  const categoryOptions = useMemo(
+    () =>
+      categories
+        .map((category: CategoryResponse) => ({
+          value: category.slug,
+          label: category.name,
+        }))
+        .sort((left, right) => left.label.localeCompare(right.label)),
+    [categories]
+  );
 
-    return {
-      value: b.slug,
-      label: b.name,
-      count,
-    };
-  });
+  const genderOptions = useMemo(
+    () =>
+      GENDER_OPTIONS.map((gender) => ({
+        value: gender,
+        label: t(`products.gender.${gender.toLowerCase()}`, gender),
+      })),
+    [t]
+  );
 
-  const dynamicCategoryOptions = categories.map((c: CategoryResponse) => {
-    const count = mappedProducts.filter(
-      (product) => product.categorySlug === c.slug
-    ).length;
+  const hasActiveFilters =
+    searchQuery !== '' ||
+    selectedBrands.length > 0 ||
+    selectedSizes.length > 0 ||
+    selectedCategories.length > 0 ||
+    selectedGenders.length > 0 ||
+    selectedPriceRange.min !== priceRange.min ||
+    selectedPriceRange.max !== priceRange.max ||
+    selectedSort !== 'newest';
 
-    return {
-      value: c.slug,
-      label: c.name,
-      count,
-    };
-  });
-
-  const dynamicGenderOptions = Array.from(
-    mappedProducts.reduce((acc, product) => {
-      if (!product.gender) {
-        return acc;
-      }
-      acc.set(product.gender, (acc.get(product.gender) ?? 0) + 1);
-      return acc;
-    }, new Map<string, number>())
-  ).map(([gender, count]) => ({
-    value: gender,
-    label: gender,
-    count,
-  }));
+  const handleClearFilters = () => {
+    setSearchDraft('');
+    setSearchQuery('');
+    setSelectedBrands([]);
+    setSelectedSizes([]);
+    setSelectedCategories([]);
+    setSelectedGenders([]);
+    setSelectedPriceRange(priceRange);
+    setSelectedSort('newest');
+    setCurrentPage(0);
+  };
 
   const handleProductClick = (id: string) => {
     void navigate(`/products/${id}`);
   };
 
   const handleAddToCart = (id: string) => {
-    const p = paginatedProducts.find((x) => x.id === id);
-    if (!p) return;
+    const product = products.find((item) => item.id === id);
+    if (!product) return;
 
     setCartProduct({
-      id: p.id,
-      name: p.name,
-      image: p.image,
-      price: p.price,
+      id: product.id,
+      name: product.name,
+      image: product.image,
+      price: product.price,
     });
     setCartOpen(true);
   };
@@ -456,57 +492,40 @@ export default function ProductsPage() {
     }
   };
 
-  if (isLoading) {
+  if (shoesQuery.isPending && !shoesPage) {
     return <PageLoader description='Loading product catalog and filters.' />;
   }
 
-  if (error) {
+  if (shoesQuery.isError && !shoesPage) {
     return (
       <PageErrorState
-        description='Error loading products. Please try again later.'
+        description={getErrorMessage(shoesQuery.error)}
         action={<ReloadPageButton />}
       />
     );
   }
 
-  const handleClearFilters = () => {
-    setSearchValue('');
-    setSelectedBrands([]);
-    setSelectedSizes([]);
-    setSelectedCategories([]);
-    setSelectedGenders([]);
-    setSelectedPriceRange(dynamicPriceRange);
-    setHasAdjustedPriceRange(false);
-    setSelectedSort('newest');
-    setCurrentPage(1);
-  };
-
-  const hasActiveFilters =
-    searchValue ||
-    selectedBrands.length > 0 ||
-    selectedSizes.length > 0 ||
-    selectedCategories.length > 0 ||
-    selectedGenders.length > 0 ||
-    effectivePriceRange.min !== dynamicPriceRange.min ||
-    effectivePriceRange.max !== dynamicPriceRange.max;
-
   return (
     <div className='space-y-6'>
-      {/* Page Header */}
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
         <div>
           <h1 className='text-3xl font-bold'>{t('products.title')}</h1>
           <p className='text-muted-foreground'>
             {t('products.showing', {
-              count: paginatedProducts.length,
-              total: sortedProducts.length,
+              count: products.length,
+              total: shoesPage?.totalElements ?? 0,
             })}
           </p>
         </div>
 
         <div className='flex items-center gap-2'>
-          {/* Active Filters Count */}
-          {hasActiveFilters && (
+          {shoesQuery.isFetching && !shoesQuery.isPending ? (
+            <span className='text-sm text-muted-foreground'>
+              {t('products.loadingResults', 'Updating results...')}
+            </span>
+          ) : null}
+
+          {hasActiveFilters ? (
             <Badge variant='secondary' className='gap-1'>
               {t('products.filtersActive')}
               <button
@@ -516,10 +535,9 @@ export default function ProductsPage() {
                 <X className='h-3 w-3' />
               </button>
             </Badge>
-          )}
+          ) : null}
 
-          {/* Mobile Filter Button */}
-          {isMobile && (
+          {isMobile ? (
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant='outline' size='sm'>
@@ -533,189 +551,161 @@ export default function ProductsPage() {
                 </SheetHeader>
                 <div className='mt-6'>
                   <FilterSidebar
-                    searchValue={searchValue}
-                    onSearchChange={(value) => {
-                      setSearchValue(value);
-                      setCurrentPage(1);
-                    }}
+                    searchValue={searchDraft}
+                    onSearchChange={setSearchDraft}
                     onSearchSubmit={(value) => {
-                      setSearchValue(value);
-                      setCurrentPage(1);
+                      setSearchDraft(value);
+                      setSearchQuery(value);
+                      setCurrentPage(0);
                     }}
-                    dynamicBrandOptions={dynamicBrandOptions}
+                    dynamicBrandOptions={brandOptions}
                     selectedBrands={selectedBrands}
-                    onBrandsChange={(brands) => {
-                      setSelectedBrands(brands);
-                      setCurrentPage(1);
+                    onBrandsChange={(brandsValue) => {
+                      setSelectedBrands(brandsValue);
+                      setCurrentPage(0);
                     }}
-                    dynamicCategoryOptions={dynamicCategoryOptions}
+                    dynamicCategoryOptions={categoryOptions}
                     selectedCategories={selectedCategories}
-                    onCategoriesChange={(categories) => {
-                      setSelectedCategories(categories);
-                      setCurrentPage(1);
+                    onCategoriesChange={(categoriesValue) => {
+                      setSelectedCategories(categoriesValue);
+                      setCurrentPage(0);
                     }}
-                    dynamicSizeOptions={dynamicSizeOptions}
+                    dynamicSizeOptions={sizeOptions}
                     selectedSizes={selectedSizes}
-                    onSizesChange={(sizes) => {
-                      setSelectedSizes(sizes);
-                      setCurrentPage(1);
+                    onSizesChange={(sizesValue) => {
+                      setSelectedSizes(sizesValue);
+                      setCurrentPage(0);
                     }}
-                    dynamicGenderOptions={dynamicGenderOptions}
+                    dynamicGenderOptions={genderOptions}
                     selectedGenders={selectedGenders}
-                    onGendersChange={(genders) => {
-                      setSelectedGenders(genders);
-                      setCurrentPage(1);
+                    onGendersChange={(gendersValue) => {
+                      setSelectedGenders(gendersValue);
+                      setCurrentPage(0);
                     }}
-                    dynamicPriceRange={dynamicPriceRange}
-                    selectedPriceRange={effectivePriceRange}
+                    selectedPriceRange={selectedPriceRange}
                     onPriceRangeChange={(range) => {
                       setSelectedPriceRange(range);
-                      setHasAdjustedPriceRange(true);
-                      setCurrentPage(1);
+                      setCurrentPage(0);
                     }}
-                    sortOptions={sortOptions}
+                    sortOptions={localizedSortOptions}
                     selectedSort={selectedSort}
-                    onSortChange={(sort) => {
-                      setSelectedSort(sort);
-                      setCurrentPage(1);
+                    onSortChange={(sortValue) => {
+                      setSelectedSort(sortValue);
+                      setCurrentPage(0);
                     }}
                     onClearFilters={handleClearFilters}
                   />
                 </div>
               </SheetContent>
             </Sheet>
-          )}
+          ) : null}
         </div>
       </div>
 
       <div className='grid gap-6 lg:grid-cols-4'>
-        {/* Desktop Filter Sidebar */}
-        {!isMobile && (
+        {!isMobile ? (
           <aside className='lg:col-span-1'>
             <div className='sticky top-20 rounded-lg border p-4'>
               <h2 className='mb-4 font-semibold'>{t('products.filters')}</h2>
               <FilterSidebar
-                searchValue={searchValue}
-                onSearchChange={(value) => {
-                  setSearchValue(value);
-                  setCurrentPage(1);
-                }}
+                searchValue={searchDraft}
+                onSearchChange={setSearchDraft}
                 onSearchSubmit={(value) => {
-                  setSearchValue(value);
-                  setCurrentPage(1);
+                  setSearchDraft(value);
+                  setSearchQuery(value);
+                  setCurrentPage(0);
                 }}
-                dynamicBrandOptions={dynamicBrandOptions}
+                dynamicBrandOptions={brandOptions}
                 selectedBrands={selectedBrands}
-                onBrandsChange={(brands) => {
-                  setSelectedBrands(brands);
-                  setCurrentPage(1);
+                onBrandsChange={(brandsValue) => {
+                  setSelectedBrands(brandsValue);
+                  setCurrentPage(0);
                 }}
-                dynamicCategoryOptions={dynamicCategoryOptions}
+                dynamicCategoryOptions={categoryOptions}
                 selectedCategories={selectedCategories}
-                onCategoriesChange={(categories) => {
-                  setSelectedCategories(categories);
-                  setCurrentPage(1);
+                onCategoriesChange={(categoriesValue) => {
+                  setSelectedCategories(categoriesValue);
+                  setCurrentPage(0);
                 }}
-                dynamicSizeOptions={dynamicSizeOptions}
+                dynamicSizeOptions={sizeOptions}
                 selectedSizes={selectedSizes}
-                onSizesChange={(sizes) => {
-                  setSelectedSizes(sizes);
-                  setCurrentPage(1);
+                onSizesChange={(sizesValue) => {
+                  setSelectedSizes(sizesValue);
+                  setCurrentPage(0);
                 }}
-                dynamicGenderOptions={dynamicGenderOptions}
+                dynamicGenderOptions={genderOptions}
                 selectedGenders={selectedGenders}
-                onGendersChange={(genders) => {
-                  setSelectedGenders(genders);
-                  setCurrentPage(1);
+                onGendersChange={(gendersValue) => {
+                  setSelectedGenders(gendersValue);
+                  setCurrentPage(0);
                 }}
-                dynamicPriceRange={dynamicPriceRange}
-                selectedPriceRange={effectivePriceRange}
+                selectedPriceRange={selectedPriceRange}
                 onPriceRangeChange={(range) => {
                   setSelectedPriceRange(range);
-                  setHasAdjustedPriceRange(true);
-                  setCurrentPage(1);
+                  setCurrentPage(0);
                 }}
-                sortOptions={sortOptions}
+                sortOptions={localizedSortOptions}
                 selectedSort={selectedSort}
-                onSortChange={(sort) => {
-                  setSelectedSort(sort);
-                  setCurrentPage(1);
+                onSortChange={(sortValue) => {
+                  setSelectedSort(sortValue);
+                  setCurrentPage(0);
                 }}
                 onClearFilters={handleClearFilters}
               />
             </div>
           </aside>
-        )}
+        ) : null}
 
-        {/* Products Grid */}
         <div className={isMobile ? 'col-span-1' : 'lg:col-span-3'}>
-          {sortedProducts.length === 0 ? (
+          {shoesQuery.isError && shoesPage ? (
+            <div className='mb-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive'>
+              {getErrorMessage(shoesQuery.error)}
+            </div>
+          ) : null}
+
+          {products.length === 0 ? (
             <PageEmptyState
-              title='No products match these filters'
-              description='Try clearing one or more filters to broaden the catalog results.'
+              title={t(
+                'products.emptyTitle',
+                'No products match these filters'
+              )}
+              description={t(
+                'products.emptyDescription',
+                'Try clearing one or more filters to broaden the catalog results.'
+              )}
               action={
                 <Button variant='outline' onClick={handleClearFilters}>
-                  Clear filters
+                  {t('products.clearFilters')}
                 </Button>
               }
             />
           ) : (
             <ProductGrid
-              products={paginatedProducts}
+              products={products}
               onProductClick={handleProductClick}
               onAddToCart={handleAddToCart}
               onAddToWishlist={handleAddToWishlist}
             />
           )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
+          {shoesPage && shoesPage.totalPages > 1 ? (
             <div className='mt-8'>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      className={
-                        safeCurrentPage === 1
-                          ? 'pointer-events-none opacity-50'
-                          : 'cursor-pointer'
-                      }
-                    />
-                  </PaginationItem>
-
-                  {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(
-                    (page) => (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          onClick={() =>
-                            setCurrentPage(Math.min(page, totalPages))
-                          }
-                          isActive={safeCurrentPage === page}
-                          className='cursor-pointer'
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  )}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() =>
-                        setCurrentPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      className={
-                        safeCurrentPage === totalPages
-                          ? 'pointer-events-none opacity-50'
-                          : 'cursor-pointer'
-                      }
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+              <PaginationControls
+                page={shoesPage.pageNumber ?? shoesPage.number}
+                totalPages={shoesPage.totalPages}
+                totalElements={shoesPage.totalElements}
+                pageSize={shoesPage.size}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                isFirst={shoesPage.first}
+                isLast={shoesPage.last}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setCurrentPage(0);
+                }}
+              />
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
