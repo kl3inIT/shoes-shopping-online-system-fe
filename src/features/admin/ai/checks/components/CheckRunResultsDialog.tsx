@@ -41,6 +41,22 @@ function VerdictBadge({ score }: { score: number | null }) {
   );
 }
 
+function buildResultKey(result: {
+  question: string;
+  referenceAnswer: string;
+  actualAnswer: string | null;
+  score: number | null;
+  log: string | null;
+}) {
+  return [
+    result.question,
+    result.referenceAnswer,
+    result.actualAnswer ?? '',
+    result.score?.toString() ?? '',
+    result.log ?? '',
+  ].join('::');
+}
+
 export function CheckRunResultsDialog({
   open,
   onOpenChange,
@@ -110,8 +126,8 @@ export function CheckRunResultsDialog({
                     </TableCell>
                   </TableRow>
                 ) : (
-                  results.map((result, index) => (
-                    <TableRow key={index}>
+                  results.map((result) => (
+                    <TableRow key={buildResultKey(result)}>
                       <TableCell className='text-sm align-top max-w-[200px]'>
                         {result.question}
                       </TableCell>
