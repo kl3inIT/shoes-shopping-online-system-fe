@@ -539,9 +539,6 @@
   },
   "http": {
     "error": {
-      "network": "Không thể kết nối tới máy chủ",
-      "timeout": "Máy chủ phản hồi quá chậm. Vui lòng thử lại.",
-      "unknown": "Đã xảy ra lỗi, vui lòng thử lại",
       "400": "Dữ liệu không hợp lệ",
       "401": "Phiên đăng nhập đã hết hạn",
       "403": "Bạn không có quyền truy cập",
@@ -552,7 +549,10 @@
       "500": "Lỗi máy chủ, vui lòng thử lại sau",
       "502": "Dịch vụ tạm thời không khả dụng",
       "503": "Dịch vụ tạm thời không khả dụng",
-      "504": "Dịch vụ tạm thời không khả dụng"
+      "504": "Dịch vụ tạm thời không khả dụng",
+      "network": "Không thể kết nối tới máy chủ",
+      "timeout": "Máy chủ phản hồi quá chậm. Vui lòng thử lại.",
+      "unknown": "Đã xảy ra lỗi, vui lòng thử lại"
     }
   },
   "admin": {
@@ -1287,6 +1287,103 @@
           "close": "Đóng"
         }
       },
+      "checks": {
+        "section": {
+          "definitions": "Định nghĩa kiểm tra",
+          "runHistory": "Lịch sử chạy"
+        },
+        "button": {
+          "addDefinition": "Thêm định nghĩa",
+          "runChecks": "Chạy kiểm tra",
+          "running": "Đang chạy...",
+          "viewResults": "Xem kết quả"
+        },
+        "badge": {
+          "latestScore": "Mới nhất: {{score}} ✓"
+        },
+        "dialog": {
+          "deleteTitle": "Xóa định nghĩa kiểm tra",
+          "deleteBody": "Xóa định nghĩa kiểm tra này và toàn bộ lịch sử chạy liên quan? Không thể hoàn tác.",
+          "deleteConfirm": "Xóa",
+          "cancel": "Hủy",
+          "addDef": "Thêm định nghĩa kiểm tra",
+          "editDef": "Chỉnh sửa định nghĩa kiểm tra",
+          "save": "Lưu",
+          "saving": "Đang lưu...",
+          "resultsTitle": "Kết quả chạy",
+          "field": {
+            "category": "Danh mục",
+            "question": "Câu hỏi",
+            "referenceAnswer": "Câu trả lời tham chiếu",
+            "active": "Kích hoạt"
+          },
+          "optional": "(tuỳ chọn)",
+          "categoryPlaceholder": "VD: sản phẩm, chính sách",
+          "questionPlaceholder": "Nhập câu hỏi kiểm tra",
+          "referenceAnswerPlaceholder": "Nhập câu trả lời tham chiếu mong đợi",
+          "referenceAnswerEditPlaceholder": "Nhập câu trả lời tham chiếu mới (tuỳ chọn)",
+          "deleteRunTitle": "Xóa lượt chạy",
+          "deleteRunBody": "Xóa lượt chạy này và tất cả kết quả? Không thể hoàn tác."
+        },
+        "table": {
+          "defs": {
+            "category": "Danh mục",
+            "question": "Câu hỏi",
+            "active": "Kích hoạt",
+            "actions": "Thao tác",
+            "edit": "Chỉnh sửa",
+            "delete": "Xóa",
+            "empty": "Chưa có định nghĩa kiểm tra",
+            "openMenu": "Mở menu"
+          },
+          "runs": {
+            "score": "Điểm",
+            "date": "Ngày",
+            "by": "Bởi",
+            "actions": "Thao tác",
+            "empty": "Chưa có lần chạy kiểm tra",
+            "delete": "Xóa"
+          },
+          "results": {
+            "question": "Câu hỏi",
+            "refAnswer": "Câu trả lời tham chiếu",
+            "actualAnswer": "Câu trả lời thực tế",
+            "score": "Điểm",
+            "verdict": "Kết luận"
+          }
+        },
+        "toast": {
+          "created": "Đã tạo định nghĩa",
+          "updated": "Đã cập nhật định nghĩa",
+          "deleted": "Đã xóa định nghĩa",
+          "runComplete": "Hoàn thành — điểm: {{score}}",
+          "noActiveDefs": "Không có định nghĩa nào đang hoạt động",
+          "runCompleteNoScore": "Đã hoàn thành kiểm tra",
+          "runDeleted": "Đã xóa lượt chạy"
+        },
+        "fetchError": "Không thể tải định nghĩa kiểm tra",
+        "totalDefs": "{{count}} định nghĩa",
+        "pagination": {
+          "pageOf": "Trang {{page}} / {{total}}",
+          "total": "{{count}} bản ghi",
+          "rowsPerPage": "Hàng:"
+        },
+        "results": {
+          "title": "Kết quả chạy",
+          "loading": "Đang tải kết quả...",
+          "back": "Quay lại",
+          "emptyState": "Không có kết quả",
+          "viewLog": "Xem log"
+        },
+        "verdict": {
+          "pass": "ĐẠT",
+          "fail": "KHÔNG ĐẠT"
+        },
+        "tabs": {
+          "definitions": "Định nghĩa kiểm tra",
+          "runHistory": "Lịch sử chạy"
+        }
+      },
       "page": {
         "title": "Vận hành trợ lý",
         "description": "Cấu hình prompt, lập chỉ mục tri thức, nhật ký hội thoại và kiểm thử phản hồi trợ lý."
@@ -1295,7 +1392,8 @@
         "configuration": "Cấu hình",
         "knowledgeBase": "Kho tri thức",
         "conversations": "Hội thoại",
-        "playground": "Kiểm thử"
+        "playground": "Kiểm thử",
+        "checks": "Kiểm tra"
       },
       "parameters": {
         "target": {
