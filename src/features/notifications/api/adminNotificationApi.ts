@@ -39,7 +39,7 @@ export const useAdminNotifications = (type?: NotificationType | 'all') => {
             createdAt: string;
           }[]
         >
-      >('/admin/notifications', {
+      >('/api/v1/admin/notifications', {
         params: type && type !== 'all' ? { type } : undefined,
       });
 
@@ -69,7 +69,7 @@ export const useBroadcastNotification = () => {
           type: NotificationType;
           createdAt: string;
         }>
-      >('/admin/notifications/broadcast', payload);
+      >('/api/v1/admin/notifications/broadcast', payload);
       return response.data.data;
     },
     onSuccess: () => {

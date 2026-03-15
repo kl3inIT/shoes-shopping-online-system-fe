@@ -51,7 +51,7 @@ export const useDashboardMetrics = () => {
     queryKey: dashboardKeys.metrics,
     queryFn: async () => {
       const res = await apiClient.get<ApiSuccessResponse<DashboardMetrics>>(
-        '/admin/dashboard/metrics'
+        '/api/v1/admin/dashboard/metrics'
       );
       return res.data.data;
     },
@@ -64,7 +64,7 @@ export const useDashboardChart = (days: number) => {
     queryFn: async () => {
       const res = await apiClient.get<
         ApiSuccessResponse<DashboardChartPoint[]>
-      >('/admin/dashboard/chart', {
+      >('/api/v1/admin/dashboard/chart', {
         params: { days },
       });
       return res.data.data;
@@ -78,7 +78,7 @@ export const useDashboardRecentOrders = () => {
     queryFn: async () => {
       const res = await apiClient.get<
         ApiSuccessResponse<DashboardRecentOrder[]>
-      >('/admin/dashboard/recent-orders', {
+      >('/api/v1/admin/dashboard/recent-orders', {
         params: { limit: 10 },
       });
       return res.data.data;
@@ -92,7 +92,7 @@ export const useDashboardTopSelling = () => {
     queryFn: async () => {
       const res = await apiClient.get<
         ApiSuccessResponse<DashboardTopSelling[]>
-      >('/admin/dashboard/top-selling', {
+      >('/api/v1/admin/dashboard/top-selling', {
         params: { limit: 10 },
       });
       return res.data.data;
@@ -105,7 +105,7 @@ export const useDashboardLowStock = () => {
     queryKey: dashboardKeys.lowStock,
     queryFn: async () => {
       const res = await apiClient.get<ApiSuccessResponse<DashboardLowStock[]>>(
-        '/admin/dashboard/low-stock',
+        '/api/v1/admin/dashboard/low-stock',
         {
           params: { threshold: 5 },
         }

@@ -6,7 +6,7 @@ export async function getChatLogs(
   params: GetChatLogsParams
 ): Promise<ChatLogPage> {
   const response = await apiClient.get<ApiSuccessResponse<ChatLogPage>>(
-    '/api/admin/chat-logs',
+    '/api/v1/admin/chat-logs',
     {
       params: {
         page: params.page ?? 0,
@@ -24,7 +24,7 @@ export async function getChatLogs(
 
 export async function getChatLog(id: string): Promise<ChatLogDetail> {
   const response = await apiClient.get<ApiSuccessResponse<ChatLogDetail>>(
-    `/api/admin/chat-logs/${id}`
+    `/api/v1/admin/chat-logs/${id}`
   );
   return response.data.data;
 }

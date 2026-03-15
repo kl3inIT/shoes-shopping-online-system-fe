@@ -7,14 +7,17 @@ export async function getUserById(id: string): Promise<User> {
 }
 
 export async function getMe(): Promise<User> {
-  const response = await apiClient.get<UserResponseDto>(`/users/me`);
+  const response = await apiClient.get<UserResponseDto>(`/api/v1/users/me`);
   return response.data.data;
 }
 
 export async function updateMyProfile(
   payload: UpdateUserProfilePayload
 ): Promise<User> {
-  const response = await apiClient.patch<UserResponseDto>(`/users/me`, payload);
+  const response = await apiClient.patch<UserResponseDto>(
+    `/api/v1/users/me`,
+    payload
+  );
   return response.data.data;
 }
 
@@ -22,7 +25,7 @@ export async function uploadMyAvatar(file: File): Promise<User> {
   const formData = new FormData();
   formData.append('file', file);
   const response = await apiClient.post<UserResponseDto>(
-    `/users/me/avatar`,
+    `/api/v1/users/me/avatar`,
     formData
   );
   return response.data.data;

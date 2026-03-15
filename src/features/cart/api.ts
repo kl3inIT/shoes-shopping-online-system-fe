@@ -12,14 +12,14 @@ export async function getShoeVariants(
   shoeId: string
 ): Promise<ShoeVariantDto[]> {
   const response = await apiClient.get<ApiSuccessResponse<ShoeVariantDto[]>>(
-    `/api/shoes/${shoeId}/variants`
+    `/api/v1/shoes/${shoeId}/variants`
   );
   return response.data.data;
 }
 
 export async function getCart(): Promise<CartResponseDto> {
   const response =
-    await apiClient.get<ApiSuccessResponse<CartResponseDto>>('/api/cart');
+    await apiClient.get<ApiSuccessResponse<CartResponseDto>>('/api/v1/cart');
   return response.data.data;
 }
 
@@ -27,7 +27,7 @@ export async function addToCart(
   body: AddToCartRequestDto
 ): Promise<CartResponseDto> {
   const response = await apiClient.post<ApiSuccessResponse<CartResponseDto>>(
-    '/api/cart',
+    '/api/v1/cart',
     body
   );
   return response.data.data;
@@ -38,18 +38,18 @@ export async function updateCartItem(
   body: UpdateCartItemRequestDto
 ): Promise<CartResponseDto> {
   const response = await apiClient.put<ApiSuccessResponse<CartResponseDto>>(
-    `/api/cart/${cartItemId}`,
+    `/api/v1/cart/${cartItemId}`,
     body
   );
   return response.data.data;
 }
 
 export async function removeCartItem(cartItemId: string): Promise<void> {
-  await apiClient.delete(`/api/cart/${cartItemId}`);
+  await apiClient.delete(`/api/v1/cart/${cartItemId}`);
 }
 
 export async function clearCart(): Promise<void> {
-  await apiClient.delete('/api/cart');
+  await apiClient.delete('/api/v1/cart');
 }
 
 /** Map CartItemDto to CartItemProps (for CartPage). */

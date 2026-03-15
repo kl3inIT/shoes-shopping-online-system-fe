@@ -10,7 +10,7 @@ export async function getVectorDocuments(
   params: GetVectorDocumentsParams
 ): Promise<VectorDocumentPage> {
   const response = await apiClient.get<ApiSuccessResponse<VectorDocumentPage>>(
-    '/api/admin/vector-store/documents',
+    '/api/v1/admin/vector-store/documents',
     {
       params: {
         page: params.page ?? 0,
@@ -24,23 +24,23 @@ export async function getVectorDocuments(
 
 export async function getVectorDocument(id: string): Promise<VectorDocument> {
   const response = await apiClient.get<ApiSuccessResponse<VectorDocument>>(
-    `/api/admin/vector-store/documents/${id}`
+    `/api/v1/admin/vector-store/documents/${id}`
   );
   return response.data.data;
 }
 
 export async function deleteVectorDocument(id: string): Promise<void> {
-  await apiClient.delete(`/api/admin/vector-store/documents/${id}`);
+  await apiClient.delete(`/api/v1/admin/vector-store/documents/${id}`);
 }
 
 export async function deleteVectorDocumentsByIds(ids: string[]): Promise<void> {
-  await apiClient.delete('/api/admin/vector-store/documents/bulk', {
+  await apiClient.delete('/api/v1/admin/vector-store/documents/bulk', {
     data: { ids },
   });
 }
 
 export async function deleteVectorDocuments(filter: string): Promise<void> {
-  await apiClient.delete('/api/admin/vector-store/documents', {
+  await apiClient.delete('/api/v1/admin/vector-store/documents', {
     data: { filter },
   });
 }

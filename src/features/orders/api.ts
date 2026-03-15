@@ -9,7 +9,7 @@ import type {
   OrderHistoryParams,
 } from './types';
 
-const ORDERS_BASE = '/api/orders';
+const ORDERS_BASE = '/api/v1/orders';
 
 export async function getOrderHistory(
   params: OrderHistoryParams
@@ -49,8 +49,21 @@ export async function getMyOrders(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _params?: CustomerOrdersQueryParams
 ): Promise<CustomerOrderSummary[]> {
-  const response = await apiClient.get<CustomerOrderSummary[]>(
-    `${ORDERS_BASE}/my-orders`
-  );
-  return response.data;
+  const response = await apiClient.get<
+    ApiSuccessResponse<OrderHistoryPageResponse>
+  >(ORDERS_BASE, {
+    params: {
+      page: _params?.page ?? 0,
+      size: _params?.size ?? 10,
+      ...(_params?.status ? { orderStatus: _params.status } : {}),
+    },
+  });
+
+  return (response.data.data.content ?? []).map((order) => ({
+    createdAt: order.createdAt,
+    id: order.id,
+    orderNumber: order.orderNumber,
+    paymentStatus: order.status,
+    totalAmount: order.total,
+  }));
 }

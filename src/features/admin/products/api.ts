@@ -11,7 +11,7 @@ import type {
 export async function getAdminShoes(): Promise<ShoeResponse[]> {
   const response = await apiClient.get<
     ResponseGeneral<PageResponse<ShoeResponse>>
-  >('/api/shoes', {
+  >('/api/v1/shoes', {
     params: {
       page: 0,
       size: 100,
@@ -47,7 +47,7 @@ export async function createShoe(
   });
 
   const response = await apiClient.post<ResponseGeneral<ShoeResponse>>(
-    '/api/shoes',
+    '/api/v1/shoes',
     formData
   );
   return response.data;
@@ -74,7 +74,7 @@ export async function updateShoe(
   });
 
   const response = await apiClient.put<ResponseGeneral<ShoeResponse>>(
-    `/api/shoes/${id}`,
+    `/api/v1/shoes/${id}`,
     formData
   );
   return response.data;
@@ -85,7 +85,7 @@ export async function getAdminShoeStockSummary(
 ): Promise<ShoeStockSummaryResponse> {
   const response = await apiClient.get<
     ResponseGeneral<ShoeStockSummaryResponse>
-  >('/api/shoes/stock-summary', {
+  >('/api/v1/shoes/stock-summary', {
     params: {
       threshold,
     },

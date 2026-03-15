@@ -7,7 +7,7 @@ export async function createOrder(
 ): Promise<OrderCreateResponse> {
   const response = await apiClient.post<
     ApiSuccessResponse<OrderCreateResponse>
-  >('/api/orders/init', body);
+  >('/api/v1/orders/init', body);
 
   return response.data.data;
 }

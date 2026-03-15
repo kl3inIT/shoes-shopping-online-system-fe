@@ -33,7 +33,7 @@ export const useUserNotifications = (enabled = true) => {
             createdAt: string;
           }[]
         >
-      >('/notifications');
+      >('/api/v1/notifications');
 
       return response.data.data.map((n) => ({
         id: n.id,
@@ -52,7 +52,7 @@ export const useMarkNotificationAsRead = () => {
 
   return useMutation({
     mutationFn: async (userNotificationId: string) => {
-      await apiClient.post(`/notifications/${userNotificationId}/read`);
+      await apiClient.post(`/api/v1/notifications/${userNotificationId}/read`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userNotificationKeys.all });

@@ -6,7 +6,7 @@ export async function getOrders(
   params: OrderHistoryRequest
 ): Promise<OrderPageResponse> {
   const response = await apiClient.get<ApiSuccessResponse<OrderPageResponse>>(
-    '/api/orders/admin',
+    '/api/v1/admin/orders',
     { params }
   );
   return response.data.data;

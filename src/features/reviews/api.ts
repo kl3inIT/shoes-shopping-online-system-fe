@@ -11,7 +11,7 @@ export async function getPublicReviewsByShoeId(
   params: { page?: number; size?: number } = {}
 ): Promise<ReviewPublicListDto> {
   const response = await apiClient.get<ApiSuccessResponse<ReviewPublicListDto>>(
-    `/api/reviews/shoe/${shoeId}`,
+    `/api/v1/reviews/shoe/${shoeId}`,
     { params }
   );
   return response.data.data;
@@ -19,7 +19,7 @@ export async function getPublicReviewsByShoeId(
 
 export async function markReviewHelpful(reviewId: string): Promise<void> {
   await apiClient.post<ApiSuccessResponse<unknown>>(
-    `/api/reviews/${reviewId}/helpful`,
+    `/api/v1/reviews/${reviewId}/helpful`,
     undefined
   );
 }
@@ -29,7 +29,7 @@ export async function getReviewEligibilityByShoeId(
 ): Promise<ReviewEligibilityByShoeDto> {
   const response = await apiClient.get<
     ApiSuccessResponse<ReviewEligibilityByShoeDto>
-  >(`/api/reviews/eligibility/shoe/${shoeId}`);
+  >(`/api/v1/reviews/eligibility/shoe/${shoeId}`);
   return response.data.data;
 }
 
@@ -53,7 +53,7 @@ export async function createReview(payload: {
   });
 
   const response = await apiClient.post<ApiSuccessResponse<ReviewResponseDto>>(
-    '/api/reviews',
+    '/api/v1/reviews',
     formData
   );
 

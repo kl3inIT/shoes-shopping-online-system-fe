@@ -6,7 +6,7 @@ export async function getPaymentInfo(
   orderId: string
 ): Promise<PaymentInfoResponse> {
   const response = await apiClient.get<ApiSuccessResponse<PaymentInfoResponse>>(
-    `/api/orders/payment-info/${orderId}`
+    `/api/v1/orders/payment-info/${orderId}`
   );
 
   return response.data.data;
