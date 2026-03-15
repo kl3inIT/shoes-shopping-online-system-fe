@@ -1008,6 +1008,81 @@
         }
       }
     },
+    "ai": {
+      "vector": {
+        "title": "Vector Store",
+        "filterPlaceholder": "{\"docType\": \"product\"}",
+        "filterHelp": "Bộ lọc JSONB. Ví dụ: {\"docType\": \"product\"}",
+        "applyFilter": "Áp dụng",
+        "clearFilter": "Xóa",
+        "selectedCount": "Đã chọn {{count}}",
+        "deleteSelected": "Xóa đã chọn",
+        "deleteByFilter": "Xóa theo bộ lọc",
+        "table": {
+          "id": "ID",
+          "contentExcerpt": "Nội dung (trích đoạn)",
+          "metadata": "Metadata",
+          "actions": "Hành động",
+          "selectAll": "Chọn tất cả",
+          "selectRow": "Chọn dòng",
+          "errorState": "Không thể tải tài liệu"
+        },
+        "pagination": {
+          "pageOf": "Trang {{page}} / {{total}}"
+        },
+        "totalDocuments": "{{count}} tài liệu",
+        "fetchError": "Không thể tải danh sách tài liệu",
+        "filter": {
+          "apply": "Áp dụng",
+          "clear": "Xóa"
+        },
+        "ingestion": {
+          "ingestAll": "Nhập liệu tất cả",
+          "runByType": "Chạy theo loại",
+          "running": "Đang chạy {{type}}…",
+          "type": {
+            "policy": "Chính sách",
+            "product": "Sản phẩm",
+            "review": "Đánh giá",
+            "order": "Đơn hàng",
+            "brand": "Thương hiệu",
+            "category": "Danh mục"
+          }
+        },
+        "actions": {
+          "viewDetail": "Xem chi tiết",
+          "delete": "Xóa"
+        },
+        "ingest": {
+          "all": "Nhập liệu tất cả",
+          "byType": "Nhập liệu {{type}}"
+        },
+        "deleteSelectedDialog": {
+          "title": "Xóa tài liệu đã chọn",
+          "description": "Xóa {{count}} tài liệu đã chọn? Hành động này không thể hoàn tác.",
+          "confirm": "Xóa",
+          "cancel": "Hủy"
+        },
+        "deleteByFilterDialog": {
+          "title": "Xóa theo bộ lọc",
+          "description": "Xóa tất cả tài liệu khớp với bộ lọc \"{{filter}}\"? Hành động này không thể hoàn tác.",
+          "confirm": "Xóa",
+          "cancel": "Hủy"
+        },
+        "detail": {
+          "title": "Chi tiết tài liệu",
+          "content": "Nội dung đầy đủ",
+          "metadata": "Metadata",
+          "close": "Đóng"
+        },
+        "toast": {
+          "deleted": "Đã xóa tài liệu",
+          "bulkDeleted": "Đã xóa tài liệu",
+          "ingested": "Nhập liệu hoàn tất",
+          "ingestError": "Nhập liệu thất bại"
+        }
+      }
+    },
     "reviews": {
       "title": "Quản Lý Đánh Giá",
       "subtitle": "Quản lý {{count}} đánh giá",

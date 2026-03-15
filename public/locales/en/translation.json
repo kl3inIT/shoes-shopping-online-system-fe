@@ -1010,6 +1010,81 @@
         }
       }
     },
+    "ai": {
+      "vector": {
+        "title": "Vector Store",
+        "filterPlaceholder": "{\"docType\": \"product\"}",
+        "filterHelp": "JSONB containment filter. Example: {\"docType\": \"product\"}",
+        "applyFilter": "Apply",
+        "clearFilter": "Clear",
+        "selectedCount": "{{count}} selected",
+        "deleteSelected": "Delete selected",
+        "deleteByFilter": "Delete by filter",
+        "table": {
+          "id": "ID",
+          "contentExcerpt": "Content (excerpt)",
+          "metadata": "Metadata",
+          "actions": "Actions",
+          "selectAll": "Select all",
+          "selectRow": "Select row",
+          "errorState": "Could not load documents"
+        },
+        "pagination": {
+          "pageOf": "Page {{page}} of {{total}}"
+        },
+        "totalDocuments": "{{count}} document(s) total",
+        "fetchError": "Failed to load documents",
+        "filter": {
+          "apply": "Apply",
+          "clear": "Clear"
+        },
+        "ingestion": {
+          "ingestAll": "Ingest All",
+          "runByType": "Run by type",
+          "running": "Running {{type}}…",
+          "type": {
+            "policy": "Policy",
+            "product": "Product",
+            "review": "Review",
+            "order": "Order",
+            "brand": "Brand",
+            "category": "Category"
+          }
+        },
+        "actions": {
+          "viewDetail": "View detail",
+          "delete": "Delete"
+        },
+        "ingest": {
+          "all": "Ingest All",
+          "byType": "Ingest {{type}}"
+        },
+        "deleteSelectedDialog": {
+          "title": "Delete selected documents",
+          "description": "Delete {{count}} selected document(s)? This cannot be undone.",
+          "confirm": "Delete",
+          "cancel": "Cancel"
+        },
+        "deleteByFilterDialog": {
+          "title": "Delete by filter",
+          "description": "Delete all documents matching filter \"{{filter}}\"? This cannot be undone.",
+          "confirm": "Delete",
+          "cancel": "Cancel"
+        },
+        "detail": {
+          "title": "Document detail",
+          "content": "Full content",
+          "metadata": "Metadata",
+          "close": "Close"
+        },
+        "toast": {
+          "deleted": "Document deleted",
+          "bulkDeleted": "Documents deleted",
+          "ingested": "Ingestion completed",
+          "ingestError": "Ingestion failed"
+        }
+      }
+    },
     "reviews": {
       "title": "Reviews Management",
       "subtitle": "Manage {{count}} reviews",
