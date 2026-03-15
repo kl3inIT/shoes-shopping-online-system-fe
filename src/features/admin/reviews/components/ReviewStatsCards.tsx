@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ReviewStatsCardsProps {
   total: number;
-  pending: number;
   approved: number;
   rejected: number;
   avgRating: string;
@@ -12,7 +11,6 @@ interface ReviewStatsCardsProps {
 
 export function ReviewStatsCards({
   total,
-  pending,
   approved,
   rejected,
   avgRating,
@@ -20,7 +18,7 @@ export function ReviewStatsCards({
   const { t } = useTranslation();
 
   return (
-    <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-5'>
+    <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
       <Card>
         <CardHeader className='flex flex-row items-center justify-between pb-2'>
           <CardTitle className='text-sm font-medium'>
@@ -29,16 +27,6 @@ export function ReviewStatsCards({
         </CardHeader>
         <CardContent>
           <div className='text-2xl font-bold'>{total}</div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className='flex flex-row items-center justify-between pb-2'>
-          <CardTitle className='text-sm font-medium'>
-            {t('admin.reviews.stats.pending')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className='text-2xl font-bold text-yellow-600'>{pending}</div>
         </CardContent>
       </Card>
       <Card>

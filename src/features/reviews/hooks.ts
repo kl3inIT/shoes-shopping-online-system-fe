@@ -5,7 +5,12 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
-import { createReview, markReviewHelpful } from './api';
+import {
+  createReview,
+  getReviewEligibility,
+  markReviewHelpful,
+  updateReview,
+} from './api';
 import {
   publicReviewsByShoeIdQueryKey,
   publicReviewsByShoeIdQueryOptions,
@@ -14,6 +19,7 @@ import {
 } from './queryOptions';
 import type {
   ReviewEligibilityByShoeDto,
+  ReviewEligibilityDto,
   ReviewPublicListDto,
   ReviewResponseDto,
 } from './types';
@@ -34,6 +40,18 @@ export function useReviewEligibilityByShoeId(
   });
 }
 
+export function useReviewEligibility(
+  orderDetailId: string | null,
+  shoeVariantId: string | null,
+  enabled = true
+): UseQueryResult<ReviewEligibilityDto, Error> {
+  return useQuery({
+    queryKey: ['review-eligibility', orderDetailId, shoeVariantId],
+    queryFn: () => getReviewEligibility(orderDetailId!, shoeVariantId!),
+    enabled: enabled && !!orderDetailId && !!shoeVariantId,
+  });
+}
+
 export function useCreateReviewMutation(shoeId?: string) {
   const queryClient = useQueryClient();
   return useMutation<
@@ -42,6 +60,30 @@ export function useCreateReviewMutation(shoeId?: string) {
     Parameters<typeof createReview>[0]
   >({
     mutationFn: createReview,
+    onSuccess: async () => {
+      if (shoeId) {
+        await queryClient.invalidateQueries({
+          queryKey: publicReviewsByShoeIdQueryKey(shoeId),
+        });
+        await queryClient.invalidateQueries({
+          queryKey: reviewEligibilityByShoeIdQueryKey(shoeId),
+        });
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ['reviews'] });
+      }
+    },
+  });
+}
+
+export function useUpdateReviewMutation(shoeId?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    ReviewResponseDto,
+    Error,
+    Parameters<typeof updateReview>[0]
+  >({
+    mutationFn: updateReview,
     onSuccess: async () => {
       if (shoeId) {
         await queryClient.invalidateQueries({

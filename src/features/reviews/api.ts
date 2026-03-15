@@ -2,6 +2,7 @@ import apiClient from '@/features/apiClient';
 import type { ApiSuccessResponse } from '@/types';
 import type {
   ReviewEligibilityByShoeDto,
+  ReviewEligibilityDto,
   ReviewPublicListDto,
   ReviewResponseDto,
 } from './types';
@@ -33,6 +34,18 @@ export async function getReviewEligibilityByShoeId(
   return response.data.data;
 }
 
+export async function getReviewEligibility(
+  orderDetailId: string,
+  shoeVariantId: string
+): Promise<ReviewEligibilityDto> {
+  const response = await apiClient.get<
+    ApiSuccessResponse<ReviewEligibilityDto>
+  >('/api/v1/reviews/eligibility', {
+    params: { orderDetailId, shoeVariantId },
+  });
+  return response.data.data;
+}
+
 export async function createReview(payload: {
   orderDetailId: string;
   shoeVariantId: string;
@@ -54,6 +67,33 @@ export async function createReview(payload: {
 
   const response = await apiClient.post<ApiSuccessResponse<ReviewResponseDto>>(
     '/api/v1/reviews',
+    formData
+  );
+
+  return response.data.data;
+}
+
+export async function updateReview(payload: {
+  reviewId: string;
+  numberStars: number;
+  description: string;
+  images?: File[];
+  keepImageUrls?: string[];
+}): Promise<ReviewResponseDto> {
+  const { reviewId, images, ...request } = payload;
+  const formData = new FormData();
+
+  formData.append(
+    'request',
+    new Blob([JSON.stringify(request)], { type: 'application/json' })
+  );
+
+  (images ?? []).forEach((file) => {
+    formData.append('images', file);
+  });
+
+  const response = await apiClient.put<ApiSuccessResponse<ReviewResponseDto>>(
+    `/api/v1/reviews/${reviewId}`,
     formData
   );
 

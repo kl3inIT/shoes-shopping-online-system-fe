@@ -1,18 +1,21 @@
-export type AdminReviewModerationItem = {
-  createdAt: string;
+export type AdminReviewItem = {
   id: string;
   rating: number;
-  reviewerName: string;
-  shoeId: string;
-  shoeName: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  updatedAt?: string | null;
+  comment: string;
+  visible: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+  customerName: string;
+  customerEmail: string | null;
+  customerAvatarUrl: string | null;
+  shoeName: string | null;
+  shoeImageUrl: string | null;
 };
 
 export type AdminReviewsQueryParams = {
   page?: number;
-  rating?: number;
-  search?: string;
   size?: number;
-  status?: AdminReviewModerationItem['status'];
+  visible?: boolean;
+  fromDate?: string;
+  toDate?: string;
 };

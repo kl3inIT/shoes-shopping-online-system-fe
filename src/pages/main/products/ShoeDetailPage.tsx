@@ -8,11 +8,8 @@ import {
 } from '@/features/products';
 import {
   ReviewCard,
-  ReviewForm,
   Rating,
   usePublicReviewsByShoeId,
-  useReviewEligibilityByShoeId,
-  useCreateReviewMutation,
   useMarkReviewHelpfulMutation,
 } from '@/features/reviews';
 import { Separator } from '@/components/ui/separator';
@@ -34,11 +31,6 @@ export function ShoeDetailPage() {
 
   const { data: shoe, isLoading, error } = useShoeById(id);
   const { data: reviewsData } = usePublicReviewsByShoeId(id);
-  const { data: eligibility } = useReviewEligibilityByShoeId(
-    id,
-    auth.isAuthenticated
-  );
-  const createReviewMutation = useCreateReviewMutation(id);
   const markHelpfulMutation = useMarkReviewHelpfulMutation(id);
   const addToCartMutation = useAddToCartMutation();
   const addToWishlistMutation = useAddToWishlistMutation();
@@ -155,32 +147,6 @@ export function ShoeDetailPage() {
     // TODO: Implement share logic
   };
 
-  const handleSubmitReview = (data: {
-    rating: number;
-    title: string;
-    content: string;
-    images: File[];
-  }) => {
-    if (
-      !eligibility?.eligible ||
-      !eligibility.orderDetailId ||
-      !eligibility.shoeVariantId
-    ) {
-      return;
-    }
-    const description = data.title?.trim()
-      ? `${data.title.trim()}\n\n${data.content}`
-      : data.content;
-
-    createReviewMutation.mutate({
-      orderDetailId: eligibility.orderDetailId,
-      shoeVariantId: eligibility.shoeVariantId,
-      numberStars: data.rating,
-      description,
-      images: data.images,
-    });
-  };
-
   return (
     <div className='container mx-auto px-4 py-8'>
       {/* Back Button */}
@@ -220,18 +186,7 @@ export function ShoeDetailPage() {
         </div>
 
         <div className='grid gap-8 lg:grid-cols-3'>
-          {/* Review Form */}
-          {auth.isAuthenticated && eligibility?.eligible ? (
-            <div className='lg:col-span-1'>
-              <ReviewForm
-                productName={productProps.name}
-                onSubmit={handleSubmitReview}
-                isSubmitting={createReviewMutation.isPending}
-              />
-            </div>
-          ) : null}
-
-          {/* Review List */}
+          <div className='lg:col-span-1' />
           <div className='space-y-4 lg:col-span-2'>
             {reviews.map((review) => (
               <ReviewCard

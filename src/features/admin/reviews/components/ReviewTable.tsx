@@ -1,13 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import {
-  IconCheck,
-  IconX,
   IconDots,
   IconStar,
   IconStarFilled,
   IconEye,
+  IconEyeOff,
 } from '@tabler/icons-react';
-import { type ReviewStatus } from '@/features/reviews';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export interface AdminReviewItem {
+export interface AdminReviewTableItem {
   id: string;
   customer: {
     id: string;
@@ -47,48 +45,34 @@ export interface AdminReviewItem {
   };
   rating: number;
   comment: string;
-  status: ReviewStatus;
+  visible: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 interface ReviewTableProps {
-  reviews: AdminReviewItem[];
-  onViewDetails?: (review: AdminReviewItem) => void;
-  onUpdateStatus?: (reviewId: string, status: ReviewStatus) => void;
-  onDelete?: (reviewId: string) => void;
+  reviews: AdminReviewTableItem[];
+  onViewDetails?: (review: AdminReviewTableItem) => void;
+  onToggleVisibility?: (reviewId: string, visible: boolean) => void;
 }
 
 export function ReviewTable({
   reviews,
   onViewDetails,
-  onUpdateStatus,
-  onDelete,
+  onToggleVisibility,
 }: ReviewTableProps) {
   const { t } = useTranslation();
 
-  const getStatusBadge = (status: ReviewStatus) => {
-    switch (status) {
-      case 'APPROVED':
-        return (
-          <Badge className='bg-green-500'>
-            {t('admin.reviews.status.approved')}
-          </Badge>
-        );
-      case 'PENDING':
-        return (
-          <Badge variant='secondary'>{t('admin.reviews.status.pending')}</Badge>
-        );
-      case 'REJECTED':
-        return (
-          <Badge variant='destructive'>
-            {t('admin.reviews.status.rejected')}
-          </Badge>
-        );
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
+  const getVisibilityBadge = (visible: boolean) =>
+    visible ? (
+      <Badge className='bg-green-500'>
+        {t('admin.reviews.visibility.visible')}
+      </Badge>
+    ) : (
+      <Badge variant='destructive'>
+        {t('admin.reviews.visibility.hidden')}
+      </Badge>
+    );
 
   const renderStars = (rating: number) => {
     return (
@@ -104,10 +88,10 @@ export function ReviewTable({
     );
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN', {
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('vi-VN', {
       year: 'numeric',
-      month: 'short',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
@@ -125,7 +109,7 @@ export function ReviewTable({
             <TableHead className='max-w-[300px]'>
               {t('admin.reviews.table.comment')}
             </TableHead>
-            <TableHead>{t('admin.reviews.table.status')}</TableHead>
+            <TableHead>{t('admin.reviews.table.visibility')}</TableHead>
             <TableHead>{t('admin.reviews.table.date')}</TableHead>
             <TableHead className='text-right'>
               {t('admin.reviews.table.actions')}
@@ -158,9 +142,9 @@ export function ReviewTable({
               <TableCell className='max-w-[300px]'>
                 <p className='line-clamp-2 text-sm'>{review.comment}</p>
               </TableCell>
-              <TableCell>{getStatusBadge(review.status)}</TableCell>
+              <TableCell>{getVisibilityBadge(review.visible)}</TableCell>
               <TableCell className='text-sm text-muted-foreground'>
-                {formatDate(review.createdAt)}
+                {formatDateTime(review.updatedAt || review.createdAt)}
               </TableCell>
               <TableCell className='text-right'>
                 <DropdownMenu>
@@ -175,30 +159,22 @@ export function ReviewTable({
                       {t('admin.reviews.actions.viewDetails')}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    {review.status !== 'APPROVED' && (
-                      <DropdownMenuItem
-                        onClick={() => onUpdateStatus?.(review.id, 'APPROVED')}
-                      >
-                        <IconCheck className='mr-2 h-4 w-4' />
-                        {t('admin.reviews.actions.approve')}
-                      </DropdownMenuItem>
-                    )}
-                    {review.status !== 'REJECTED' && (
-                      <DropdownMenuItem
-                        className='text-destructive'
-                        onClick={() => onUpdateStatus?.(review.id, 'REJECTED')}
-                      >
-                        <IconX className='mr-2 h-4 w-4' />
-                        {t('admin.reviews.actions.reject')}
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      className='text-destructive'
-                      onClick={() => onDelete?.(review.id)}
+                      onClick={() =>
+                        onToggleVisibility?.(review.id, !review.visible)
+                      }
                     >
-                      <IconX className='mr-2 h-4 w-4' />
-                      {t('admin.reviews.actions.delete')}
+                      {review.visible ? (
+                        <>
+                          <IconEyeOff className='mr-2 h-4 w-4' />
+                          {t('admin.reviews.actions.hide')}
+                        </>
+                      ) : (
+                        <>
+                          <IconEye className='mr-2 h-4 w-4' />
+                          {t('admin.reviews.actions.show')}
+                        </>
+                      )}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

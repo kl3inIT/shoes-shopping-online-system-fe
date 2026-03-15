@@ -1,11 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import {
-  IconCheck,
-  IconX,
   IconStar,
   IconStarFilled,
+  IconEye,
+  IconEyeOff,
 } from '@tabler/icons-react';
-import { type ReviewStatus } from '@/features/reviews';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,45 +17,33 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
-import type { AdminReviewItem } from './ReviewTable';
+import type { AdminReviewTableItem } from './ReviewTable';
 
 interface ReviewDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  review: AdminReviewItem | null;
-  onUpdateStatus?: (reviewId: string, status: ReviewStatus) => void;
+  review: AdminReviewTableItem | null;
+  onToggleVisibility?: (reviewId: string, visible: boolean) => void;
 }
 
 export function ReviewDetailDialog({
   open,
   onOpenChange,
   review,
-  onUpdateStatus,
+  onToggleVisibility,
 }: ReviewDetailDialogProps) {
   const { t } = useTranslation();
 
-  const getStatusBadge = (status: ReviewStatus) => {
-    switch (status) {
-      case 'APPROVED':
-        return (
-          <Badge className='bg-green-500'>
-            {t('admin.reviews.status.approved')}
-          </Badge>
-        );
-      case 'PENDING':
-        return (
-          <Badge variant='secondary'>{t('admin.reviews.status.pending')}</Badge>
-        );
-      case 'REJECTED':
-        return (
-          <Badge variant='destructive'>
-            {t('admin.reviews.status.rejected')}
-          </Badge>
-        );
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
+  const getVisibilityBadge = (visible: boolean) =>
+    visible ? (
+      <Badge className='bg-green-500'>
+        {t('admin.reviews.visibility.visible')}
+      </Badge>
+    ) : (
+      <Badge variant='destructive'>
+        {t('admin.reviews.visibility.hidden')}
+      </Badge>
+    );
 
   const renderStars = (rating: number) => {
     return (
@@ -129,40 +116,35 @@ export function ReviewDetailDialog({
 
           <Separator />
 
-          {/* Status & Actions */}
+          {/* Visibility & Actions */}
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-2'>
               <span className='text-sm text-muted-foreground'>
-                {t('admin.reviews.detail.status')}:
+                {t('admin.reviews.detail.visibility')}:
               </span>
-              {getStatusBadge(review.status)}
+              {getVisibilityBadge(review.visible)}
             </div>
             <div className='flex gap-2'>
-              {review.status !== 'APPROVED' && (
-                <Button
-                  size='sm'
-                  onClick={() => {
-                    onUpdateStatus?.(review.id, 'APPROVED');
-                    onOpenChange(false);
-                  }}
-                >
-                  <IconCheck className='mr-1 h-4 w-4' />
-                  {t('admin.reviews.actions.approve')}
-                </Button>
-              )}
-              {review.status !== 'REJECTED' && (
-                <Button
-                  size='sm'
-                  variant='destructive'
-                  onClick={() => {
-                    onUpdateStatus?.(review.id, 'REJECTED');
-                    onOpenChange(false);
-                  }}
-                >
-                  <IconX className='mr-1 h-4 w-4' />
-                  {t('admin.reviews.actions.reject')}
-                </Button>
-              )}
+              <Button
+                size='sm'
+                variant={review.visible ? 'destructive' : 'default'}
+                onClick={() => {
+                  onToggleVisibility?.(review.id, !review.visible);
+                  onOpenChange(false);
+                }}
+              >
+                {review.visible ? (
+                  <>
+                    <IconEyeOff className='mr-1 h-4 w-4' />
+                    {t('admin.reviews.actions.hide')}
+                  </>
+                ) : (
+                  <>
+                    <IconEye className='mr-1 h-4 w-4' />
+                    {t('admin.reviews.actions.show')}
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </div>

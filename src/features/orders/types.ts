@@ -18,6 +18,8 @@ export type CustomerOrdersQueryParams = {
 
 export interface CustomerOrderItemResponse {
   id: string;
+  shoeId: string | null;
+  shoeVariantId: string | null;
   name: string;
   image: string;
   price: number;
@@ -97,6 +99,8 @@ export function mapOrderToCardData(order: CustomerOrderHistoryResponse): {
     createdAt: order.createdAt,
     items: (order.items ?? []).map((item) => ({
       id: String(item.id),
+      shoeId: item.shoeId ?? null,
+      shoeVariantId: item.shoeVariantId ?? null,
       name: item.name,
       image: item.image ?? '',
       price: Number(item.price),

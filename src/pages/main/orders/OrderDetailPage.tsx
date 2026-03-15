@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
@@ -13,6 +13,21 @@ import {
   type OrderStatus,
   useOrderDetailQuery,
 } from '@/features/orders';
+import {
+  ReviewForm,
+  type ReviewFormData,
+  useCreateReviewMutation,
+  useReviewEligibility,
+  useUpdateReviewMutation,
+} from '@/features/reviews';
+import { getReviewEligibility } from '@/features/reviews/api';
+import type { ReviewEligibilityDto } from '@/features/reviews/types';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 import { getOrderTimeline } from './data';
 
@@ -44,13 +59,151 @@ export function OrderDetailPage() {
   const navigate = useNavigate();
   const { orderId } = useParams<{ orderId: string }>();
   const { order, isLoading, isFetching, error } = useOrderDetailQuery(orderId);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [reviewTarget, setReviewTarget] = useState<{
+    orderDetailId: string;
+    shoeVariantId: string;
+    productName: string;
+  } | null>(null);
+  const [itemEligibility, setItemEligibility] = useState<
+    Record<string, ReviewEligibilityDto>
+  >({});
+
+  const { data: eligibility } = useReviewEligibility(
+    reviewTarget?.orderDetailId ?? null,
+    reviewTarget?.shoeVariantId ?? null,
+    !!reviewTarget
+  );
+  const createReviewMutation = useCreateReviewMutation();
+  const updateReviewMutation = useUpdateReviewMutation();
 
   const timeline = useMemo(
     () => (order ? getOrderTimeline(order.status, (key) => t(key)) : []),
     [order, t]
   );
 
+  const refreshItemEligibility = async (
+    orderDetailId: string,
+    shoeVariantId: string
+  ) => {
+    try {
+      const data = await getReviewEligibility(orderDetailId, shoeVariantId);
+      setItemEligibility((prev) => ({
+        ...prev,
+        [orderDetailId]: data,
+      }));
+    } catch {
+      // ignore refresh errors for now
+    }
+  };
+
+  useEffect(() => {
+    if (!order) return;
+
+    const fetchAll = async () => {
+      try {
+        const entries = await Promise.all(
+          order.items
+            .filter((item) => item.shoeVariantId)
+            .map(async (item) => {
+              const data = await getReviewEligibility(
+                item.id,
+                item.shoeVariantId as string
+              );
+              return [item.id, data] as const;
+            })
+        );
+        setItemEligibility(Object.fromEntries(entries));
+      } catch {
+        // best-effort, ignore errors here
+      }
+    };
+
+    void fetchAll();
+  }, [order]);
+
+  useEffect(() => {
+    if (!reviewTarget || !eligibility) return;
+
+    if (eligibility.alreadyReviewed && eligibility.canEdit) {
+      setItemEligibility((prev) => ({
+        ...prev,
+        [reviewTarget.orderDetailId]: eligibility,
+      }));
+    }
+  }, [eligibility, reviewTarget]);
+
   const isLoadingState = isLoading || isFetching;
+
+  const handleOpenReview = (item: {
+    id: string;
+    shoeVariantId: string | null;
+    name: string;
+  }) => {
+    if (!item.shoeVariantId) return;
+    setReviewTarget({
+      orderDetailId: item.id,
+      shoeVariantId: item.shoeVariantId,
+      productName: item.name,
+    });
+    setReviewDialogOpen(true);
+  };
+
+  const handleSubmitReview = (data: ReviewFormData) => {
+    if (!reviewTarget || !eligibility) return;
+
+    const existingReview = eligibility.review;
+    const canEdit = eligibility.canEdit && !!existingReview;
+    const isEditing = !!existingReview && canEdit;
+
+    if (!isEditing && !eligibility.eligible) return;
+
+    const description = data.title?.trim()
+      ? `${data.title.trim()}\n\n${data.content}`
+      : data.content;
+
+    if (isEditing) {
+      updateReviewMutation.mutate(
+        {
+          reviewId: existingReview!.id,
+          numberStars: data.rating,
+          description,
+          images: data.images,
+          keepImageUrls: data.keepExistingImageUrls ?? [],
+        },
+        {
+          onSuccess: () => {
+            void refreshItemEligibility(
+              reviewTarget.orderDetailId,
+              reviewTarget.shoeVariantId
+            );
+            setReviewDialogOpen(false);
+            window.location.reload();
+          },
+        }
+      );
+    } else {
+      createReviewMutation.mutate(
+        {
+          orderDetailId: reviewTarget.orderDetailId,
+          shoeVariantId: reviewTarget.shoeVariantId,
+          numberStars: data.rating,
+          description,
+          images: data.images,
+        },
+        {
+          onSuccess: () => {
+            void refreshItemEligibility(
+              reviewTarget.orderDetailId,
+              reviewTarget.shoeVariantId
+            );
+            setReviewDialogOpen(false);
+            window.location.reload();
+          },
+        }
+      );
+    }
+  };
 
   return (
     <div className='container mx-auto px-4 py-8'>
@@ -129,9 +282,92 @@ export function OrderDetailPage() {
                           {t('cart.item.size')}: {item.size} x {item.quantity}
                         </p>
                       </div>
-                      <div className='text-right text-sm font-semibold'>
-                        {(item.price * item.quantity).toLocaleString('vi-VN')}{' '}
-                        VND
+                      <div className='flex flex-col items-end gap-2 text-right'>
+                        <div className='text-sm font-semibold'>
+                          {(item.price * item.quantity).toLocaleString('vi-VN')}{' '}
+                          VND
+                        </div>
+                        {order.status === 'DELIVERED' &&
+                          (() => {
+                            const eligibilityForItem = itemEligibility[item.id];
+
+                            if (!eligibilityForItem) {
+                              return (
+                                <Button
+                                  size='sm'
+                                  variant='outline'
+                                  onClick={() =>
+                                    handleOpenReview({
+                                      id: item.id,
+                                      shoeVariantId: item.shoeVariantId ?? null,
+                                      name: item.name,
+                                    })
+                                  }
+                                >
+                                  {t(
+                                    'productDetail.reviews.writeReview',
+                                    'Đánh giá'
+                                  )}
+                                </Button>
+                              );
+                            }
+
+                            if (eligibilityForItem.alreadyReviewed) {
+                              if (eligibilityForItem.canEdit) {
+                                return (
+                                  <Button
+                                    size='sm'
+                                    variant='ghost'
+                                    onClick={() =>
+                                      handleOpenReview({
+                                        id: item.id,
+                                        shoeVariantId:
+                                          item.shoeVariantId ?? null,
+                                        name: item.name,
+                                      })
+                                    }
+                                  >
+                                    {t(
+                                      'productDetail.reviews.editReview',
+                                      'Sửa đánh giá'
+                                    )}
+                                  </Button>
+                                );
+                              }
+
+                              return (
+                                <span className='text-xs font-medium text-muted-foreground'>
+                                  {t(
+                                    'productDetail.reviews.alreadyReviewed',
+                                    'Đã đánh giá'
+                                  )}
+                                </span>
+                              );
+                            }
+
+                            if (eligibilityForItem.eligible) {
+                              return (
+                                <Button
+                                  size='sm'
+                                  variant='outline'
+                                  onClick={() =>
+                                    handleOpenReview({
+                                      id: item.id,
+                                      shoeVariantId: item.shoeVariantId ?? null,
+                                      name: item.name,
+                                    })
+                                  }
+                                >
+                                  {t(
+                                    'productDetail.reviews.writeReview',
+                                    'Đánh giá'
+                                  )}
+                                </Button>
+                              );
+                            }
+
+                            return null;
+                          })()}
                       </div>
                     </div>
                   ))}
@@ -165,6 +401,51 @@ export function OrderDetailPage() {
           </Card>
         </div>
       )}
+
+      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+        <DialogContent className='sm:max-w-lg'>
+          <DialogHeader>
+            <DialogTitle>
+              {t('productDetail.reviews.writeReview', 'Viết đánh giá')}
+            </DialogTitle>
+          </DialogHeader>
+          {reviewTarget && (
+            <ReviewForm
+              productName={reviewTarget.productName}
+              initialData={(() => {
+                const existingReview = eligibility?.review;
+                if (!existingReview) return undefined;
+
+                const description = existingReview.description ?? '';
+                const separator = '\n\n';
+                const hasSeparator = description.includes(separator);
+
+                const title = hasSeparator
+                  ? description.substring(0, description.indexOf(separator))
+                  : '';
+                const content = hasSeparator
+                  ? description.substring(
+                      description.indexOf(separator) + separator.length
+                    )
+                  : description;
+
+                return {
+                  rating: existingReview.numberStars,
+                  title,
+                  content,
+                  images: [],
+                };
+              })()}
+              existingImageUrls={eligibility?.review?.imageUrls ?? []}
+              onSubmit={handleSubmitReview}
+              onCancel={() => setReviewDialogOpen(false)}
+              isSubmitting={
+                createReviewMutation.isPending || updateReviewMutation.isPending
+              }
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

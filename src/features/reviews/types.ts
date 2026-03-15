@@ -24,6 +24,13 @@ export interface ReviewEligibilityByShoeDto {
   shoeVariantId?: string | null;
 }
 
+export interface ReviewEligibilityDto {
+  eligible: boolean;
+  alreadyReviewed: boolean;
+  canEdit: boolean;
+  review?: ReviewResponseDto | null;
+}
+
 export interface ReviewResponseDto {
   id: string;
   shoeVariantId: string;

@@ -46,48 +46,45 @@ export function BrandFormDialog({
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // Revoke object URL when cleanup (dialog close or file change)
+  // Khi mở popup edit, nếu có logoUrl từ server thì dùng làm preview ban đầu
   useEffect(() => {
-    return () => {
-      if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl);
-    };
-  }, [logoPreviewUrl]);
-
-  // Reset pending file when dialog closes
-  useEffect(() => {
-    if (!open) {
+    if (open) {
+      setLogoPreviewUrl(formData.logoUrl || null);
       setSelectedLogoFile(null);
-      if (logoPreviewUrl) {
-        URL.revokeObjectURL(logoPreviewUrl);
-        setLogoPreviewUrl(null);
-      }
     }
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps -- only reset when open becomes false
+  }, [open, formData.logoUrl]);
 
+  // Chọn file: chỉ tạo preview local, CHƯA upload lên MinIO
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0] || null;
+    // Cho phép chọn lại cùng một file nhiều lần
     e.target.value = '';
-    if (!file) return;
-    if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl);
+
+    setLogoPreviewUrl((prev) => {
+      if (prev && prev.startsWith('blob:')) {
+        URL.revokeObjectURL(prev);
+      }
+      return file ? URL.createObjectURL(file) : formData.logoUrl || null;
+    });
+
     setSelectedLogoFile(file);
-    setLogoPreviewUrl(URL.createObjectURL(file));
-    // Xóa link/ảnh cũ: khi chọn ảnh mới thì bỏ URL cũ khỏi input, preview sẽ hiển thị ảnh vừa chọn.
-    onFormChange({ ...formData, logoUrl: '' });
   };
 
   const handleDialogOpenChange = (next: boolean) => {
     if (!next) {
-      setSelectedLogoFile(null);
-      if (logoPreviewUrl) {
+      if (logoPreviewUrl && logoPreviewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(logoPreviewUrl);
-        setLogoPreviewUrl(null);
       }
+      setLogoPreviewUrl(null);
+      setSelectedLogoFile(null);
     }
     onOpenChange(next);
   };
 
+  // Nhấn Lưu: nếu có file mới thì mới upload, sau đó gọi onSave
   const handleSaveClick = async () => {
     let finalLogoUrl = formData.logoUrl;
+
     if (selectedLogoFile) {
       setUploading(true);
       try {
@@ -100,10 +97,9 @@ export function BrandFormDialog({
         setUploading(false);
       }
     }
+
     onSave({ ...formData, logoUrl: finalLogoUrl });
   };
-
-  const previewUrl = logoPreviewUrl ?? formData.logoUrl;
 
   return (
     <Dialog open={open} onOpenChange={handleDialogOpenChange}>
@@ -156,16 +152,8 @@ export function BrandFormDialog({
             />
           </div>
           <div className='space-y-2'>
-            <Label>{t('admin.brands.form.logoUrl')}</Label>
+            <Label>{t('admin.brands.form.logo')}</Label>
             <div className='flex flex-wrap items-center gap-2'>
-              <Input
-                value={formData.logoUrl}
-                onChange={(e) =>
-                  onFormChange({ ...formData, logoUrl: e.target.value })
-                }
-                placeholder='https://... or upload file'
-                className='flex-1 min-w-0'
-              />
               <label className='inline-flex h-9 cursor-pointer items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50'>
                 <input
                   type='file'
@@ -181,10 +169,10 @@ export function BrandFormDialog({
             </div>
             <div className='mt-1 flex items-center gap-2'>
               <div className='relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded border bg-muted'>
-                {previewUrl ? (
+                {logoPreviewUrl ? (
                   <>
                     <img
-                      src={previewUrl}
+                      src={logoPreviewUrl}
                       alt='Logo preview'
                       className='h-full w-full object-contain'
                       onError={(e) => {
@@ -209,12 +197,9 @@ export function BrandFormDialog({
                   </span>
                 )}
               </div>
-              {selectedLogoFile && (
+              {uploading && (
                 <span className='text-xs text-muted-foreground'>
-                  {t(
-                    'admin.brands.form.logoPreviewHint',
-                    'Preview – upload when you Save'
-                  )}
+                  {t('common.uploading')}
                 </span>
               )}
             </div>
