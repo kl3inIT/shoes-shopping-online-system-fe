@@ -1040,7 +1040,16 @@
         },
         "ingestion": {
           "ingestAll": "Ingest All",
-          "type": {}
+          "runByType": "Run by type",
+          "running": "Running {{type}}…",
+          "type": {
+            "policy": "Policy",
+            "product": "Product",
+            "review": "Review",
+            "order": "Order",
+            "brand": "Brand",
+            "category": "Category"
+          }
         },
         "actions": {
           "viewDetail": "View detail",

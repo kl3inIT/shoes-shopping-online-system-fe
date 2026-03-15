@@ -1038,7 +1038,16 @@
         },
         "ingestion": {
           "ingestAll": "Nhập liệu tất cả",
-          "type": {}
+          "runByType": "Chạy theo loại",
+          "running": "Đang chạy {{type}}…",
+          "type": {
+            "policy": "Chính sách",
+            "product": "Sản phẩm",
+            "review": "Đánh giá",
+            "order": "Đơn hàng",
+            "brand": "Thương hiệu",
+            "category": "Danh mục"
+          }
         },
         "actions": {
           "viewDetail": "Xem chi tiết",
