@@ -26,7 +26,14 @@ function nowIso(): string {
 export const orderHistoryQueryKey = {
   all: ['orders', 'history'] as const,
   list: (params: OrderHistoryParams) =>
-    [...orderHistoryQueryKey.all, params] as const,
+    [
+      ...orderHistoryQueryKey.all,
+      params.page,
+      params.size,
+      params.orderStatus ?? '',
+      params.dateFrom ?? '',
+      params.dateTo ?? '',
+    ] as const,
 };
 
 export const orderDetailQueryKey = {
@@ -86,6 +93,12 @@ export function useOrderHistoryQuery(pageSize = DEFAULT_PAGE_SIZE) {
   const query = useQuery({
     queryKey: orderHistoryQueryKey.list(params),
     queryFn: () => getOrderHistory(params),
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+    retry: false,
+    meta: {
+      suppressErrorToast: true,
+    },
   });
 
   const orders = useMemo(
@@ -148,6 +161,12 @@ export function useOrderDetailQuery(orderId: string | undefined) {
       return getOrderDetail(orderId);
     },
     enabled: !!orderId,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+    retry: false,
+    meta: {
+      suppressErrorToast: true,
+    },
   });
 
   const order = useMemo(

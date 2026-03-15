@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { IconSearch } from '@tabler/icons-react';
 import { Calendar as CalendarIcon } from 'lucide-react';
 
+import { PageErrorState, PageLoader } from '@/components/app';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -15,6 +16,7 @@ import {
 
 import type { OrderResponse, OrderStatus } from '@/features/admin/orders';
 import { useQueryOrders } from '@/features/admin/orders';
+import { getErrorMessage } from '@/features/apiClient';
 import {
   OrderDetailDialog,
   OrderStatsCards,
@@ -86,7 +88,7 @@ export default function AdminOrdersPage() {
     [params, computedDates]
   );
 
-  const { data, isPending } = useQueryOrders(requestParams);
+  const { data, isPending, error, refetch } = useQueryOrders(requestParams);
   const orders = useMemo(() => data?.content ?? [], [data?.content]);
   const totalElements = data?.totalElements ?? 0;
   const totalPages = data?.totalPages ?? 1;
@@ -246,9 +248,23 @@ export default function AdminOrdersPage() {
 
       <div className='px-4 lg:px-6'>
         {isPending ? (
-          <p className='text-muted-foreground'>
-            {t('common.loading', 'Loading...')}
-          </p>
+          <PageLoader
+            title={t('common.loading', 'Loading...')}
+            description={t(
+              'admin.orders.loading',
+              'Loading order management data.'
+            )}
+          />
+        ) : error ? (
+          <PageErrorState
+            title={t('admin.orders.errorTitle', 'Unable to load orders')}
+            description={getErrorMessage(error)}
+            action={
+              <Button variant='outline' onClick={() => void refetch()}>
+                {t('common.retry', 'Retry')}
+              </Button>
+            }
+          />
         ) : (
           <OrderTable
             orders={orders}

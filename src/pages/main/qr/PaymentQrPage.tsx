@@ -1,22 +1,22 @@
-import { use, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
+import { Button } from '@/components/ui/button';
 import {
   QrPaymentCard,
-  usePaymentInfoQuery,
   type QrPaymentInfo,
+  usePaymentInfoQuery,
 } from '@/features/qr';
-import { WebSocketContext } from '@/providers';
+import { WebSocketProvider, useWebSocketClient } from '@/providers';
 
-export function PaymentQrPage() {
+function PaymentQrPageContent() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { orderId } = useParams();
-
   const { data } = usePaymentInfoQuery(orderId);
+  const stompClient = useWebSocketClient();
 
   const paymentInfo: QrPaymentInfo = {
     amount: data?.amount ?? 0,
@@ -26,13 +26,12 @@ export function PaymentQrPage() {
     orderCode: data?.orderCode ?? 'SSOS-OD3423-JSKDF',
   };
 
-  const stompClient = use(WebSocketContext);
-
   useEffect(() => {
-    if (!stompClient) return;
+    if (!stompClient) {
+      return;
+    }
 
-    const subscription = stompClient.subscribe('/topic/orders', (msg) => {
-      console.log('QR nhận:', msg.body);
+    const subscription = stompClient.subscribe('/topic/orders', () => {
       navigate('/orders');
     });
 
@@ -54,6 +53,14 @@ export function PaymentQrPage() {
 
       <QrPaymentCard info={paymentInfo} />
     </div>
+  );
+}
+
+export function PaymentQrPage() {
+  return (
+    <WebSocketProvider>
+      <PaymentQrPageContent />
+    </WebSocketProvider>
   );
 }
 
