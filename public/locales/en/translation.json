@@ -129,6 +129,7 @@
   "products": {
     "title": "All Products",
     "showing": "Showing {{count}} of {{total}} products",
+    "loadingResults": "Updating results...",
     "filters": "Filters",
     "filtersActive": "Filters active",
     "clearFilters": "Clear all filters",
@@ -153,6 +154,13 @@
       "priceRange": "Price Range",
       "gender": "Gender"
     },
+    "gender": {
+      "men": "Men",
+      "women": "Women",
+      "unisex": "Unisex"
+    },
+    "emptyTitle": "No products match these filters",
+    "emptyDescription": "Try clearing one or more filters to broaden the catalog results.",
     "noProducts": "No products found.",
     "addToCart": "Add to Cart",
     "addToWishlist": "Add to Wishlist"
@@ -511,7 +519,16 @@
     "uploading": "Uploading...",
     "error": "Error",
     "success": "Success",
-    "retry": "Retry"
+    "retry": "Retry",
+    "pagination": {
+      "total": "{{count}} records",
+      "rowsPerPage": "Rows per page",
+      "pageOf": "Page {{page}} of {{total}}",
+      "previous": "Previous",
+      "next": "Next",
+      "previousAria": "Go to previous page",
+      "nextAria": "Go to next page"
+    }
   },
   "error": {
     "page": {
@@ -733,6 +750,9 @@
       "title": "Products Management",
       "subtitle": "Manage {{count}} products",
       "addProduct": "Add Product",
+      "loadingResults": "Updating products...",
+      "emptyTitle": "No products found",
+      "emptyDescription": "Adjust the filters or search term to find more products.",
       "addPage": {
         "breadcrumb": "SSOS Admin / Products",
         "title": "Add Product",
