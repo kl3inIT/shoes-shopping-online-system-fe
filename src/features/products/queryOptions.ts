@@ -1,18 +1,28 @@
-import { queryOptions } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions } from '@tanstack/react-query';
 
 import {
   getAllBrands,
   getAllCategories,
-  getAllShoes,
   getShoeById,
   getBestSellers,
   getShoesList,
+  searchShoes,
+  type ShoeSearchParams,
+  type PageableParams,
 } from './api';
-import type { ShoeResponse, BrandResponse, CategoryResponse } from './types';
+import type {
+  ShoeResponse,
+  BrandResponse,
+  CategoryResponse,
+  PageResponse,
+} from './types';
 
 // ===== Query Keys =====
 
-export const shoesQueryKey = ['shoes'] as const;
+export interface ShoesPageQueryParams
+  extends ShoeSearchParams, PageableParams {}
+
+export const shoesQueryKeyPrefix = ['shoes'] as const;
 export const bestSellersQueryKey = ['shoes', 'best-sellers'] as const;
 export const newArrivalsQueryKey = ['shoes', 'new-arrivals'] as const;
 export const brandsQueryKey = ['brands'] as const;
@@ -20,10 +30,27 @@ export const categoriesQueryKey = ['categories'] as const;
 export const shoeByIdQueryKey = (id: string | null) =>
   ['shoes', id ?? ''] as const;
 
-export const shoesQueryOptions = () =>
-  queryOptions<ShoeResponse[], Error>({
-    queryKey: shoesQueryKey,
-    queryFn: getAllShoes,
+export const shoesQueryKey = (params: ShoesPageQueryParams) =>
+  [
+    ...shoesQueryKeyPrefix,
+    params.page ?? 0,
+    params.size ?? 20,
+    params.sort ?? 'createdAt,desc',
+    params.search ?? '',
+    (params.brandIds ?? []).join(','),
+    (params.sizes ?? []).join(','),
+    (params.categoryIds ?? []).join(','),
+    params.minPrice ?? '',
+    params.maxPrice ?? '',
+    (params.statuses ?? []).join(','),
+    (params.genders ?? []).join(','),
+  ] as const;
+
+export const shoesQueryOptions = (params: ShoesPageQueryParams) =>
+  queryOptions<PageResponse<ShoeResponse>, Error>({
+    queryKey: shoesQueryKey(params),
+    queryFn: () => searchShoes(params),
+    placeholderData: keepPreviousData,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
     meta: {

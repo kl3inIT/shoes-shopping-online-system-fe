@@ -8,12 +8,20 @@ import {
   bestSellersQueryOptions,
   newArrivalsQueryOptions,
 } from './queryOptions';
-import type { ShoeResponse, BrandResponse, CategoryResponse } from './types';
+import type {
+  ShoeResponse,
+  BrandResponse,
+  CategoryResponse,
+  PageResponse,
+} from './types';
+import type { ShoesPageQueryParams } from './queryOptions';
 
 export * from './queryOptions';
 
-export function useShoes(): UseQueryResult<ShoeResponse[], Error> {
-  return useQuery(shoesQueryOptions());
+export function useShoes(
+  params: ShoesPageQueryParams
+): UseQueryResult<PageResponse<ShoeResponse>, Error> {
+  return useQuery(shoesQueryOptions(params));
 }
 
 export function useBrands(): UseQueryResult<BrandResponse[], Error> {

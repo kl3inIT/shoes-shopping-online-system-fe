@@ -129,6 +129,7 @@
   "products": {
     "title": "All Products",
     "showing": "Showing {{count}} of {{total}} products",
+    "loadingResults": "Updating results...",
     "filters": "Filters",
     "filtersActive": "Filters active",
     "clearFilters": "Clear all filters",
@@ -153,6 +154,13 @@
       "priceRange": "Price Range",
       "gender": "Gender"
     },
+    "gender": {
+      "men": "Men",
+      "women": "Women",
+      "unisex": "Unisex"
+    },
+    "emptyTitle": "No products match these filters",
+    "emptyDescription": "Try clearing one or more filters to broaden the catalog results.",
     "noProducts": "No products found.",
     "addToCart": "Add to Cart",
     "addToWishlist": "Add to Wishlist"
@@ -511,7 +519,16 @@
     "uploading": "Uploading...",
     "error": "Error",
     "success": "Success",
-    "retry": "Retry"
+    "retry": "Retry",
+    "pagination": {
+      "total": "{{count}} records",
+      "rowsPerPage": "Rows per page",
+      "pageOf": "Page {{page}} of {{total}}",
+      "previous": "Previous",
+      "next": "Next",
+      "previousAria": "Go to previous page",
+      "nextAria": "Go to next page"
+    }
   },
   "error": {
     "page": {
@@ -539,9 +556,6 @@
   },
   "http": {
     "error": {
-      "network": "Unable to connect to the server.",
-      "timeout": "The server is taking too long to respond. Please try again.",
-      "unknown": "An unexpected error occurred. Please try again.",
       "400": "Invalid data.",
       "401": "Your session has expired. Please log in again.",
       "403": "You do not have permission to access this resource.",
@@ -552,7 +566,10 @@
       "500": "Server error. Please try again later.",
       "502": "The service is temporarily unavailable.",
       "503": "The service is temporarily unavailable.",
-      "504": "The service is temporarily unavailable."
+      "504": "The service is temporarily unavailable.",
+      "network": "Unable to connect to the server.",
+      "timeout": "The server is taking too long to respond. Please try again.",
+      "unknown": "An unexpected error occurred. Please try again."
     }
   },
   "admin": {
@@ -733,6 +750,9 @@
       "title": "Products Management",
       "subtitle": "Manage {{count}} products",
       "addProduct": "Add Product",
+      "loadingResults": "Updating products...",
+      "emptyTitle": "No products found",
+      "emptyDescription": "Adjust the filters or search term to find more products.",
       "addPage": {
         "breadcrumb": "SSOS Admin / Products",
         "title": "Add Product",
@@ -1172,15 +1192,35 @@
     "ai": {
       "vector": {
         "title": "Vector Store",
-        "filterPlaceholder": "{\"docType\": \"product\"}",
+        "summary": {
+          "totalDocuments": "Total documents",
+          "totalDocumentsHint": "Indexed records currently available to retrieval.",
+          "selectedRows": "Selected rows",
+          "selectedRowsHint": "Bulk actions only appear when you intentionally select records.",
+          "filterState": "Filter state",
+          "noFilter": "No filter applied",
+          "filterStateHint": "Apply metadata filters before deleting or investigating a subset."
+        },
+        "section": {
+          "controls": "Indexing Controls",
+          "controlsDescription": "Run a full ingest when the knowledge base changes broadly, or scope the run by source type when only part of the corpus needs to refresh.",
+          "documents": "Indexed Documents",
+          "documentsDescription": "Use the table for quick scanning. Open detail only when the excerpt or metadata suggests a problem."
+        },
+        "filterPlaceholder": "{\"docType\":\"product\",\"locale\":\"vi\"}",
         "filterHelp": "JSONB containment filter. Example: {\"docType\": \"product\"}",
-        "applyFilter": "Apply",
-        "clearFilter": "Clear",
+        "filter": {
+          "title": "Metadata filter",
+          "description": "Use a JSON object to narrow documents before reviewing or deleting them.",
+          "apply": "Apply",
+          "clear": "Clear"
+        },
         "selectedCount": "{{count}} selected",
-        "deleteSelected": "Delete selected",
-        "deleteByFilter": "Delete by filter",
+        "deleteSelectedAction": "Delete selected",
+        "deleteByFilterAction": "Delete by filter",
         "table": {
           "id": "ID",
+          "content": "Content",
           "contentExcerpt": "Content (excerpt)",
           "metadata": "Metadata",
           "actions": "Actions",
@@ -1193,14 +1233,13 @@
         },
         "totalDocuments": "{{count}} document(s) total",
         "fetchError": "Failed to load documents",
-        "filter": {
-          "apply": "Apply",
-          "clear": "Clear"
-        },
         "ingestion": {
+          "title": "Run ingestion jobs",
+          "description": "Use a full ingest for broad refreshes, or target a single source type when only one pipeline changed.",
+          "runningAll": "Running full ingest...",
           "ingestAll": "Ingest All",
           "runByType": "Run by type",
-          "running": "Running {{type}}…",
+          "running": "Running {{type}}...",
           "type": {
             "policy": "Policy",
             "product": "Product",
@@ -1214,24 +1253,17 @@
           "viewDetail": "View detail",
           "delete": "Delete"
         },
-        "ingest": {
-          "all": "Ingest All",
-          "byType": "Ingest {{type}}"
+        "deleteSelected": {
+          "title": "Delete selected",
+          "description": "Are you sure you want to delete {{count}} selected document(s)? This action cannot be undone."
         },
-        "deleteSelectedDialog": {
-          "title": "Delete selected documents",
-          "description": "Delete {{count}} selected document(s)? This cannot be undone.",
-          "confirm": "Delete",
-          "cancel": "Cancel"
-        },
-        "deleteByFilterDialog": {
+        "deleteByFilter": {
           "title": "Delete by filter",
-          "description": "Delete all documents matching filter \"{{filter}}\"? This cannot be undone.",
-          "confirm": "Delete",
-          "cancel": "Cancel"
+          "description": "Are you sure you want to delete all documents matching filter \"{{filter}}\"? This action cannot be undone."
         },
         "detail": {
           "title": "Document detail",
+          "id": "ID",
           "content": "Full content",
           "metadata": "Metadata",
           "close": "Close"
@@ -1245,6 +1277,23 @@
       },
       "chatLogs": {
         "title": "Chat Logs",
+        "section": {
+          "title": "Conversation Logs",
+          "description": "Start with a filter, scan the table for timing or token anomalies, then open the full conversation only when you need context."
+        },
+        "summary": {
+          "total": "Total logs",
+          "totalHint": "Conversation responses captured for investigation and auditing.",
+          "averageLatency": "Current page latency",
+          "averageLatencyHint": "Useful for spotting slow responses before opening details.",
+          "filters": "Filter state",
+          "filtersHint": "Keep the scope narrow when debugging a single conversation.",
+          "conversationFilter": "Conversation ID applied",
+          "dateFilter": "Date range applied",
+          "noFilter": "No filters applied",
+          "emptyMetric": "N/A"
+        },
+        "pageSummary": "Showing {{count}} records on this page",
         "table": {
           "date": "Date",
           "conversationId": "Conversation ID",
@@ -1289,22 +1338,203 @@
           "close": "Close"
         }
       },
-      "page": {
-        "title": "Assistant Operations",
-        "description": "Configure prompts, knowledge indexing, conversation logs, and assistant response testing."
+      "checks": {
+        "section": {
+          "definitions": "Check Definitions",
+          "definitionsDescription": "Keep each check focused on a single behavior so failures are easy to diagnose from the results page.",
+          "runHistory": "Run History",
+          "runHistoryDescription": "Use the history as an operational timeline: trigger a run, compare the score, then open detailed results only where quality changed."
+        },
+        "summary": {
+          "totalDefinitions": "Total definitions",
+          "totalDefinitionsHint": "The full set of evaluation questions currently stored.",
+          "activeDefinitions": "Active definitions",
+          "activeDefinitionsHint": "These definitions will be included when checks run.",
+          "inactiveDefinitions": "Inactive definitions",
+          "inactiveDefinitionsHint": "Keep drafts here without affecting production evaluations.",
+          "runCount": "Total runs",
+          "runCountHint": "Stored executions you can reopen for detailed analysis.",
+          "latestScore": "Latest score",
+          "latestScoreHint": "Updated immediately after a successful run.",
+          "pageAverage": "Current page average",
+          "pageAverageHint": "Quick signal for recent quality without opening every run.",
+          "emptyMetric": "N/A"
+        },
+        "button": {
+          "addDefinition": "Add Definition",
+          "runChecks": "Run Checks",
+          "running": "Running...",
+          "viewResults": "View Results"
+        },
+        "activeState": {
+          "on": "Enabled",
+          "off": "Disabled"
+        },
+        "badge": {
+          "latestScore": "Latest: {{score}} ✓"
+        },
+        "dialog": {
+          "deleteTitle": "Delete Check Definition",
+          "deleteBody": "Delete this check definition and all its related run history? This cannot be undone.",
+          "deleteConfirm": "Delete",
+          "cancel": "Cancel",
+          "addDef": "Add Check Definition",
+          "editDef": "Edit Check Definition",
+          "save": "Save",
+          "saving": "Saving...",
+          "resultsTitle": "Run Results",
+          "field": {
+            "category": "Category",
+            "question": "Question",
+            "referenceAnswer": "Reference Answer",
+            "active": "Active"
+          },
+          "optional": "(optional)",
+          "categoryPlaceholder": "e.g. product, policy",
+          "questionPlaceholder": "Enter the check question",
+          "referenceAnswerPlaceholder": "Enter the expected reference answer",
+          "referenceAnswerEditPlaceholder": "Enter new reference answer (optional)",
+          "deleteRunTitle": "Delete Run",
+          "deleteRunBody": "Delete this run and all its results? This cannot be undone."
+        },
+        "table": {
+          "defs": {
+            "category": "Category",
+            "question": "Question",
+            "active": "Active",
+            "actions": "Actions",
+            "edit": "Edit",
+            "delete": "Delete",
+            "empty": "No check definitions",
+            "openMenu": "Open menu"
+          },
+          "runs": {
+            "score": "Score",
+            "date": "Date",
+            "by": "By",
+            "actions": "Actions",
+            "empty": "No check runs yet",
+            "delete": "Delete"
+          },
+          "results": {
+            "question": "Question",
+            "refAnswer": "Ref Answer",
+            "actualAnswer": "Actual Answer",
+            "score": "Score",
+            "verdict": "Verdict"
+          }
+        },
+        "results": {
+          "title": "Run Results",
+          "subtitle": "Review a compact preview in the table and open details for the full answer.",
+          "score": "Score",
+          "loading": "Loading results...",
+          "back": "Back",
+          "emptyState": "No results found",
+          "viewLog": "View log",
+          "viewDetails": "View details",
+          "detailTitle": "Result details",
+          "detailDescription": "Review the full question, reference answer, actual answer, and log for this result.",
+          "referenceAnswer": "Reference answer",
+          "referenceAnswerEmpty": "No reference answer",
+          "actualAnswerEmpty": "No actual answer",
+          "log": "Log",
+          "table": {
+            "question": "Question",
+            "refAnswer": "Ref Answer",
+            "actualAnswer": "Actual Answer",
+            "score": "Score",
+            "verdict": "Verdict",
+            "emptyState": "No results found",
+            "viewLog": "View log"
+          },
+          "summary": {
+            "total": "Total results",
+            "averageScore": "Average score",
+            "passRate": "Pass rate"
+          }
+        },
+        "toast": {
+          "created": "Definition created",
+          "updated": "Definition updated",
+          "deleted": "Definition deleted",
+          "runComplete": "Run complete — score: {{score}}",
+          "noActiveDefs": "No active definitions to run",
+          "runCompleteNoScore": "Check run completed",
+          "runDeleted": "Run deleted"
+        },
+        "fetchError": "Failed to load check definitions",
+        "totalDefs": "{{count}} definition(s)",
+        "pagination": {
+          "pageOf": "Page {{page}} of {{total}}",
+          "total": "{{count}} records",
+          "rowsPerPage": "Rows:"
+        },
+        "verdict": {
+          "pass": "PASS",
+          "fail": "FAIL"
+        },
+        "tabs": {
+          "definitions": "Test Definitions",
+          "definitionsDescription": "Maintain the questions and reference answers used to evaluate the assistant.",
+          "runHistory": "Run History",
+          "runHistoryDescription": "Track evaluation runs, compare scores, and open detailed results."
+        }
       },
       "tabs": {
         "configuration": "Configuration",
+        "configurationDescription": "Manage prompt versions and activate the one the assistant should use.",
         "knowledgeBase": "Knowledge Base",
+        "knowledgeBaseDescription": "Control indexing, filters, and cleanup for retrieved documents.",
         "conversations": "Conversations",
-        "playground": "Playground"
+        "conversationsDescription": "Inspect conversation traffic, latency, and token usage patterns.",
+        "playground": "Playground",
+        "checks": "Checks",
+        "checksDescription": "Define evaluation questions and review assistant run quality over time."
       },
       "parameters": {
+        "title": "AI Parameters",
+        "subtitle": "Choose the target, review available versions, then open one record to edit or activate it.",
         "target": {
           "chat": "Chat",
           "search": "Search"
         },
-        "noDescription": "(no description)"
+        "summary": {
+          "currentTarget": "Current target",
+          "currentTargetHint": "Switch between assistant chat behavior and retrieval behavior.",
+          "totalVersions": "Saved versions",
+          "totalVersionsHint": "Drafts and active versions available for this target.",
+          "activeVersion": "Active version",
+          "activeVersionHint": "Exactly one version should usually be active for each target."
+        },
+        "createFromDefault": "Create from default",
+        "count": "{{count}} records for {{type}}",
+        "table": {
+          "description": "Description",
+          "active": "Status"
+        },
+        "noDescription": "(no description)",
+        "active": "Active",
+        "inactive": "Draft",
+        "editorTitle": "Edit parameter",
+        "editorEmptyTitle": "Choose a parameter",
+        "editorDescription": "Update the description or YAML content, then activate the version you trust.",
+        "editorEmpty": "Pick a record from the left or create a new draft from the default YAML template.",
+        "fields": {
+          "description": "Description",
+          "descriptionPlaceholder": "For example: Chat prompt v2 for product questions",
+          "content": "YAML content"
+        },
+        "actions": {
+          "activate": "Activate",
+          "copy": "Duplicate"
+        }
+      },
+      "testChat": {
+        "title": "Test Chat",
+        "description": "Use the frontend chat widget for realistic tests. Later, you can embed a dedicated admin chat experience here.",
+        "previewTitle": "Live Preview",
+        "previewHint": "Preview area for the user chat experience (refer to FloatingChat)."
       }
     },
     "reviews": {

@@ -59,7 +59,10 @@ export interface PageResponse<T> {
   totalElements: number;
   totalPages: number;
   size: number;
+  pageNumber: number;
   number: number;
+  first: boolean;
+  last: boolean;
 }
 
 export interface ShoeVariantRequestDto {

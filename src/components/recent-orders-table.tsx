@@ -13,15 +13,10 @@ import { Button } from '@/components/ui/button';
 import { getErrorMessage } from '@/features/apiClient';
 import { useDashboardRecentOrders } from '@/features/admin/dashboard/api/dashboardApi';
 
-const formatCurrency = (value: number, locale: string) =>
-  new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(value);
+import { formatCurrency } from '@/lib/utils';
 
 export function RecentOrdersTable() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const {
     data: recentOrders = [],
     error,
@@ -29,7 +24,6 @@ export function RecentOrdersTable() {
     isLoading,
     refetch,
   } = useDashboardRecentOrders();
-  const locale = i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US';
 
   return (
     <div className='px-4 lg:px-6 mb-8'>
@@ -115,15 +109,13 @@ export function RecentOrdersTable() {
                   </TableCell>
                   <TableCell>{order.customerName}</TableCell>
                   <TableCell>
-                    {new Date(order.createdAt).toLocaleDateString(locale, {
+                    {new Date(order.createdAt).toLocaleDateString(undefined, {
                       month: 'short',
                       day: 'numeric',
                       year: 'numeric',
                     })}
                   </TableCell>
-                  <TableCell>
-                    {formatCurrency(order.totalAmount, locale)}
-                  </TableCell>
+                  <TableCell>{formatCurrency(order.totalAmount)}</TableCell>
                   <TableCell className='text-right'>
                     <Badge
                       variant={

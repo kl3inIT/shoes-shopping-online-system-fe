@@ -7,21 +7,25 @@ import {
 } from '@tanstack/react-query';
 
 import type {
+  PageResponse,
   ShoeResponse,
   ShoeCreateRequestDto,
   ShoeUpdateRequestDto,
   ShoeStockSummaryResponse,
+  ShoesPageQueryParams,
 } from '@/features/products';
 import { createShoe, updateShoe } from './api';
 import {
-  adminShoesQueryKey,
+  adminShoesQueryKeyPrefix,
   adminShoesQueryOptions,
   adminShoeStockSummaryQueryKey,
   adminShoeStockSummaryQueryOptions,
 } from './queryOptions';
 
-export function useAdminShoes(): UseQueryResult<ShoeResponse[], Error> {
-  return useQuery(adminShoesQueryOptions());
+export function useAdminShoes(
+  params: ShoesPageQueryParams
+): UseQueryResult<PageResponse<ShoeResponse>, Error> {
+  return useQuery(adminShoesQueryOptions(params));
 }
 
 export function useAdminShoeStockSummary(
@@ -47,12 +51,10 @@ export function useCreateShoeMutation(): UseMutationResult<
       const res = await createShoe(payload, shoeImages, variantImages);
       return res.data;
     },
-    onSuccess: (createdShoe) => {
-      queryClient.setQueryData<ShoeResponse[]>(
-        adminShoesQueryKey,
-        (current = []) => [createdShoe, ...current]
-      );
-      void queryClient.invalidateQueries({ queryKey: adminShoesQueryKey });
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: adminShoesQueryKeyPrefix,
+      });
       void queryClient.invalidateQueries({
         queryKey: adminShoeStockSummaryQueryKey,
       });
@@ -77,47 +79,15 @@ export function useUpdateShoeMutation(): UseMutationResult<
       const res = await updateShoe(id, payload, shoeImages, variantImages);
       return res.data;
     },
-    onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: adminShoesQueryKey });
-      const previousShoes =
-        queryClient.getQueryData<ShoeResponse[]>(adminShoesQueryKey);
-
-      queryClient.setQueryData<ShoeResponse[]>(
-        adminShoesQueryKey,
-        (current = []) =>
-          current.map((shoe) =>
-            shoe.id === variables.id
-              ? {
-                  ...shoe,
-                  status: variables.payload.status,
-                }
-              : shoe
-          )
-      );
-
-      return { previousShoes };
-    },
-    onError: (_error, _variables, context) => {
-      if (context?.previousShoes) {
-        queryClient.setQueryData(adminShoesQueryKey, context.previousShoes);
-      }
-    },
-    onSuccess: (updatedShoe) => {
-      queryClient.setQueryData<ShoeResponse[]>(
-        adminShoesQueryKey,
-        (current = []) =>
-          current.map((shoe) =>
-            shoe.id === updatedShoe.id
-              ? {
-                  ...shoe,
-                  ...updatedShoe,
-                }
-              : shoe
-          )
-      );
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: adminShoesQueryKeyPrefix,
+      });
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: adminShoesQueryKey });
+      void queryClient.invalidateQueries({
+        queryKey: adminShoesQueryKeyPrefix,
+      });
       void queryClient.invalidateQueries({
         queryKey: adminShoeStockSummaryQueryKey,
       });

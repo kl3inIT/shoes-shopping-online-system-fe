@@ -1,4 +1,5 @@
 import apiClient from '@/features/apiClient';
+import { PRODUCT_API_PATHS } from '@/features/products/apiPaths';
 import type {
   PageResponse,
   ResponseGeneral,
@@ -7,19 +8,18 @@ import type {
   ShoeUpdateRequestDto,
   ShoeStockSummaryResponse,
 } from '@/features/products';
+import type { ShoesPageQueryParams } from '@/features/products';
 
-export async function getAdminShoes(): Promise<ShoeResponse[]> {
+export async function getAdminShoes(
+  params: ShoesPageQueryParams
+): Promise<PageResponse<ShoeResponse>> {
   const response = await apiClient.get<
     ResponseGeneral<PageResponse<ShoeResponse>>
-  >('/api/v1/shoes', {
-    params: {
-      page: 0,
-      size: 100,
-      sort: 'createdAt,desc',
-    },
+  >(PRODUCT_API_PATHS.shoes, {
+    params,
   });
 
-  return response.data.data.content;
+  return response.data.data;
 }
 
 export async function createShoe(
@@ -47,7 +47,7 @@ export async function createShoe(
   });
 
   const response = await apiClient.post<ResponseGeneral<ShoeResponse>>(
-    '/api/v1/shoes',
+    PRODUCT_API_PATHS.shoes,
     formData
   );
   return response.data;
@@ -74,7 +74,7 @@ export async function updateShoe(
   });
 
   const response = await apiClient.put<ResponseGeneral<ShoeResponse>>(
-    `/api/v1/shoes/${id}`,
+    `${PRODUCT_API_PATHS.shoes}/${id}`,
     formData
   );
   return response.data;
@@ -85,7 +85,7 @@ export async function getAdminShoeStockSummary(
 ): Promise<ShoeStockSummaryResponse> {
   const response = await apiClient.get<
     ResponseGeneral<ShoeStockSummaryResponse>
-  >('/api/v1/shoes/stock-summary', {
+  >(PRODUCT_API_PATHS.stockSummary, {
     params: {
       threshold,
     },

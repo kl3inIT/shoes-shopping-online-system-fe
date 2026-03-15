@@ -3,15 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { IconInfoCircle, IconPlus } from '@tabler/icons-react';
 
-import { Button } from '@/components/ui/button';
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
+  PageEmptyState,
+  PageErrorState,
+  PageLoader,
+  PaginationControls,
+} from '@/components/app';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -54,6 +52,7 @@ import {
 } from '@/features/products';
 
 import { useQueryBrands } from '@/features/brands';
+import { getErrorMessage } from '@/features/apiClient';
 import { statusOptions } from './data';
 
 const STATUS_VALUES: ShoeStatus[] = [
@@ -71,6 +70,9 @@ const STATUS_LABEL_KEYS: Record<ShoeStatus, string> = {
   DRAFT: 'admin.products.status.draft',
   DISCONTINUED: 'admin.products.status.discontinued',
 };
+
+const DEFAULT_PAGE_SIZE = 10;
+const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
 function mapShoeToProduct(shoe: ShoeResponse): Product {
   const firstImageUrl = shoe.imageUrls[0] ?? '';
@@ -105,8 +107,8 @@ function mapShoeToProduct(shoe: ShoeResponse): Product {
       status: variant.quantity === 0 ? 'OUT_OF_STOCK' : 'AVAILABLE',
       imageUrls: variant.imageUrls,
     })),
-    reviewCount: 0,
-    averageRating: 0,
+    reviewCount: shoe.reviewCount ?? 0,
+    averageRating: shoe.avgRating ?? 0,
     createdAt: shoe.createdAt,
     updatedAt: shoe.updatedAt,
   };
@@ -116,88 +118,85 @@ export default function AdminProductsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { data: shoes = [] } = useAdminShoes();
   const { data: brands = [] } = useQueryBrands();
   const { data: categories = [] } = useCategories();
   const updateShoeMutation = useUpdateShoeMutation();
 
-  const products = useMemo(() => shoes.map(mapShoeToProduct), [shoes]);
-
-  const [searchQuery, setSearchQuery] = useState('');
   const initialCategoryId = searchParams.get('categoryId') ?? 'all';
+
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [brandFilter, setBrandFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] =
     useState<string>(initialCategoryId);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<ShoeStatus>('ACTIVE');
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setCurrentPage(0);
+    }, 300);
 
-  const filteredProducts = useMemo(() => {
-    const result = products.filter((product) => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch =
-        product.name.toLowerCase().includes(q) ||
-        product.slug.toLowerCase().includes(q);
-      const matchesStatus =
-        statusFilter === 'all' || product.status === statusFilter;
-      const matchesBrand =
-        brandFilter === 'all' || product.brand.id === brandFilter;
-      const matchesCategory =
-        categoryFilter === 'all' || product.category.id === categoryFilter;
-
-      return matchesSearch && matchesStatus && matchesBrand && matchesCategory;
-    });
-
-    return result.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-  }, [products, searchQuery, statusFilter, brandFilter, categoryFilter]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+    return () => window.clearTimeout(timeoutId);
+  }, [searchInput]);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, statusFilter, brandFilter, categoryFilter]);
-
-  useEffect(() => {
-    const categoryId = searchParams.get('categoryId') ?? 'all';
-    setCategoryFilter(categoryId);
+    const nextCategoryId = searchParams.get('categoryId') ?? 'all';
+    setCategoryFilter(nextCategoryId);
+    setCurrentPage(0);
   }, [searchParams]);
 
-  useEffect(() => {
-    setCurrentPage((prev) => Math.min(prev, totalPages));
-  }, [totalPages]);
+  const shoesQuery = useAdminShoes({
+    page: currentPage,
+    size: pageSize,
+    sort: 'createdAt,desc',
+    search: searchQuery || undefined,
+    brandIds: brandFilter !== 'all' ? [brandFilter] : undefined,
+    categoryIds: categoryFilter !== 'all' ? [categoryFilter] : undefined,
+    statuses: statusFilter !== 'all' ? [statusFilter as ShoeStatus] : undefined,
+  });
 
-  const paginatedProducts = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredProducts.slice(start, start + pageSize);
-  }, [filteredProducts, currentPage]);
+  const shoesPage = shoesQuery.data;
+  const products = useMemo(
+    () => (shoesPage?.content ?? []).map(mapShoeToProduct),
+    [shoesPage]
+  );
+
+  useEffect(() => {
+    if (!shoesPage || shoesPage.totalPages === 0) {
+      return;
+    }
+
+    if (currentPage > shoesPage.totalPages - 1) {
+      setCurrentPage(Math.max(0, shoesPage.totalPages - 1));
+    }
+  }, [currentPage, shoesPage]);
 
   const brandOptions = useMemo(
     () =>
       brands
-        .map((b) => ({ value: b.id, label: b.name }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
+        .map((brand) => ({ value: brand.id, label: brand.name }))
+        .sort((left, right) => left.label.localeCompare(right.label)),
     [brands]
   );
 
   const categoryOptions = useMemo(
     () =>
       categories
-        .map((c) => ({ value: c.id, label: c.name }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
+        .map((category) => ({ value: category.id, label: category.name }))
+        .sort((left, right) => left.label.localeCompare(right.label)),
     [categories]
   );
 
   const getTotalStock = (product: Product) =>
-    product.variants.reduce((sum, v) => sum + v.stockQuantity, 0);
+    product.variants.reduce((sum, variant) => sum + variant.stockQuantity, 0);
 
   const isFiltering =
     searchQuery !== '' ||
@@ -208,24 +207,18 @@ export default function AdminProductsPage() {
   const { data: stockSummary } = useAdminShoeStockSummary(10, !isFiltering);
 
   const stats = {
-    total:
-      !isFiltering && stockSummary?.total !== undefined
-        ? stockSummary.total
-        : filteredProducts.length,
+    total: shoesPage?.totalElements ?? stockSummary?.total ?? products.length,
     active:
-      !isFiltering && stockSummary?.selling !== undefined
-        ? stockSummary.selling
-        : filteredProducts.filter((p) => p.status === 'ACTIVE').length,
+      stockSummary?.selling ??
+      products.filter((product) => product.status === 'ACTIVE').length,
     outOfStock:
-      !isFiltering && stockSummary?.outOfStock !== undefined
-        ? stockSummary.outOfStock
-        : filteredProducts.filter((p) => p.status === 'OUT_OF_STOCK').length,
+      stockSummary?.outOfStock ??
+      products.filter((product) => product.status === 'OUT_OF_STOCK').length,
     lowStock:
-      !isFiltering && stockSummary?.lowStock !== undefined
-        ? stockSummary.lowStock
-        : filteredProducts.filter(
-            (p) => getTotalStock(p) > 0 && getTotalStock(p) < 10
-          ).length,
+      stockSummary?.lowStock ??
+      products.filter(
+        (product) => getTotalStock(product) > 0 && getTotalStock(product) < 10
+      ).length,
   };
 
   const handleView = (product: Product) => {
@@ -250,11 +243,11 @@ export default function AdminProductsPage() {
     categoryId: shoeDetail.categoryId,
     brandId: shoeDetail.brandId,
     price: shoeDetail.price,
-    variants: shoeDetail.variants.map((v) => ({
-      id: v.id,
-      size: v.size,
-      color: v.color,
-      quantity: v.quantity,
+    variants: shoeDetail.variants.map((variant) => ({
+      id: variant.id,
+      size: variant.size,
+      color: variant.color,
+      quantity: variant.quantity,
     })),
   });
 
@@ -301,13 +294,32 @@ export default function AdminProductsPage() {
     }
   };
 
+  if (shoesQuery.isPending && !shoesPage) {
+    return <PageLoader description='Loading products for management.' />;
+  }
+
+  if (shoesQuery.isError && !shoesPage) {
+    return (
+      <PageErrorState
+        description={getErrorMessage(shoesQuery.error)}
+        action={
+          <Button variant='outline' onClick={() => void shoesQuery.refetch()}>
+            {t('common.retry')}
+          </Button>
+        }
+      />
+    );
+  }
+
   return (
     <div className='flex flex-col gap-4 py-4'>
       <div className='flex items-center justify-between px-4 lg:px-6'>
         <div>
           <h1 className='text-2xl font-bold'>{t('admin.products.title')}</h1>
           <p className='text-muted-foreground'>
-            {t('admin.products.subtitle', { count: filteredProducts.length })}
+            {t('admin.products.subtitle', {
+              count: shoesPage?.totalElements ?? products.length,
+            })}
           </p>
         </div>
         <Button onClick={() => navigate('/admin/addshoe')}>
@@ -322,14 +334,23 @@ export default function AdminProductsPage() {
 
       <div className='px-4 lg:px-6'>
         <ProductFilters
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
+          searchQuery={searchInput}
+          onSearchChange={(value) => setSearchInput(value)}
           statusFilter={statusFilter}
-          onStatusChange={setStatusFilter}
+          onStatusChange={(value) => {
+            setStatusFilter(value);
+            setCurrentPage(0);
+          }}
           brandFilter={brandFilter}
-          onBrandChange={setBrandFilter}
+          onBrandChange={(value) => {
+            setBrandFilter(value);
+            setCurrentPage(0);
+          }}
           categoryFilter={categoryFilter}
-          onCategoryChange={setCategoryFilter}
+          onCategoryChange={(value) => {
+            setCategoryFilter(value);
+            setCurrentPage(0);
+          }}
           statusOptions={statusOptions}
           brandOptions={brandOptions}
           categoryOptions={categoryOptions}
@@ -337,61 +358,55 @@ export default function AdminProductsPage() {
       </div>
 
       <div className='px-4 lg:px-6'>
-        <ProductTable
-          products={paginatedProducts}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onChangeStatus={handleChangeStatus}
-        />
+        {shoesQuery.isError && shoesPage ? (
+          <div className='mb-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive'>
+            {getErrorMessage(shoesQuery.error)}
+          </div>
+        ) : null}
+
+        {shoesQuery.isFetching && !shoesQuery.isPending ? (
+          <p className='mb-3 text-sm text-muted-foreground'>
+            {t('admin.products.loadingResults', 'Updating products...')}
+          </p>
+        ) : null}
+
+        {products.length === 0 ? (
+          <PageEmptyState
+            title={t('admin.products.emptyTitle', 'No products found')}
+            description={t(
+              'admin.products.emptyDescription',
+              'Adjust the filters or search term to find more products.'
+            )}
+          />
+        ) : (
+          <ProductTable
+            products={products}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onChangeStatus={handleChangeStatus}
+          />
+        )}
       </div>
 
-      {totalPages > 1 && (
-        <div className='mt-4 px-4 lg:px-6'>
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className={
-                    currentPage === 1
-                      ? 'pointer-events-none opacity-50'
-                      : 'cursor-pointer'
-                  }
-                />
-              </PaginationItem>
-
-              {Array.from(
-                { length: totalPages },
-                (_, pageIndex) => pageIndex + 1
-              ).map((pageNumber) => (
-                <PaginationItem key={pageNumber}>
-                  <PaginationLink
-                    onClick={() => setCurrentPage(pageNumber)}
-                    isActive={currentPage === pageNumber}
-                    className='cursor-pointer'
-                  >
-                    {pageNumber}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  className={
-                    currentPage === totalPages
-                      ? 'pointer-events-none opacity-50'
-                      : 'cursor-pointer'
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+      {shoesPage && shoesPage.totalPages > 1 ? (
+        <div className='px-4 lg:px-6'>
+          <PaginationControls
+            page={shoesPage.pageNumber ?? shoesPage.number}
+            totalPages={shoesPage.totalPages}
+            totalElements={shoesPage.totalElements}
+            pageSize={shoesPage.size}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            isFirst={shoesPage.first}
+            isLast={shoesPage.last}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(0);
+            }}
+          />
         </div>
-      )}
+      ) : null}
 
       <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
         <DialogContent>

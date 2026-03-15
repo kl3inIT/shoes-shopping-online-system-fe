@@ -1,4 +1,5 @@
 import apiClient from '@/features/apiClient';
+import { PRODUCT_API_PATHS, PRODUCT_MAX_PAGE_SIZE } from './apiPaths';
 import type {
   BrandResponse,
   CategoryResponse,
@@ -8,9 +9,6 @@ import type {
   ShoeStatus,
   ShoeVariantResponse,
 } from './types';
-
-const SHOES_ENDPOINT = '/api/v1/shoes';
-const MAX_PAGE_SIZE = 100;
 
 type Primitive = string | number | boolean;
 type ParamValue = Primitive | Primitive[] | null | undefined;
@@ -53,12 +51,17 @@ export interface PageableParams {
 
 function normalizePageable<T extends PageableParams>(params: T): T {
   const page = params.page ?? 0;
-  const size = params.size ?? MAX_PAGE_SIZE;
+  const size = params.size ?? PRODUCT_MAX_PAGE_SIZE;
 
   return {
     ...params,
     page: page < 0 ? 0 : page,
-    size: size <= 0 ? 1 : size > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : size,
+    size:
+      size <= 0
+        ? 1
+        : size > PRODUCT_MAX_PAGE_SIZE
+          ? PRODUCT_MAX_PAGE_SIZE
+          : size,
   };
 }
 
@@ -68,7 +71,7 @@ export async function searchShoes(
   const safeParams = normalizePageable(params);
   const response = await apiClient.get<
     ResponseGeneral<PageResponse<ShoeResponse>>
-  >(SHOES_ENDPOINT, {
+  >(PRODUCT_API_PATHS.shoes, {
     params: safeParams,
     paramsSerializer: { serialize: serializeParams },
   });
@@ -88,7 +91,7 @@ export async function getAllShoes(): Promise<ShoeResponse[]> {
 
 export async function getShoeById(id: string): Promise<ShoeResponse> {
   const response = await apiClient.get<ResponseGeneral<ShoeResponse>>(
-    `${SHOES_ENDPOINT}/${id}`
+    `${PRODUCT_API_PATHS.shoes}/${id}`
   );
   return response.data.data;
 }
@@ -97,14 +100,14 @@ export async function getShoeVariants(
   id: string
 ): Promise<ShoeVariantResponse[]> {
   const response = await apiClient.get<ResponseGeneral<ShoeVariantResponse[]>>(
-    `${SHOES_ENDPOINT}/${id}/variants`
+    `${PRODUCT_API_PATHS.shoes}/${id}/variants`
   );
   return response.data.data;
 }
 
 export async function getBestSellers(limit = 5): Promise<ShoeResponse[]> {
   const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
-    `${SHOES_ENDPOINT}/best-sellers`,
+    `${PRODUCT_API_PATHS.shoes}/best-sellers`,
     { params: { limit } }
   );
   return response.data.data;
@@ -112,7 +115,7 @@ export async function getBestSellers(limit = 5): Promise<ShoeResponse[]> {
 
 export async function getNewArrivals(limit = 5): Promise<ShoeResponse[]> {
   const response = await apiClient.get<ResponseGeneral<ShoeResponse[]>>(
-    `${SHOES_ENDPOINT}/new-arrivals`,
+    `${PRODUCT_API_PATHS.shoes}/new-arrivals`,
     { params: { limit } }
   );
   return response.data.data;
@@ -145,22 +148,22 @@ export async function getShoesList(
   } = params;
   const response = await apiClient.get<
     ResponseGeneral<PageResponse<ShoeResponse>>
-  >(SHOES_ENDPOINT, {
+  >(PRODUCT_API_PATHS.shoes, {
     params: { sort: `${sort},${order}`, page, size, ...rest },
   });
   return response.data.data;
 }
 
 export async function getAllBrands(): Promise<BrandResponse[]> {
-  const response =
-    await apiClient.get<ResponseGeneral<BrandResponse[]>>('/api/v1/brands');
+  const response = await apiClient.get<ResponseGeneral<BrandResponse[]>>(
+    PRODUCT_API_PATHS.brands
+  );
   return response.data.data;
 }
 
 export async function getAllCategories(): Promise<CategoryResponse[]> {
-  const response =
-    await apiClient.get<ResponseGeneral<CategoryResponse[]>>(
-      '/api/v1/categories'
-    );
+  const response = await apiClient.get<ResponseGeneral<CategoryResponse[]>>(
+    PRODUCT_API_PATHS.categories
+  );
   return response.data.data;
 }

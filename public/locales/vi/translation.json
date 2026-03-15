@@ -543,9 +543,6 @@
   },
   "http": {
     "error": {
-      "network": "Không thể kết nối tới máy chủ",
-      "timeout": "Máy chủ phản hồi quá chậm. Vui lòng thử lại.",
-      "unknown": "Đã xảy ra lỗi, vui lòng thử lại",
       "400": "Dữ liệu không hợp lệ",
       "401": "Phiên đăng nhập đã hết hạn",
       "403": "Bạn không có quyền truy cập",
@@ -556,7 +553,10 @@
       "500": "Lỗi máy chủ, vui lòng thử lại sau",
       "502": "Dịch vụ tạm thời không khả dụng",
       "503": "Dịch vụ tạm thời không khả dụng",
-      "504": "Dịch vụ tạm thời không khả dụng"
+      "504": "Dịch vụ tạm thời không khả dụng",
+      "network": "Không thể kết nối tới máy chủ",
+      "timeout": "Máy chủ phản hồi quá chậm. Vui lòng thử lại.",
+      "unknown": "Đã xảy ra lỗi, vui lòng thử lại"
     }
   },
   "admin": {
@@ -612,7 +612,7 @@
         "badge": {
           "live": "Trực tiếp"
         },
-        "liveData": "Dữ liệu trực tiếp từ backend"
+        "liveData": "Cập nhật theo thời gian thực"
       },
       "chart": {
         "title": "Tổng doanh thu và lợi nhuận",
@@ -1174,16 +1174,36 @@
     },
     "ai": {
       "vector": {
-        "title": "Vector Store",
-        "filterPlaceholder": "{\"docType\": \"product\"}",
+        "title": "Kho vector",
+        "summary": {
+          "totalDocuments": "Tổng tài liệu",
+          "totalDocumentsHint": "Các bản ghi đã lập chỉ mục hiện sẵn sàng cho truy xuất.",
+          "selectedRows": "Số dòng đã chọn",
+          "selectedRowsHint": "Chỉ hiện thao tác hàng loạt khi bạn chủ động chọn bản ghi.",
+          "filterState": "Trạng thái bộ lọc",
+          "noFilter": "Chưa áp dụng bộ lọc",
+          "filterStateHint": "Hãy áp dụng bộ lọc metadata trước khi xóa hoặc kiểm tra một nhóm tài liệu cụ thể."
+        },
+        "section": {
+          "controls": "Điều khiển lập chỉ mục",
+          "controlsDescription": "Chạy nhập liệu toàn bộ khi kho tri thức thay đổi trên diện rộng, hoặc chỉ chạy theo loại nguồn khi chỉ một phần dữ liệu cần làm mới.",
+          "documents": "Tài liệu đã lập chỉ mục",
+          "documentsDescription": "Dùng bảng để rà soát nhanh. Chỉ mở chi tiết khi đoạn trích hoặc metadata cho thấy có vấn đề."
+        },
+        "filterPlaceholder": "{\"docType\":\"product\",\"locale\":\"vi\"}",
         "filterHelp": "Bộ lọc JSONB. Ví dụ: {\"docType\": \"product\"}",
-        "applyFilter": "Áp dụng",
-        "clearFilter": "Xóa",
+        "filter": {
+          "title": "Bộ lọc metadata",
+          "description": "Dùng một object JSON để thu hẹp tài liệu trước khi xem hoặc xóa.",
+          "apply": "Áp dụng",
+          "clear": "Xóa"
+        },
         "selectedCount": "Đã chọn {{count}}",
-        "deleteSelected": "Xóa đã chọn",
-        "deleteByFilter": "Xóa theo bộ lọc",
+        "deleteSelectedAction": "Xóa đã chọn",
+        "deleteByFilterAction": "Xóa theo bộ lọc",
         "table": {
           "id": "ID",
+          "content": "Nội dung",
           "contentExcerpt": "Nội dung (trích đoạn)",
           "metadata": "Metadata",
           "actions": "Hành động",
@@ -1196,14 +1216,13 @@
         },
         "totalDocuments": "{{count}} tài liệu",
         "fetchError": "Không thể tải danh sách tài liệu",
-        "filter": {
-          "apply": "Áp dụng",
-          "clear": "Xóa"
-        },
         "ingestion": {
+          "title": "Chạy tác vụ nhập liệu",
+          "description": "Dùng nhập liệu toàn bộ cho các lần làm mới lớn, hoặc chạy theo từng loại nguồn khi chỉ một pipeline thay đổi.",
+          "runningAll": "Đang chạy nhập liệu toàn bộ...",
           "ingestAll": "Nhập liệu tất cả",
           "runByType": "Chạy theo loại",
-          "running": "Đang chạy {{type}}…",
+          "running": "Đang chạy {{type}}...",
           "type": {
             "policy": "Chính sách",
             "product": "Sản phẩm",
@@ -1217,24 +1236,17 @@
           "viewDetail": "Xem chi tiết",
           "delete": "Xóa"
         },
-        "ingest": {
-          "all": "Nhập liệu tất cả",
-          "byType": "Nhập liệu {{type}}"
+        "deleteSelected": {
+          "title": "Xóa đã chọn",
+          "description": "Bạn có chắc muốn xóa {{count}} tài liệu đã chọn không? Hành động này không thể hoàn tác."
         },
-        "deleteSelectedDialog": {
-          "title": "Xóa tài liệu đã chọn",
-          "description": "Xóa {{count}} tài liệu đã chọn? Hành động này không thể hoàn tác.",
-          "confirm": "Xóa",
-          "cancel": "Hủy"
-        },
-        "deleteByFilterDialog": {
+        "deleteByFilter": {
           "title": "Xóa theo bộ lọc",
-          "description": "Xóa tất cả tài liệu khớp với bộ lọc \"{{filter}}\"? Hành động này không thể hoàn tác.",
-          "confirm": "Xóa",
-          "cancel": "Hủy"
+          "description": "Bạn có chắc muốn xóa toàn bộ tài liệu khớp với bộ lọc \"{{filter}}\" không? Hành động này không thể hoàn tác."
         },
         "detail": {
           "title": "Chi tiết tài liệu",
+          "id": "ID",
           "content": "Nội dung đầy đủ",
           "metadata": "Metadata",
           "close": "Đóng"
@@ -1248,6 +1260,23 @@
       },
       "chatLogs": {
         "title": "Nhật Ký Chat",
+        "section": {
+          "title": "Nhật ký hội thoại",
+          "description": "Bắt đầu với bộ lọc, rà bảng để tìm bất thường về thời gian phản hồi hoặc token, rồi chỉ mở chi tiết khi cần thêm ngữ cảnh."
+        },
+        "summary": {
+          "total": "Tổng nhật ký",
+          "totalHint": "Các phản hồi hội thoại được lưu lại để điều tra và kiểm tra.",
+          "averageLatency": "Độ trễ trang hiện tại",
+          "averageLatencyHint": "Hữu ích để phát hiện phản hồi chậm trước khi mở chi tiết.",
+          "filters": "Trạng thái bộ lọc",
+          "filtersHint": "Giữ phạm vi hẹp khi cần debug một hội thoại cụ thể.",
+          "conversationFilter": "Đã áp dụng ID cuộc trò chuyện",
+          "dateFilter": "Đã áp dụng khoảng ngày",
+          "noFilter": "Chưa áp dụng bộ lọc",
+          "emptyMetric": "Không có"
+        },
+        "pageSummary": "Hiển thị {{count}} bản ghi trên trang này",
         "table": {
           "date": "Ngày",
           "conversationId": "ID Cuộc trò chuyện",
@@ -1292,22 +1321,203 @@
           "close": "Đóng"
         }
       },
-      "page": {
-        "title": "Vận hành trợ lý",
-        "description": "Cấu hình prompt, lập chỉ mục tri thức, nhật ký hội thoại và kiểm thử phản hồi trợ lý."
+      "checks": {
+        "section": {
+          "definitions": "Định nghĩa kiểm tra",
+          "definitionsDescription": "Giữ mỗi bài kiểm tra tập trung vào một hành vi cụ thể để dễ chẩn đoán lỗi từ trang kết quả.",
+          "runHistory": "Lịch sử chạy",
+          "runHistoryDescription": "Dùng lịch sử như một dòng thời gian vận hành: chạy kiểm tra, so sánh điểm và chỉ mở chi tiết ở nơi chất lượng thay đổi."
+        },
+        "summary": {
+          "totalDefinitions": "Tổng định nghĩa",
+          "totalDefinitionsHint": "Toàn bộ tập câu hỏi đánh giá hiện đang được lưu.",
+          "activeDefinitions": "Định nghĩa đang bật",
+          "activeDefinitionsHint": "Các định nghĩa này sẽ được dùng khi chạy kiểm tra.",
+          "inactiveDefinitions": "Định nghĩa đang tắt",
+          "inactiveDefinitionsHint": "Giữ bản nháp ở đây mà không ảnh hưởng tới đánh giá đang dùng.",
+          "runCount": "Tổng số lần chạy",
+          "runCountHint": "Các lần thực thi đã lưu để bạn có thể mở lại và phân tích chi tiết.",
+          "latestScore": "Điểm mới nhất",
+          "latestScoreHint": "Được cập nhật ngay sau khi một lần chạy thành công.",
+          "pageAverage": "Điểm trung bình trang hiện tại",
+          "pageAverageHint": "Tín hiệu nhanh về chất lượng gần đây mà không cần mở từng lần chạy.",
+          "emptyMetric": "Không có"
+        },
+        "button": {
+          "addDefinition": "Thêm định nghĩa",
+          "runChecks": "Chạy kiểm tra",
+          "running": "Đang chạy...",
+          "viewResults": "Xem kết quả"
+        },
+        "activeState": {
+          "on": "Đang bật",
+          "off": "Đang tắt"
+        },
+        "badge": {
+          "latestScore": "Mới nhất: {{score}} ✓"
+        },
+        "dialog": {
+          "deleteTitle": "Xóa định nghĩa kiểm tra",
+          "deleteBody": "Xóa định nghĩa kiểm tra này và toàn bộ lịch sử chạy liên quan? Không thể hoàn tác.",
+          "deleteConfirm": "Xóa",
+          "cancel": "Hủy",
+          "addDef": "Thêm định nghĩa kiểm tra",
+          "editDef": "Chỉnh sửa định nghĩa kiểm tra",
+          "save": "Lưu",
+          "saving": "Đang lưu...",
+          "resultsTitle": "Kết quả chạy",
+          "field": {
+            "category": "Danh mục",
+            "question": "Câu hỏi",
+            "referenceAnswer": "Câu trả lời tham chiếu",
+            "active": "Kích hoạt"
+          },
+          "optional": "(tuỳ chọn)",
+          "categoryPlaceholder": "VD: sản phẩm, chính sách",
+          "questionPlaceholder": "Nhập câu hỏi kiểm tra",
+          "referenceAnswerPlaceholder": "Nhập câu trả lời tham chiếu mong đợi",
+          "referenceAnswerEditPlaceholder": "Nhập câu trả lời tham chiếu mới (tuỳ chọn)",
+          "deleteRunTitle": "Xóa lượt chạy",
+          "deleteRunBody": "Xóa lượt chạy này và tất cả kết quả? Không thể hoàn tác."
+        },
+        "table": {
+          "defs": {
+            "category": "Danh mục",
+            "question": "Câu hỏi",
+            "active": "Kích hoạt",
+            "actions": "Thao tác",
+            "edit": "Chỉnh sửa",
+            "delete": "Xóa",
+            "empty": "Chưa có định nghĩa kiểm tra",
+            "openMenu": "Mở menu"
+          },
+          "runs": {
+            "score": "Điểm",
+            "date": "Ngày",
+            "by": "Bởi",
+            "actions": "Thao tác",
+            "empty": "Chưa có lần chạy kiểm tra",
+            "delete": "Xóa"
+          },
+          "results": {
+            "question": "Câu hỏi",
+            "refAnswer": "Câu trả lời tham chiếu",
+            "actualAnswer": "Câu trả lời thực tế",
+            "score": "Điểm",
+            "verdict": "Kết luận"
+          }
+        },
+        "results": {
+          "title": "Kết quả chạy",
+          "subtitle": "Xem bản rút gọn ngay trên bảng và mở chi tiết để đọc toàn bộ câu trả lời.",
+          "score": "Điểm",
+          "loading": "Đang tải kết quả...",
+          "back": "Quay lại",
+          "emptyState": "Không có kết quả",
+          "viewLog": "Xem log",
+          "viewDetails": "Xem chi tiết",
+          "detailTitle": "Chi tiết kết quả",
+          "detailDescription": "Xem đầy đủ câu hỏi, câu trả lời tham chiếu, câu trả lời thực tế và log của kết quả này.",
+          "referenceAnswer": "Câu trả lời tham chiếu",
+          "referenceAnswerEmpty": "Chưa có câu trả lời tham chiếu",
+          "actualAnswerEmpty": "Chưa có câu trả lời thực tế",
+          "log": "Log",
+          "table": {
+            "question": "Câu hỏi",
+            "refAnswer": "Câu trả lời tham chiếu",
+            "actualAnswer": "Câu trả lời thực tế",
+            "score": "Điểm",
+            "verdict": "Kết luận",
+            "emptyState": "Không có kết quả",
+            "viewLog": "Xem log"
+          },
+          "summary": {
+            "total": "Tổng kết quả",
+            "averageScore": "Điểm trung bình",
+            "passRate": "Tỷ lệ đạt"
+          }
+        },
+        "toast": {
+          "created": "Đã tạo định nghĩa",
+          "updated": "Đã cập nhật định nghĩa",
+          "deleted": "Đã xóa định nghĩa",
+          "runComplete": "Hoàn thành — điểm: {{score}}",
+          "noActiveDefs": "Không có định nghĩa nào đang hoạt động",
+          "runCompleteNoScore": "Đã hoàn thành kiểm tra",
+          "runDeleted": "Đã xóa lượt chạy"
+        },
+        "fetchError": "Không thể tải định nghĩa kiểm tra",
+        "totalDefs": "{{count}} định nghĩa",
+        "pagination": {
+          "pageOf": "Trang {{page}} / {{total}}",
+          "total": "{{count}} bản ghi",
+          "rowsPerPage": "Hàng:"
+        },
+        "verdict": {
+          "pass": "ĐẠT",
+          "fail": "KHÔNG ĐẠT"
+        },
+        "tabs": {
+          "definitions": "Định nghĩa kiểm tra",
+          "definitionsDescription": "Quản lý câu hỏi và câu trả lời tham chiếu dùng để đánh giá trợ lý.",
+          "runHistory": "Lịch sử chạy",
+          "runHistoryDescription": "Theo dõi các lần đánh giá, so sánh điểm số và mở kết quả chi tiết."
+        }
       },
       "tabs": {
         "configuration": "Cấu hình",
+        "configurationDescription": "Quản lý các phiên bản prompt và kích hoạt phiên bản mà trợ lý sẽ sử dụng.",
         "knowledgeBase": "Kho tri thức",
+        "knowledgeBaseDescription": "Kiểm soát việc lập chỉ mục, bộ lọc và dọn dẹp cho tài liệu được truy xuất.",
         "conversations": "Hội thoại",
-        "playground": "Kiểm thử"
+        "conversationsDescription": "Theo dõi lưu lượng hội thoại, độ trễ và mô hình sử dụng token.",
+        "playground": "Kiểm thử",
+        "checks": "Kiểm tra",
+        "checksDescription": "Định nghĩa câu hỏi đánh giá và theo dõi chất lượng vận hành của trợ lý theo thời gian."
       },
       "parameters": {
+        "title": "Tham số AI",
+        "subtitle": "Chọn mục tiêu, xem các phiên bản hiện có, rồi mở một bản ghi để chỉnh sửa hoặc kích hoạt.",
         "target": {
-          "chat": "Chat",
+          "chat": "Trò chuyện",
           "search": "Tìm kiếm"
         },
-        "noDescription": "(không có mô tả)"
+        "summary": {
+          "currentTarget": "Mục tiêu hiện tại",
+          "currentTargetHint": "Chuyển đổi giữa hành vi chat của trợ lý và hành vi truy xuất.",
+          "totalVersions": "Phiên bản đã lưu",
+          "totalVersionsHint": "Các bản nháp và phiên bản đang hoạt động cho mục tiêu này.",
+          "activeVersion": "Phiên bản đang hoạt động",
+          "activeVersionHint": "Thông thường chỉ nên có một phiên bản hoạt động cho mỗi mục tiêu."
+        },
+        "createFromDefault": "Tạo từ mặc định",
+        "count": "{{count}} bản ghi cho {{type}}",
+        "table": {
+          "description": "Mô tả",
+          "active": "Trạng thái"
+        },
+        "noDescription": "(không có mô tả)",
+        "active": "Đang hoạt động",
+        "inactive": "Bản nháp",
+        "editorTitle": "Chỉnh sửa tham số",
+        "editorEmptyTitle": "Chọn một tham số",
+        "editorDescription": "Cập nhật mô tả hoặc nội dung YAML, sau đó kích hoạt phiên bản mà bạn tin tưởng.",
+        "editorEmpty": "Chọn một bản ghi ở bên trái hoặc tạo một bản nháp mới từ mẫu YAML mặc định.",
+        "fields": {
+          "description": "Mô tả",
+          "descriptionPlaceholder": "Ví dụ: Prompt chat v2 cho câu hỏi về sản phẩm",
+          "content": "Nội dung YAML"
+        },
+        "actions": {
+          "activate": "Kích hoạt",
+          "copy": "Nhân bản"
+        }
+      },
+      "testChat": {
+        "title": "Kiểm thử chat",
+        "description": "Dùng widget chat ở frontend để kiểm thử sát thực tế. Sau này bạn có thể nhúng một trải nghiệm chat riêng cho quản trị vào đây.",
+        "previewTitle": "Xem trước trực tiếp",
+        "previewHint": "Khu vực xem trước trải nghiệm chat của người dùng (tham khảo FloatingChat)."
       }
     },
     "reviews": {
