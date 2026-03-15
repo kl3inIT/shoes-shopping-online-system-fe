@@ -37,7 +37,7 @@ function toCategory(dto: CategoryResponseDto): Category {
 export async function getCategories(): Promise<Category[]> {
   const response = await apiClient.get<
     ApiSuccessResponse<CategoryResponseDto[]>
-  >('/api/categories', { skipAuth: true });
+  >('/api/v1/categories', { skipAuth: true });
 
   const dtos = response.data.data ?? [];
   return dtos.map(toCategory);
@@ -48,7 +48,7 @@ export async function createCategory(
 ): Promise<Category> {
   const response = await apiClient.post<
     ApiSuccessResponse<CategoryResponseDto>
-  >('/api/categories', data, { skipAuth: true });
+  >('/api/v1/categories', data, { skipAuth: true });
   const dto = response.data.data;
   if (!dto) throw new Error('No data returned from create category');
   return toCategory(dto);
@@ -59,7 +59,7 @@ export async function updateCategory(
   data: CategoryRequestDto
 ): Promise<Category> {
   const response = await apiClient.put<ApiSuccessResponse<CategoryResponseDto>>(
-    `/api/categories/${id}`,
+    `/api/v1/categories/${id}`,
     data,
     { skipAuth: true }
   );
@@ -69,5 +69,5 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  await apiClient.delete(`/api/categories/${id}`, { skipAuth: true });
+  await apiClient.delete(`/api/v1/categories/${id}`, { skipAuth: true });
 }

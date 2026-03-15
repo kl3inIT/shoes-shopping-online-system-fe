@@ -1,7 +1,7 @@
 import type { ApiSuccessResponse } from '@/types';
 import apiClient from '@/features/apiClient';
 
-/** Presigned URL response from GET /api/storage/presigned-url */
+/** Presigned URL response from GET /api/v1/storage/presigned-url */
 export interface PresignedUrlDto {
   url: string;
 }
@@ -16,7 +16,7 @@ export async function getPresignedUrl(
 ): Promise<string> {
   const response = await apiClient.get<
     ApiSuccessResponse<Record<string, string>>
-  >('/api/storage/presigned-url', {
+  >('/api/v1/storage/presigned-url', {
     params: { objectKey, action },
   });
   return response.data.data.url;
@@ -24,7 +24,7 @@ export async function getPresignedUrl(
 
 /** Xóa object trong MinIO. */
 export async function deleteStorageObject(objectKey: string): Promise<void> {
-  await apiClient.delete('/api/storage', { params: { objectKey } });
+  await apiClient.delete('/api/v1/storage', { params: { objectKey } });
 }
 
 /**

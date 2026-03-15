@@ -4,20 +4,20 @@ import apiClient from '@/features/apiClient';
 
 export async function getBrands(): Promise<BrandDto[]> {
   const response =
-    await apiClient.get<ApiSuccessResponse<BrandDto[]>>('/api/brands');
+    await apiClient.get<ApiSuccessResponse<BrandDto[]>>('/api/v1/brands');
   return response.data.data;
 }
 
 export async function getBrandById(id: string): Promise<BrandDto> {
   const response = await apiClient.get<ApiSuccessResponse<BrandDto>>(
-    `/api/brands/${id}`
+    `/api/v1/brands/${id}`
   );
   return response.data.data;
 }
 
 export async function createBrand(body: BrandRequestDto): Promise<BrandDto> {
   const response = await apiClient.post<ApiSuccessResponse<BrandDto>>(
-    '/api/brands',
+    '/api/v1/brands',
     body
   );
   return response.data.data;
@@ -28,12 +28,12 @@ export async function updateBrand(
   body: BrandRequestDto
 ): Promise<BrandDto> {
   const response = await apiClient.put<ApiSuccessResponse<BrandDto>>(
-    `/api/brands/${id}`,
+    `/api/v1/brands/${id}`,
     body
   );
   return response.data.data;
 }
 
 export async function deleteBrand(id: string): Promise<void> {
-  await apiClient.delete(`/api/brands/${id}`);
+  await apiClient.delete(`/api/v1/brands/${id}`);
 }

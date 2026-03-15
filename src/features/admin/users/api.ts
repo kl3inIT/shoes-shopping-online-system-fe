@@ -15,7 +15,7 @@ export async function getAdminUsers(
 ): Promise<AdminUserPageResponse> {
   const response = await apiClient.get<
     ApiSuccessResponse<AdminUserPageResponse>
-  >('/api/admin/users', {
+  >('/api/v1/admin/users', {
     params: {
       page: params.page ?? 0,
       size: params.size ?? 20,
@@ -31,7 +31,7 @@ export async function createAdminUser(
   payload: CreateAdminUserPayload
 ): Promise<AdminUser> {
   const response = await apiClient.post<ApiSuccessResponse<AdminUser>>(
-    '/api/admin/users',
+    '/api/v1/admin/users',
     payload
   );
   return response.data.data;
@@ -42,7 +42,7 @@ export async function updateUserRole(
   role: UserRole
 ): Promise<AdminUser> {
   const response = await apiClient.patch<ApiSuccessResponse<AdminUser>>(
-    `/api/admin/users/${keycloakId}/role`,
+    `/api/v1/admin/users/${keycloakId}/role`,
     { role }
   );
   return response.data.data;
@@ -53,26 +53,26 @@ export async function updateUserStatus(
   status: UserStatus
 ): Promise<AdminUser> {
   const response = await apiClient.patch<ApiSuccessResponse<AdminUser>>(
-    `/api/admin/users/${keycloakId}/status`,
+    `/api/v1/admin/users/${keycloakId}/status`,
     { status }
   );
   return response.data.data;
 }
 
 export async function deleteAdminUser(keycloakId: string): Promise<void> {
-  await apiClient.delete(`/api/admin/users/${keycloakId}`);
+  await apiClient.delete(`/api/v1/admin/users/${keycloakId}`);
 }
 
 export async function getAdminUserStats(): Promise<AdminUserStats> {
   const response = await apiClient.get<ApiSuccessResponse<AdminUserStats>>(
-    '/api/admin/users/stats'
+    '/api/v1/admin/users/stats'
   );
   return response.data.data;
 }
 
 export async function toggleUserStatus(keycloakId: string): Promise<AdminUser> {
   const response = await apiClient.post<ApiSuccessResponse<AdminUser>>(
-    `/api/admin/users/${keycloakId}/status/toggle`
+    `/api/v1/admin/users/${keycloakId}/status/toggle`
   );
   return response.data.data;
 }

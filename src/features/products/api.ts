@@ -9,7 +9,7 @@ import type {
   ShoeVariantResponse,
 } from './types';
 
-const SHOES_ENDPOINT = '/api/shoes';
+const SHOES_ENDPOINT = '/api/v1/shoes';
 const MAX_PAGE_SIZE = 100;
 
 type Primitive = string | number | boolean;
@@ -153,12 +153,14 @@ export async function getShoesList(
 
 export async function getAllBrands(): Promise<BrandResponse[]> {
   const response =
-    await apiClient.get<ResponseGeneral<BrandResponse[]>>('/api/brands');
+    await apiClient.get<ResponseGeneral<BrandResponse[]>>('/api/v1/brands');
   return response.data.data;
 }
 
 export async function getAllCategories(): Promise<CategoryResponse[]> {
   const response =
-    await apiClient.get<ResponseGeneral<CategoryResponse[]>>('/api/categories');
+    await apiClient.get<ResponseGeneral<CategoryResponse[]>>(
+      '/api/v1/categories'
+    );
   return response.data.data;
 }

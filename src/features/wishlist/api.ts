@@ -7,7 +7,7 @@ export async function getWishlist(
   params?: WishlistFilterParams
 ): Promise<WishlistItemDto[]> {
   const response = await apiClient.get<ApiSuccessResponse<WishlistItemDto[]>>(
-    '/api/wishlist',
+    '/api/v1/wishlist',
     { params }
   );
   return response.data.data;
@@ -15,14 +15,14 @@ export async function getWishlist(
 
 export async function addToWishlist(shoeId: string): Promise<WishlistItemDto> {
   const response = await apiClient.post<ApiSuccessResponse<WishlistItemDto>>(
-    '/api/wishlist',
+    '/api/v1/wishlist',
     { shoeId }
   );
   return response.data.data;
 }
 
 export async function removeFromWishlist(shoeId: string): Promise<void> {
-  await apiClient.delete(`/api/wishlist/${shoeId}`);
+  await apiClient.delete(`/api/v1/wishlist/${shoeId}`);
 }
 
 /** Map DTO từ API sang props cho WishlistItem (để dùng với WishlistGrid). */
