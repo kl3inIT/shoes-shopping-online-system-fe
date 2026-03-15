@@ -5,8 +5,10 @@ import {
   IconDashboard,
   IconHelp,
   IconPackage,
+  IconSettings,
   IconShoe,
   IconStar,
+  IconUserCircle,
   IconUserCog,
   type Icon,
 } from '@tabler/icons-react';
@@ -21,7 +23,7 @@ export type AdminNavigationItem = {
   url: string;
 };
 
-export const adminNavigationItems: readonly AdminNavigationItem[] = [
+export const adminPrimaryNavigationItems: readonly AdminNavigationItem[] = [
   {
     titleKey: 'admin.nav.dashboard',
     defaultTitle: 'Dashboard',
@@ -85,4 +87,26 @@ export const adminNavigationItems: readonly AdminNavigationItem[] = [
     icon: IconHelp,
     requirement: PERMISSIONS.aiManage,
   },
+] as const;
+
+export const adminSecondaryNavigationItems: readonly AdminNavigationItem[] = [
+  {
+    titleKey: 'admin.nav.settings',
+    defaultTitle: 'Settings',
+    url: '/admin/settings',
+    icon: IconSettings,
+    requirement: PERMISSIONS.dashboardView,
+  },
+  {
+    titleKey: 'admin.nav.account',
+    defaultTitle: 'Account',
+    url: '/admin/account',
+    icon: IconUserCircle,
+    requirement: PERMISSIONS.dashboardView,
+  },
+] as const;
+
+export const adminNavigationItems: readonly AdminNavigationItem[] = [
+  ...adminPrimaryNavigationItems,
+  ...adminSecondaryNavigationItems,
 ] as const;

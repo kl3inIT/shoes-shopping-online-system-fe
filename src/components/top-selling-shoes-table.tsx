@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import {
   Table,
   TableBody,
@@ -9,21 +11,42 @@ import {
 import { useDashboardTopSelling } from '@/features/admin/dashboard/api/dashboardApi';
 
 export function TopSellingShoesTable() {
+  const { t } = useTranslation();
   const { data: topSelling = [], isLoading } = useDashboardTopSelling();
 
   return (
     <div className='px-4 lg:px-6 mb-8'>
       <div className='flex items-center justify-between mb-4'>
-        <h2 className='text-xl font-bold tracking-tight'>Top Selling Shoes</h2>
+        <h2 className='text-xl font-bold tracking-tight'>
+          {t('admin.dashboard.topSelling.title', {
+            defaultValue: 'Top Selling Shoes',
+          })}
+        </h2>
       </div>
       <div className='rounded-md border bg-card text-card-foreground'>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Product Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead className='text-right'>Total Sold</TableHead>
-              <TableHead className='text-right'>Current Stock</TableHead>
+              <TableHead>
+                {t('admin.dashboard.topSelling.columns.productName', {
+                  defaultValue: 'Product Name',
+                })}
+              </TableHead>
+              <TableHead>
+                {t('admin.dashboard.topSelling.columns.category', {
+                  defaultValue: 'Category',
+                })}
+              </TableHead>
+              <TableHead className='text-right'>
+                {t('admin.dashboard.topSelling.columns.totalSold', {
+                  defaultValue: 'Total Sold',
+                })}
+              </TableHead>
+              <TableHead className='text-right'>
+                {t('admin.dashboard.topSelling.columns.currentStock', {
+                  defaultValue: 'Current Stock',
+                })}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -33,7 +56,7 @@ export function TopSellingShoesTable() {
                   colSpan={4}
                   className='text-center py-6 text-muted-foreground'
                 >
-                  Loading...
+                  {t('common.loading', { defaultValue: 'Loading...' })}
                 </TableCell>
               </TableRow>
             ) : topSelling.length === 0 ? (
@@ -42,7 +65,9 @@ export function TopSellingShoesTable() {
                   colSpan={4}
                   className='text-center py-6 text-muted-foreground'
                 >
-                  No selling data.
+                  {t('admin.dashboard.topSelling.empty', {
+                    defaultValue: 'No selling data.',
+                  })}
                 </TableCell>
               </TableRow>
             ) : (

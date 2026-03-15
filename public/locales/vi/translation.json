@@ -13,6 +13,8 @@
     "register": "Đăng ký",
     "logout": "Đăng xuất",
     "profile": "Hồ sơ",
+    "dashboard": "Bảng điều khiển",
+    "adminDashboard": "Trang quản trị",
     "protected": {
       "loadingTitle": "Đang tải...",
       "loadingSubtitle": "Đang kiểm tra quyền truy cập",
@@ -567,8 +569,159 @@
       "analytics": "Phân tích",
       "ai": "AI",
       "settings": "Cài đặt",
+      "account": "Tài khoản",
       "help": "Trợ giúp",
       "search": "Tìm kiếm"
+    },
+    "header": {
+      "title": "Quản trị",
+      "viewStore": "Xem cửa hàng"
+    },
+    "dashboard": {
+      "tabs": {
+        "recentOrders": "Đơn hàng gần đây",
+        "topSelling": "Bán chạy",
+        "lowStock": "Cảnh báo tồn kho thấp"
+      },
+      "cards": {
+        "totalRevenue": {
+          "title": "Tổng doanh thu",
+          "trend": "Tăng trưởng tốt trong tháng này",
+          "description": "Dựa trên các đơn đã giao"
+        },
+        "totalCustomers": {
+          "title": "Tổng khách hàng",
+          "trend": "Tăng 15% trong tháng này",
+          "description": "Số tài khoản khách hàng đã đăng ký"
+        },
+        "totalOrders": {
+          "title": "Tổng đơn hàng",
+          "trend": "Lượng đơn hàng ổn định",
+          "description": "Chỉ tính các đơn đã giao"
+        },
+        "productsSold": {
+          "title": "Sản phẩm đã bán",
+          "trend": "Nhu cầu sản phẩm đang cao",
+          "description": "Tính trên toàn bộ dòng sản phẩm đã giao"
+        }
+      },
+      "chart": {
+        "title": "Tổng doanh thu và lợi nhuận",
+        "description": {
+          "long": "Tổng quan trong 3 tháng gần nhất",
+          "short": "3 tháng gần nhất"
+        },
+        "selectLabel": "Chọn khoảng thời gian",
+        "ranges": {
+          "90d": "3 tháng gần nhất",
+          "30d": "30 ngày gần nhất",
+          "7d": "7 ngày gần nhất"
+        },
+        "labels": {
+          "visitors": "Lượt truy cập",
+          "revenue": "Doanh thu",
+          "profit": "Lợi nhuận"
+        }
+      },
+      "recentOrders": {
+        "title": "Đơn hàng gần đây",
+        "empty": "Chưa có đơn hàng gần đây.",
+        "columns": {
+          "orderCode": "Mã đơn",
+          "customer": "Khách hàng",
+          "date": "Ngày",
+          "total": "Tổng tiền",
+          "status": "Trạng thái"
+        }
+      },
+      "topSelling": {
+        "title": "Giày bán chạy",
+        "empty": "Chưa có dữ liệu bán hàng.",
+        "columns": {
+          "productName": "Tên sản phẩm",
+          "category": "Danh mục",
+          "totalSold": "Đã bán",
+          "currentStock": "Tồn kho hiện tại"
+        }
+      },
+      "lowStock": {
+        "title": "Cảnh báo tồn kho thấp",
+        "empty": "Không có sản phẩm sắp hết hàng.",
+        "columns": {
+          "productName": "Tên sản phẩm",
+          "size": "Kích cỡ",
+          "remaining": "Còn lại",
+          "status": "Trạng thái"
+        },
+        "status": {
+          "outOfStock": "Hết hàng",
+          "critical": "Khẩn cấp",
+          "warning": "Cảnh báo"
+        }
+      }
+    },
+    "settings": {
+      "title": "Cài đặt",
+      "subtitle": "Quản lý ngôn ngữ, giao diện và các tuỳ chọn hiển thị trong khu vực quản trị.",
+      "summary": {
+        "title": "Tùy chọn hiện tại",
+        "description": "Tóm tắt nhanh các cài đặt đang được áp dụng trên trình duyệt này.",
+        "language": "Ngôn ngữ",
+        "theme": "Giao diện"
+      },
+      "actions": {
+        "account": "Mở trang tài khoản"
+      },
+      "language": {
+        "title": "Ngôn ngữ",
+        "description": "Chọn cách hiển thị nhãn, điều hướng và thông báo trong khu vực quản trị.",
+        "toggleLabel": "Đổi ngôn ngữ"
+      },
+      "appearance": {
+        "title": "Giao diện",
+        "description": "Chuyển giữa chế độ sáng, tối hoặc theo hệ thống cho trang quản trị.",
+        "toggleLabel": "Đổi giao diện",
+        "options": {
+          "light": "Sáng",
+          "dark": "Tối",
+          "system": "Theo hệ thống"
+        },
+        "help": {
+          "light": "Dùng giao diện sáng cho khu vực quản trị.",
+          "dark": "Dùng giao diện tối cho khu vực quản trị.",
+          "system": "Tự động theo giao diện của thiết bị."
+        }
+      }
+    },
+    "account": {
+      "title": "Tài khoản",
+      "subtitle": "Xem thông tin tài khoản quản trị đang đăng nhập và đi tới các cài đặt liên quan.",
+      "fallbackName": "Người dùng quản trị",
+      "profile": {
+        "title": "Hồ sơ quản trị",
+        "description": "Thông tin này được lấy từ phiên đăng nhập hiện tại của bạn."
+      },
+      "fields": {
+        "name": "Tên hiển thị",
+        "username": "Tên đăng nhập",
+        "email": "Email",
+        "subject": "Mã người dùng"
+      },
+      "access": {
+        "title": "Vai trò truy cập",
+        "description": "Các vai trò được suy ra từ phiên Keycloak hiện tại để cấp quyền trong admin.",
+        "empty": "Không tìm thấy vai trò quản trị nào."
+      },
+      "preferences": {
+        "title": "Tùy chọn hiện tại",
+        "description": "Tóm tắt nhanh ngôn ngữ và giao diện đang hoạt động trong phiên admin này.",
+        "language": "Ngôn ngữ",
+        "theme": "Giao diện"
+      },
+      "actions": {
+        "settings": "Mở cài đặt",
+        "profile": "Mở hồ sơ ngoài storefront"
+      }
     },
     "products": {
       "title": "Quản Lý Sản Phẩm",

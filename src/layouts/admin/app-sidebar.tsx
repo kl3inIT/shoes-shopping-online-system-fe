@@ -6,7 +6,11 @@ import { Link } from 'react-router';
 
 import { useAuthorizedItems } from '@/features/auth';
 import { NavMain } from '@/layouts/admin/nav-main';
-import { adminNavigationItems } from '@/layouts/admin/navigation.config';
+import { NavSecondary } from '@/layouts/admin/nav-secondary';
+import {
+  adminPrimaryNavigationItems,
+  adminSecondaryNavigationItems,
+} from '@/layouts/admin/navigation.config';
 import { NavUser } from '@/layouts/admin/nav-user';
 import {
   Sidebar,
@@ -16,12 +20,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from '@/layouts/admin/sidebar';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
   const auth = useAuth();
-  const visibleNavItems = useAuthorizedItems(adminNavigationItems);
+  const visiblePrimaryItems = useAuthorizedItems(adminPrimaryNavigationItems);
+  const visibleSecondaryItems = useAuthorizedItems(
+    adminSecondaryNavigationItems
+  );
 
   const user = {
     name:
@@ -53,7 +61,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain
-          items={visibleNavItems.map((item) => ({
+          items={visiblePrimaryItems.map((item) => ({
+            title: t(item.titleKey, { defaultValue: item.defaultTitle }),
+            url: item.url,
+            icon: item.icon,
+          }))}
+        />
+        <SidebarSeparator />
+        <NavSecondary
+          items={visibleSecondaryItems.map((item) => ({
             title: t(item.titleKey, { defaultValue: item.defaultTitle }),
             url: item.url,
             icon: item.icon,

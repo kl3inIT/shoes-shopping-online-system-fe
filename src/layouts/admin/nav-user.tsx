@@ -1,8 +1,10 @@
 import {
   IconDotsVertical,
   IconLogout,
+  IconSettings,
   IconUserCircle,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oidc-context';
 import { Link } from 'react-router';
 
@@ -33,6 +35,7 @@ export function NavUser({
   };
 }) {
   const auth = useAuth();
+  const { t } = useTranslation();
   const { isMobile } = useSidebar();
   const initials = user.name.slice(0, 2).toUpperCase();
 
@@ -85,16 +88,22 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link to='/profile'>
+                <Link to='/admin/account'>
                   <IconUserCircle />
-                  Account
+                  {t('admin.nav.account', { defaultValue: 'Account' })}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to='/admin/settings'>
+                  <IconSettings />
+                  {t('admin.nav.settings', { defaultValue: 'Settings' })}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => void auth.signoutRedirect()}>
               <IconLogout />
-              Log out
+              {t('auth.logout', { defaultValue: 'Log out' })}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -169,6 +169,22 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: 'settings',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/settings/AdminSettingsPage');
+          return { Component };
+        },
+      },
+      {
+        path: 'account',
+        lazy: async () => {
+          const { default: Component } =
+            await import('@/pages/admin/account/AdminAccountPage');
+          return { Component };
+        },
+      },
+      {
         element: <RequirePermission requirement={PERMISSIONS.productsManage} />,
         children: [
           {
