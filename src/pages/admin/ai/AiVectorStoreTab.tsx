@@ -210,7 +210,7 @@ export function AiVectorStoreTab() {
               onClick={() => setDeleteSelectedOpen(true)}
             >
               <Trash2 className='size-4' />
-              {t('admin.ai.vector.deleteSelected', 'Delete selected')}
+              {t('admin.ai.vector.deleteSelectedAction', 'Delete selected')}
             </Button>
           </div>
         ) : null}
@@ -223,7 +223,7 @@ export function AiVectorStoreTab() {
               onClick={() => setDeleteByFilterOpen(true)}
             >
               <ScanSearch className='size-4' />
-              {t('admin.ai.vector.deleteByFilter', 'Delete by filter')}
+              {t('admin.ai.vector.deleteByFilterAction', 'Delete by filter')}
             </Button>
           </div>
         ) : null}

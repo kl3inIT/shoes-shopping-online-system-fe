@@ -73,8 +73,6 @@ export function AiParametersTab() {
     deleteMutation.isPending;
 
   const activeCount = list.filter((parameter) => parameter.active).length;
-  const activeParameter = list.find((parameter) => parameter.active) ?? null;
-
   const targetToLabel = (type: AiTargetType) => {
     if (type === 'SEARCH') {
       return t('admin.ai.parameters.target.search', {
@@ -142,13 +140,10 @@ export function AiParametersTab() {
             defaultValue: 'Active version',
           })}
           value={activeCount > 0 ? String(activeCount) : '0'}
-          hint={
-            activeParameter?.description ??
-            t('admin.ai.parameters.summary.activeVersionHint', {
-              defaultValue:
-                'Exactly one version should usually be active for each target.',
-            })
-          }
+          hint={t('admin.ai.parameters.summary.activeVersionHint', {
+            defaultValue:
+              'Exactly one version should usually be active for each target.',
+          })}
           icon={CheckCircle2}
         />
       </OperationsMetricGrid>
