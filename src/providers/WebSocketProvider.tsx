@@ -21,11 +21,12 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       reconnectDelay: 5000,
       onConnect: () => {
         setClient(stompClient);
-        console.log('WebSocket connected');
       },
       onDisconnect: () => {
         setClient(null);
-        console.log('WebSocket disconnected');
+      },
+      onStompError: () => {
+        setClient(null);
       },
     });
 

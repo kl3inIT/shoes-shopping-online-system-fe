@@ -1,13 +1,20 @@
 import { useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
+
+import { PageErrorState, PageLoader } from '@/components/app';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { useOrderDetailQuery, type OrderStatus } from '@/features/orders';
+import { getErrorMessage } from '@/features/apiClient';
+import {
+  OrderTimeline,
+  type OrderStatus,
+  useOrderDetailQuery,
+} from '@/features/orders';
+
 import { getOrderTimeline } from './data';
-import { OrderTimeline } from '@/features/orders';
 
 function getStatusTranslationKey(status: OrderStatus): string {
   switch (status) {
@@ -36,7 +43,6 @@ export function OrderDetailPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { orderId } = useParams<{ orderId: string }>();
-
   const { order, isLoading, isFetching, error } = useOrderDetailQuery(orderId);
 
   const timeline = useMemo(
@@ -56,17 +62,17 @@ export function OrderDetailPage() {
       </div>
 
       {isLoadingState && (
-        <p className='text-sm text-muted-foreground'>
-          {t('common.loading', 'Loading...')}
-        </p>
+        <PageLoader
+          title={t('common.loading', 'Loading...')}
+          description={t('orders.loadingDetail', 'Loading order details.')}
+        />
       )}
 
       {error && !isLoadingState && (
-        <p className='mb-4 text-sm text-destructive'>
-          {error instanceof Error
-            ? error.message
-            : t('http.error.unknown', 'Something went wrong')}
-        </p>
+        <PageErrorState
+          title={t('orders.detail.errorTitle', 'Unable to load order')}
+          description={getErrorMessage(error)}
+        />
       )}
 
       {!isLoadingState && !error && !order && (
@@ -120,11 +126,12 @@ export function OrderDetailPage() {
                       <div className='flex-1'>
                         <p className='font-medium'>{item.name}</p>
                         <p className='text-xs text-muted-foreground'>
-                          {t('cart.item.size')}: {item.size} × {item.quantity}
+                          {t('cart.item.size')}: {item.size} x {item.quantity}
                         </p>
                       </div>
                       <div className='text-right text-sm font-semibold'>
-                        {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
+                        {(item.price * item.quantity).toLocaleString('vi-VN')}{' '}
+                        VND
                       </div>
                     </div>
                   ))}
@@ -138,7 +145,7 @@ export function OrderDetailPage() {
                   {t('orders.total', 'Total')}
                 </span>
                 <span className='text-lg font-bold'>
-                  {order.total.toLocaleString('vi-VN')} ₫
+                  {order.total.toLocaleString('vi-VN')} VND
                 </span>
               </div>
             </CardContent>

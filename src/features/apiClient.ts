@@ -77,25 +77,12 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-  (error: AxiosError) => {
-    console.error('[API Request Error]', error);
-    return Promise.reject(error);
-  }
+  (error: AxiosError) => Promise.reject(error)
 );
 
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError<ProblemDetailPayload>) => {
-    if (isDev) {
-      console.error('[API Response Error]', {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        url: error.config?.url,
-        method: error.config?.method,
-        data: error.response?.data,
-      });
-    }
-
     if (!error.response) {
       const isTimeout =
         error.code === 'ECONNABORTED' || error.message?.includes('timeout');
@@ -133,25 +120,13 @@ apiClient.interceptors.response.use(
         originalRequest._retry = true;
 
         try {
-          if (isDev) {
-            console.log(
-              '[API Client] 401 received, attempting to get fresh token...'
-            );
-          }
           const freshToken = await getAccessTokenFromProvider();
 
           if (freshToken) {
             originalRequest.headers.Authorization = `Bearer ${freshToken}`;
 
-            if (isDev) {
-              console.log(
-                '[API Client] Fresh token obtained, retrying request...'
-              );
-            }
-
             return apiClient(originalRequest);
           } else {
-            console.warn('[API Client] No token available');
             return Promise.reject(
               new HttpError(error.config, 401, {
                 ...problemDetail,
@@ -159,8 +134,7 @@ apiClient.interceptors.response.use(
               })
             );
           }
-        } catch (tokenError) {
-          console.error('[API Client] Failed to get fresh token:', tokenError);
+        } catch {
           return Promise.reject(
             new HttpError(error.config, 401, {
               ...problemDetail,

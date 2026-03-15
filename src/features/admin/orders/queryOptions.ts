@@ -18,11 +18,12 @@ function ordersQueryKey(params: OrderHistoryRequest) {
 export const ordersQueryOptions = (params: OrderHistoryRequest) => {
   return queryOptions({
     queryKey: ordersQueryKey(params),
-    queryFn: () => {
-      console.log('Fetching orders...');
-      return getOrders(params);
-    },
+    queryFn: () => getOrders(params),
+    staleTime: 30_000,
     refetchOnWindowFocus: false,
     retry: false,
+    meta: {
+      suppressErrorToast: true,
+    },
   });
 };
