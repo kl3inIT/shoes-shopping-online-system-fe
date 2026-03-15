@@ -323,6 +323,14 @@ export const router = createBrowserRouter([
               };
             },
           },
+          {
+            path: 'ai/checks/runs/:runId',
+            lazy: async () => {
+              const { default: Component } =
+                await import('@/pages/admin/ai/CheckRunResultsPage');
+              return { Component };
+            },
+          },
         ],
       },
     ],

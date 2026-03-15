@@ -19,7 +19,6 @@ import {
   CheckDefTable,
   CheckDefDialog,
   CheckRunHistoryTable,
-  CheckRunResultsDialog,
   useQueryCheckDefs,
   useQueryCheckRuns,
   useCreateCheckDefMutation,
@@ -45,12 +44,6 @@ export function AiChecksTab() {
 
   // Run history pagination
   const [runsPage, setRunsPage] = useState(0);
-
-  // Results drill-down
-  const [resultsRunId, setResultsRunId] = useState<string | null>(null);
-  const [resultsDialogOpen, setResultsDialogOpen] = useState(false);
-  const [resultsRunScore, setResultsRunScore] = useState<number | null>(null);
-  const [resultsRunDate, setResultsRunDate] = useState<string | null>(null);
 
   // Queries
   const {
@@ -96,11 +89,7 @@ export function AiChecksTab() {
   };
 
   const handleViewResults = (runId: string) => {
-    const run = runsData?.content.find((r) => r.id === runId) ?? null;
-    setResultsRunId(runId);
-    setResultsRunScore(run?.score ?? null);
-    setResultsRunDate(run?.createdAt ?? null);
-    setResultsDialogOpen(true);
+    window.open(`/admin/ai/checks/runs/${runId}`, '_blank');
   };
 
   return (
@@ -263,14 +252,6 @@ export function AiChecksTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <CheckRunResultsDialog
-        open={resultsDialogOpen}
-        onOpenChange={setResultsDialogOpen}
-        runId={resultsRunId}
-        runScore={resultsRunScore}
-        runDate={resultsRunDate}
-      />
     </div>
   );
 }
