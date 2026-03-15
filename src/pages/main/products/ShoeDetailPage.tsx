@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from 'react-oidc-context';
 import {
   ProductDetail,
   useShoeById,
@@ -26,7 +25,6 @@ import { resolveImageUrl } from '@/lib/image';
 export function ShoeDetailPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const auth = useAuth();
   const { id } = useParams<{ id: string }>();
 
   const { data: shoe, isLoading, error } = useShoeById(id);
@@ -89,7 +87,7 @@ export function ShoeDetailPage() {
       : [
           {
             id: 'fallback',
-            url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800',
+            url: 'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg',
             alt: shoe.name,
           },
         ];
