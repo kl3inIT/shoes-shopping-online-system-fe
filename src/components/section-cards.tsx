@@ -1,4 +1,5 @@
 import { IconTrendingUp } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -11,15 +12,17 @@ import {
 } from '@/components/ui/card';
 import { useDashboardMetrics } from '@/features/admin/dashboard/api/dashboardApi';
 
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat('en-US', {
+const formatCurrency = (value: number, locale: string) =>
+  new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
   }).format(value);
 
 export function SectionCards() {
+  const { t, i18n } = useTranslation();
   const { data, isLoading } = useDashboardMetrics();
+  const locale = i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US';
 
   const totalRevenue = data?.totalRevenue ?? 0;
   const totalCustomers = data?.totalCustomers ?? 0;
@@ -30,9 +33,13 @@ export function SectionCards() {
     <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4'>
       <Card className='@container/card'>
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
+          <CardDescription>
+            {t('admin.dashboard.cards.totalRevenue.title', {
+              defaultValue: 'Total Revenue',
+            })}
+          </CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            {isLoading ? '...' : formatCurrency(totalRevenue)}
+            {isLoading ? '...' : formatCurrency(totalRevenue, locale)}
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
@@ -44,16 +51,27 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className='flex-col items-start gap-1.5 text-sm'>
           <div className='line-clamp-1 flex gap-2 font-medium'>
-            Trending up this month <IconTrendingUp className='size-4' />
+            {t('admin.dashboard.cards.totalRevenue.trend', {
+              defaultValue: 'Trending up this month',
+            })}{' '}
+            <IconTrendingUp className='size-4' />
           </div>
-          <div className='text-muted-foreground'>Based on delivered orders</div>
+          <div className='text-muted-foreground'>
+            {t('admin.dashboard.cards.totalRevenue.description', {
+              defaultValue: 'Based on delivered orders',
+            })}
+          </div>
         </CardFooter>
       </Card>
       <Card className='@container/card'>
         <CardHeader>
-          <CardDescription>Total Customers</CardDescription>
+          <CardDescription>
+            {t('admin.dashboard.cards.totalCustomers.title', {
+              defaultValue: 'Total Customers',
+            })}
+          </CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            {isLoading ? '...' : totalCustomers.toLocaleString()}
+            {isLoading ? '...' : totalCustomers.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
@@ -64,18 +82,27 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className='flex-col items-start gap-1.5 text-sm'>
           <div className='line-clamp-1 flex gap-2 font-medium'>
-            Up 15% this month <IconTrendingUp className='size-4' />
+            {t('admin.dashboard.cards.totalCustomers.trend', {
+              defaultValue: 'Up 15% this month',
+            })}{' '}
+            <IconTrendingUp className='size-4' />
           </div>
           <div className='text-muted-foreground'>
-            Registered customer accounts
+            {t('admin.dashboard.cards.totalCustomers.description', {
+              defaultValue: 'Registered customer accounts',
+            })}
           </div>
         </CardFooter>
       </Card>
       <Card className='@container/card'>
         <CardHeader>
-          <CardDescription>Total Orders</CardDescription>
+          <CardDescription>
+            {t('admin.dashboard.cards.totalOrders.title', {
+              defaultValue: 'Total Orders',
+            })}
+          </CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            {isLoading ? '...' : totalOrders.toLocaleString()}
+            {isLoading ? '...' : totalOrders.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
@@ -86,16 +113,27 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className='flex-col items-start gap-1.5 text-sm'>
           <div className='line-clamp-1 flex gap-2 font-medium'>
-            Strong order volume <IconTrendingUp className='size-4' />
+            {t('admin.dashboard.cards.totalOrders.trend', {
+              defaultValue: 'Strong order volume',
+            })}{' '}
+            <IconTrendingUp className='size-4' />
           </div>
-          <div className='text-muted-foreground'>Delivered orders only</div>
+          <div className='text-muted-foreground'>
+            {t('admin.dashboard.cards.totalOrders.description', {
+              defaultValue: 'Delivered orders only',
+            })}
+          </div>
         </CardFooter>
       </Card>
       <Card className='@container/card'>
         <CardHeader>
-          <CardDescription>Products Sold</CardDescription>
+          <CardDescription>
+            {t('admin.dashboard.cards.productsSold.title', {
+              defaultValue: 'Products Sold',
+            })}
+          </CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            {isLoading ? '...' : productsSold.toLocaleString()}
+            {isLoading ? '...' : productsSold.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
@@ -106,9 +144,16 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className='flex-col items-start gap-1.5 text-sm'>
           <div className='line-clamp-1 flex gap-2 font-medium'>
-            High product demand <IconTrendingUp className='size-4' />
+            {t('admin.dashboard.cards.productsSold.trend', {
+              defaultValue: 'High product demand',
+            })}{' '}
+            <IconTrendingUp className='size-4' />
           </div>
-          <div className='text-muted-foreground'>All delivered line items</div>
+          <div className='text-muted-foreground'>
+            {t('admin.dashboard.cards.productsSold.description', {
+              defaultValue: 'All delivered line items',
+            })}
+          </div>
         </CardFooter>
       </Card>
     </div>

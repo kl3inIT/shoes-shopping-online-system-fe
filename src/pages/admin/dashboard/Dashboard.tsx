@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { ChartAreaInteractive } from '@/components/chart-area-interactive';
 import { LowStockAlertTable } from '@/components/low-stock-alert-table';
 import { RecentOrdersTable } from '@/components/recent-orders-table';
@@ -6,6 +8,8 @@ import { TopSellingShoesTable } from '@/components/top-selling-shoes-table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
+
   return (
     <>
       <SectionCards />
@@ -18,9 +22,21 @@ export default function DashboardPage() {
           className='w-full border rounded-lg p-4 bg-card text-card-foreground'
         >
           <TabsList className='mb-4 bg-muted'>
-            <TabsTrigger value='recent-orders'>Recent Orders</TabsTrigger>
-            <TabsTrigger value='top-selling'>Top Selling</TabsTrigger>
-            <TabsTrigger value='low-stock'>Low Stock Alerts</TabsTrigger>
+            <TabsTrigger value='recent-orders'>
+              {t('admin.dashboard.tabs.recentOrders', {
+                defaultValue: 'Recent Orders',
+              })}
+            </TabsTrigger>
+            <TabsTrigger value='top-selling'>
+              {t('admin.dashboard.tabs.topSelling', {
+                defaultValue: 'Top Selling',
+              })}
+            </TabsTrigger>
+            <TabsTrigger value='low-stock'>
+              {t('admin.dashboard.tabs.lowStock', {
+                defaultValue: 'Low Stock Alerts',
+              })}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value='recent-orders' className='mt-0'>

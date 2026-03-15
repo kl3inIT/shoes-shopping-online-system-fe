@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 import { useIsMobile } from '@/hooks/useMobile';
@@ -125,23 +126,35 @@ const fallbackChartData = [
   { date: '2024-06-30', revenue: 446, profit: 400 },
 ];
 
-const chartConfig = {
-  visitors: {
-    label: 'Visitors',
-  },
-  revenue: {
-    label: 'Revenue',
-    color: 'var(--primary)',
-  },
-  profit: {
-    label: 'Profit',
-    color: 'var(--primary)',
-  },
-} satisfies ChartConfig;
-
 export function ChartAreaInteractive() {
+  const { t, i18n } = useTranslation();
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState('90d');
+  const locale = i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US';
+
+  const chartConfig = React.useMemo(
+    () =>
+      ({
+        visitors: {
+          label: t('admin.dashboard.chart.labels.visitors', {
+            defaultValue: 'Visitors',
+          }),
+        },
+        revenue: {
+          label: t('admin.dashboard.chart.labels.revenue', {
+            defaultValue: 'Revenue',
+          }),
+          color: 'var(--primary)',
+        },
+        profit: {
+          label: t('admin.dashboard.chart.labels.profit', {
+            defaultValue: 'Profit',
+          }),
+          color: 'var(--primary)',
+        },
+      }) satisfies ChartConfig,
+    [t]
+  );
 
   const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
   const { data: apiData = [] } = useDashboardChart(days);
@@ -178,12 +191,22 @@ export function ChartAreaInteractive() {
   return (
     <Card className='@container/card'>
       <CardHeader>
-        <CardTitle>Total Revenue & Profit</CardTitle>
+        <CardTitle>
+          {t('admin.dashboard.chart.title', {
+            defaultValue: 'Total Revenue & Profit',
+          })}
+        </CardTitle>
         <CardDescription>
           <span className='hidden @[540px]/card:block'>
-            Total for the last 3 months
+            {t('admin.dashboard.chart.description.long', {
+              defaultValue: 'Total for the last 3 months',
+            })}
           </span>
-          <span className='@[540px]/card:hidden'>Last 3 months</span>
+          <span className='@[540px]/card:hidden'>
+            {t('admin.dashboard.chart.description.short', {
+              defaultValue: 'Last 3 months',
+            })}
+          </span>
         </CardDescription>
         <CardAction>
           <ToggleGroup
@@ -193,27 +216,51 @@ export function ChartAreaInteractive() {
             variant='outline'
             className='hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex'
           >
-            <ToggleGroupItem value='90d'>Last 3 months</ToggleGroupItem>
-            <ToggleGroupItem value='30d'>Last 30 days</ToggleGroupItem>
-            <ToggleGroupItem value='7d'>Last 7 days</ToggleGroupItem>
+            <ToggleGroupItem value='90d'>
+              {t('admin.dashboard.chart.ranges.90d', {
+                defaultValue: 'Last 3 months',
+              })}
+            </ToggleGroupItem>
+            <ToggleGroupItem value='30d'>
+              {t('admin.dashboard.chart.ranges.30d', {
+                defaultValue: 'Last 30 days',
+              })}
+            </ToggleGroupItem>
+            <ToggleGroupItem value='7d'>
+              {t('admin.dashboard.chart.ranges.7d', {
+                defaultValue: 'Last 7 days',
+              })}
+            </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
               className='flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden'
               size='sm'
-              aria-label='Select a value'
+              aria-label={t('admin.dashboard.chart.selectLabel', {
+                defaultValue: 'Select a time range',
+              })}
             >
-              <SelectValue placeholder='Last 3 months' />
+              <SelectValue
+                placeholder={t('admin.dashboard.chart.ranges.90d', {
+                  defaultValue: 'Last 3 months',
+                })}
+              />
             </SelectTrigger>
             <SelectContent className='rounded-xl'>
               <SelectItem value='90d' className='rounded-lg'>
-                Last 3 months
+                {t('admin.dashboard.chart.ranges.90d', {
+                  defaultValue: 'Last 3 months',
+                })}
               </SelectItem>
               <SelectItem value='30d' className='rounded-lg'>
-                Last 30 days
+                {t('admin.dashboard.chart.ranges.30d', {
+                  defaultValue: 'Last 30 days',
+                })}
               </SelectItem>
               <SelectItem value='7d' className='rounded-lg'>
-                Last 7 days
+                {t('admin.dashboard.chart.ranges.7d', {
+                  defaultValue: 'Last 7 days',
+                })}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -260,7 +307,7 @@ export function ChartAreaInteractive() {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('en-US', {
+                return date.toLocaleDateString(locale, {
                   month: 'short',
                   day: 'numeric',
                 });
@@ -271,7 +318,7 @@ export function ChartAreaInteractive() {
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString('en-US', {
+                    return new Date(value).toLocaleDateString(locale, {
                       month: 'short',
                       day: 'numeric',
                     });

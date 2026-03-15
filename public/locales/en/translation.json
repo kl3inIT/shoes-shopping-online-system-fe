@@ -13,6 +13,8 @@
     "register": "Sign up",
     "logout": "Log out",
     "profile": "Profile",
+    "dashboard": "Dashboard",
+    "adminDashboard": "Admin Dashboard",
     "protected": {
       "loadingTitle": "Loading...",
       "loadingSubtitle": "Checking your access permissions",
@@ -567,8 +569,159 @@
       "analytics": "Analytics",
       "ai": "AI",
       "settings": "Settings",
+      "account": "Account",
       "help": "Help",
       "search": "Search"
+    },
+    "header": {
+      "title": "Admin",
+      "viewStore": "View Store"
+    },
+    "dashboard": {
+      "tabs": {
+        "recentOrders": "Recent Orders",
+        "topSelling": "Top Selling",
+        "lowStock": "Low Stock Alerts"
+      },
+      "cards": {
+        "totalRevenue": {
+          "title": "Total Revenue",
+          "trend": "Trending up this month",
+          "description": "Based on delivered orders"
+        },
+        "totalCustomers": {
+          "title": "Total Customers",
+          "trend": "Up 15% this month",
+          "description": "Registered customer accounts"
+        },
+        "totalOrders": {
+          "title": "Total Orders",
+          "trend": "Strong order volume",
+          "description": "Delivered orders only"
+        },
+        "productsSold": {
+          "title": "Products Sold",
+          "trend": "High product demand",
+          "description": "All delivered line items"
+        }
+      },
+      "chart": {
+        "title": "Total Revenue & Profit",
+        "description": {
+          "long": "Total for the last 3 months",
+          "short": "Last 3 months"
+        },
+        "selectLabel": "Select a time range",
+        "ranges": {
+          "90d": "Last 3 months",
+          "30d": "Last 30 days",
+          "7d": "Last 7 days"
+        },
+        "labels": {
+          "visitors": "Visitors",
+          "revenue": "Revenue",
+          "profit": "Profit"
+        }
+      },
+      "recentOrders": {
+        "title": "Recent Orders",
+        "empty": "No recent orders.",
+        "columns": {
+          "orderCode": "Order Code",
+          "customer": "Customer",
+          "date": "Date",
+          "total": "Total",
+          "status": "Status"
+        }
+      },
+      "topSelling": {
+        "title": "Top Selling Shoes",
+        "empty": "No selling data.",
+        "columns": {
+          "productName": "Product Name",
+          "category": "Category",
+          "totalSold": "Total Sold",
+          "currentStock": "Current Stock"
+        }
+      },
+      "lowStock": {
+        "title": "Low Stock Alert",
+        "empty": "No low stock items.",
+        "columns": {
+          "productName": "Product Name",
+          "size": "Size",
+          "remaining": "Remaining",
+          "status": "Status"
+        },
+        "status": {
+          "outOfStock": "Out of Stock",
+          "critical": "Critical",
+          "warning": "Warning"
+        }
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage your language, appearance, and admin workspace preferences.",
+      "summary": {
+        "title": "Current preferences",
+        "description": "A quick overview of the preferences currently applied to this browser.",
+        "language": "Language",
+        "theme": "Theme"
+      },
+      "actions": {
+        "account": "Open account page"
+      },
+      "language": {
+        "title": "Language",
+        "description": "Choose how labels, navigation, and messages are displayed in the admin area.",
+        "toggleLabel": "Toggle language"
+      },
+      "appearance": {
+        "title": "Appearance",
+        "description": "Switch between light, dark, or system mode for the admin dashboard.",
+        "toggleLabel": "Toggle theme",
+        "options": {
+          "light": "Light",
+          "dark": "Dark",
+          "system": "System"
+        },
+        "help": {
+          "light": "Use a bright interface for the admin workspace.",
+          "dark": "Use a dark interface for the admin workspace.",
+          "system": "Match the device theme automatically."
+        }
+      }
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "Review the admin identity currently signed in and jump to your related settings.",
+      "fallbackName": "Admin user",
+      "profile": {
+        "title": "Admin profile",
+        "description": "This information comes from your current authentication session."
+      },
+      "fields": {
+        "name": "Display name",
+        "username": "Username",
+        "email": "Email",
+        "subject": "User ID"
+      },
+      "access": {
+        "title": "Access roles",
+        "description": "Roles resolved from your current Keycloak session for admin permissions.",
+        "empty": "No admin roles were resolved."
+      },
+      "preferences": {
+        "title": "Current preferences",
+        "description": "A quick summary of the language and theme active in this admin browser session.",
+        "language": "Language",
+        "theme": "Theme"
+      },
+      "actions": {
+        "settings": "Open settings",
+        "profile": "Open storefront profile"
+      }
     },
     "products": {
       "title": "Products Management",

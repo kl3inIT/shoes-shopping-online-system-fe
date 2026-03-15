@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,6 +11,7 @@ import {
 import { useLanguage } from '@/i18n/useLanguage';
 
 export function LanguageToggle() {
+  const { t } = useTranslation();
   const { current, languages, changeLanguage } = useLanguage();
   const currentLabel = current === 'vi' ? 'VI' : 'EN';
 
@@ -17,7 +20,11 @@ export function LanguageToggle() {
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='sm' className='gap-2'>
           <span className='font-medium'>{currentLabel}</span>
-          <span className='sr-only'>Toggle language</span>
+          <span className='sr-only'>
+            {t('admin.settings.language.toggleLabel', {
+              defaultValue: 'Toggle language',
+            })}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>

@@ -354,6 +354,8 @@ function ProductRow({
   onAddToCart: (id: string) => void;
   onAddToWishlist: (id: string) => void;
 }) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
@@ -374,7 +376,7 @@ function ProductRow({
   if (products.length === 0) {
     return (
       <p className='py-12 text-center text-sm text-muted-foreground'>
-        No products found.
+        {t('products.noProducts', { defaultValue: 'No products found.' })}
       </p>
     );
   }
