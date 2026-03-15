@@ -84,7 +84,7 @@ export function CheckDefTable({
                 <TableCell>
                   <Switch
                     checked={def.active}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={(checked: boolean) =>
                       onToggleActive(def.id, checked)
                     }
                   />
