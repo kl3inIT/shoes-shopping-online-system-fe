@@ -1,16 +1,14 @@
 import * as React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { IconShoe } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
 import { Link } from 'react-router';
 
 import { useAuthorizedItems } from '@/features/auth';
+import { getMeQueryOptions } from '@/features/user/queryOptions';
 import { NavMain } from '@/layouts/admin/nav-main';
-import { NavSecondary } from '@/layouts/admin/nav-secondary';
-import {
-  adminPrimaryNavigationItems,
-  adminSecondaryNavigationItems,
-} from '@/layouts/admin/navigation.config';
+import { adminPrimaryNavigationItems } from '@/layouts/admin/navigation.config';
 import { NavUser } from '@/layouts/admin/nav-user';
 import {
   Sidebar,
@@ -20,16 +18,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from '@/layouts/admin/sidebar';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
   const auth = useAuth();
   const visiblePrimaryItems = useAuthorizedItems(adminPrimaryNavigationItems);
-  const visibleSecondaryItems = useAuthorizedItems(
-    adminSecondaryNavigationItems
-  );
+  const { data: me } = useQuery({
+    ...getMeQueryOptions(),
+    enabled: auth.isAuthenticated,
+  });
 
   const user = {
     name:
@@ -37,7 +35,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       auth.user?.profile.preferred_username?.toString() ||
       'User',
     email: auth.user?.profile.email?.toString() || '',
-    avatar: auth.user?.profile.picture?.toString() || '',
+    avatar:
+      me?.avatarUrl ||
+      auth.user?.profile.picture?.toString() ||
+      auth.user?.profile.avatar_url?.toString() ||
+      auth.user?.profile.avatarUrl?.toString() ||
+      undefined,
   };
 
   return (
@@ -62,14 +65,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain
           items={visiblePrimaryItems.map((item) => ({
-            title: t(item.titleKey, { defaultValue: item.defaultTitle }),
-            url: item.url,
-            icon: item.icon,
-          }))}
-        />
-        <SidebarSeparator />
-        <NavSecondary
-          items={visibleSecondaryItems.map((item) => ({
             title: t(item.titleKey, { defaultValue: item.defaultTitle }),
             url: item.url,
             icon: item.icon,
