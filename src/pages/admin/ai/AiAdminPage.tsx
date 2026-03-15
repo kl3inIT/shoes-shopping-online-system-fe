@@ -1,11 +1,16 @@
-import { Settings2, Database, MessagesSquare, Beaker } from 'lucide-react';
+import {
+  Settings2,
+  Database,
+  MessagesSquare,
+  ClipboardCheck,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AiParametersTab } from './parameters/AiParametersTab';
 import { AiVectorStoreTab } from './AiVectorStoreTab';
 import { AiChatLogsTab } from './AiChatLogsTab';
-import { AiTestChatTab } from './AiTestChatTab';
+import { AiChecksTab } from './AiChecksTab';
 
 export default function AiAdminPage() {
   const { t } = useTranslation();
@@ -49,10 +54,10 @@ export default function AiAdminPage() {
                 defaultValue: 'Conversations',
               })}
             </TabsTrigger>
-            <TabsTrigger value='test'>
-              <Beaker className='mr-1 h-4 w-4' />
-              {t('admin.ai.tabs.playground', {
-                defaultValue: 'Playground',
+            <TabsTrigger value='checks'>
+              <ClipboardCheck className='mr-1 h-4 w-4' />
+              {t('admin.ai.tabs.checks', {
+                defaultValue: 'Checks',
               })}
             </TabsTrigger>
           </TabsList>
@@ -69,8 +74,8 @@ export default function AiAdminPage() {
             <AiChatLogsTab />
           </TabsContent>
 
-          <TabsContent value='test'>
-            <AiTestChatTab />
+          <TabsContent value='checks'>
+            <AiChecksTab />
           </TabsContent>
         </Tabs>
       </div>
