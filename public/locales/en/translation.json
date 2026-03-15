@@ -1305,7 +1305,7 @@
         },
         "dialog": {
           "deleteTitle": "Delete Check Definition",
-          "deleteBody": "Delete this check definition? This cannot be undone.",
+          "deleteBody": "Delete this check definition and all its related run history? This cannot be undone.",
           "deleteConfirm": "Delete",
           "cancel": "Cancel",
           "addDef": "Add Check Definition",
@@ -1323,7 +1323,9 @@
           "categoryPlaceholder": "e.g. product, policy",
           "questionPlaceholder": "Enter the check question",
           "referenceAnswerPlaceholder": "Enter the expected reference answer",
-          "referenceAnswerEditPlaceholder": "Enter new reference answer (optional)"
+          "referenceAnswerEditPlaceholder": "Enter new reference answer (optional)",
+          "deleteRunTitle": "Delete Run",
+          "deleteRunBody": "Delete this run and all its results? This cannot be undone."
         },
         "table": {
           "defs": {
@@ -1341,7 +1343,8 @@
             "date": "Date",
             "by": "By",
             "actions": "Actions",
-            "empty": "No check runs yet"
+            "empty": "No check runs yet",
+            "delete": "Delete"
           },
           "results": {
             "question": "Question",
@@ -1357,12 +1360,15 @@
           "deleted": "Definition deleted",
           "runComplete": "Run complete — score: {{score}}",
           "noActiveDefs": "No active definitions to run",
-          "runCompleteNoScore": "Check run completed"
+          "runCompleteNoScore": "Check run completed",
+          "runDeleted": "Run deleted"
         },
         "fetchError": "Failed to load check definitions",
         "totalDefs": "{{count}} definition(s)",
         "pagination": {
-          "pageOf": "Page {{page}} of {{total}}"
+          "pageOf": "Page {{page}} of {{total}}",
+          "total": "{{count}} records",
+          "rowsPerPage": "Rows:"
         },
         "results": {
           "title": "Run Results",
@@ -1374,6 +1380,10 @@
         "verdict": {
           "pass": "PASS",
           "fail": "FAIL"
+        },
+        "tabs": {
+          "definitions": "Test Definitions",
+          "runHistory": "Run History"
         }
       },
       "page": {

@@ -63,6 +63,10 @@ export async function getCheckRuns(
   return response.data.data;
 }
 
+export async function deleteCheckRun(id: string): Promise<void> {
+  await apiClient.delete(`/api/v1/admin/checks/runs/${id}`);
+}
+
 export async function getCheckResults(
   runId: string
 ): Promise<CheckRunResult[]> {

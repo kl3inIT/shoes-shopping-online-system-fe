@@ -6,6 +6,7 @@ import {
   createCheckDef,
   updateCheckDef,
   deleteCheckDef,
+  deleteCheckRun,
   triggerCheckRun,
 } from './api';
 import type { CheckDefCreatePayload, GetCheckRunsParams } from './types';
@@ -98,6 +99,21 @@ export function useDeleteCheckDefMutation() {
       toast.success(
         t('admin.ai.checks.toast.deleted', 'Check definition deleted')
       );
+    },
+    onError: (err) => toast.error(getErrorMessage(err)),
+  });
+}
+
+export function useDeleteCheckRunMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  return useMutation({
+    mutationFn: (id: string) => deleteCheckRun(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ['admin', 'checks', 'runs'],
+      });
+      toast.success(t('admin.ai.checks.toast.runDeleted', 'Run deleted'));
     },
     onError: (err) => toast.error(getErrorMessage(err)),
   });

@@ -1303,7 +1303,7 @@
         },
         "dialog": {
           "deleteTitle": "Xóa định nghĩa kiểm tra",
-          "deleteBody": "Xóa định nghĩa kiểm tra này? Hành động này không thể hoàn tác.",
+          "deleteBody": "Xóa định nghĩa kiểm tra này và toàn bộ lịch sử chạy liên quan? Không thể hoàn tác.",
           "deleteConfirm": "Xóa",
           "cancel": "Hủy",
           "addDef": "Thêm định nghĩa kiểm tra",
@@ -1321,7 +1321,9 @@
           "categoryPlaceholder": "VD: sản phẩm, chính sách",
           "questionPlaceholder": "Nhập câu hỏi kiểm tra",
           "referenceAnswerPlaceholder": "Nhập câu trả lời tham chiếu mong đợi",
-          "referenceAnswerEditPlaceholder": "Nhập câu trả lời tham chiếu mới (tuỳ chọn)"
+          "referenceAnswerEditPlaceholder": "Nhập câu trả lời tham chiếu mới (tuỳ chọn)",
+          "deleteRunTitle": "Xóa lượt chạy",
+          "deleteRunBody": "Xóa lượt chạy này và tất cả kết quả? Không thể hoàn tác."
         },
         "table": {
           "defs": {
@@ -1339,7 +1341,8 @@
             "date": "Ngày",
             "by": "Bởi",
             "actions": "Thao tác",
-            "empty": "Chưa có lần chạy kiểm tra"
+            "empty": "Chưa có lần chạy kiểm tra",
+            "delete": "Xóa"
           },
           "results": {
             "question": "Câu hỏi",
@@ -1355,12 +1358,15 @@
           "deleted": "Đã xóa định nghĩa",
           "runComplete": "Hoàn thành — điểm: {{score}}",
           "noActiveDefs": "Không có định nghĩa nào đang hoạt động",
-          "runCompleteNoScore": "Đã hoàn thành kiểm tra"
+          "runCompleteNoScore": "Đã hoàn thành kiểm tra",
+          "runDeleted": "Đã xóa lượt chạy"
         },
         "fetchError": "Không thể tải định nghĩa kiểm tra",
         "totalDefs": "{{count}} định nghĩa",
         "pagination": {
-          "pageOf": "Trang {{page}} / {{total}}"
+          "pageOf": "Trang {{page}} / {{total}}",
+          "total": "{{count}} bản ghi",
+          "rowsPerPage": "Hàng:"
         },
         "results": {
           "title": "Kết quả chạy",
@@ -1372,6 +1378,10 @@
         "verdict": {
           "pass": "ĐẠT",
           "fail": "KHÔNG ĐẠT"
+        },
+        "tabs": {
+          "definitions": "Định nghĩa kiểm tra",
+          "runHistory": "Lịch sử chạy"
         }
       },
       "page": {
