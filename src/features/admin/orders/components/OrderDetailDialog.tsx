@@ -106,11 +106,11 @@ export function OrderDetailDialog({
                   <div className='flex-1 text-sm'>
                     <p className='font-medium'>{item.name}</p>
                     <p className='text-xs text-muted-foreground'>
-                      {t('cart.item.size')}: {item.size} × {item.quantity}
+                      {t('cart.item.size')}: {item.size} x {item.quantity}
                     </p>
                   </div>
                   <div className='text-right text-sm font-semibold'>
-                    {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
+                    {(item.price * item.quantity).toLocaleString('vi-VN')} VND
                   </div>
                 </div>
               ))}
@@ -121,7 +121,7 @@ export function OrderDetailDialog({
 
           <div className='flex items-center justify-between text-lg font-bold'>
             <span>{t('admin.orders.detail.total')}</span>
-            <span>{order.totalAmount.toLocaleString('vi-VN')} ₫</span>
+            <span>{order.totalAmount.toLocaleString('vi-VN')} VND</span>
           </div>
         </div>
       </DialogContent>
