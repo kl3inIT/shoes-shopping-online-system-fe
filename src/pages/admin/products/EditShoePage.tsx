@@ -40,6 +40,12 @@ import {
 import { useBrands, useCategories, useShoeById } from '@/features/products';
 import { useUpdateShoeMutation } from '@/features/admin/products';
 
+type ImageItem = {
+  id: string;
+  type: 'existing' | 'new';
+  value: string;
+};
+
 interface VariantFormState {
   id: string;
   size: string;
@@ -49,6 +55,7 @@ interface VariantFormState {
   keepImageUrls: string[];
   newImages: File[];
   newPreviewUrls: string[];
+  imageOrder: ImageItem[];
 }
 
 interface ShoeFormState {
@@ -116,6 +123,7 @@ export default function EditShoePage() {
   const [shoeKeepImageUrls, setShoeKeepImageUrls] = useState<string[]>([]);
   const [shoeNewImages, setShoeNewImages] = useState<File[]>([]);
   const [shoeNewPreviewUrls, setShoeNewPreviewUrls] = useState<string[]>([]);
+  const [shoeImageOrder, setShoeImageOrder] = useState<ImageItem[]>([]);
   const mainImageInputRef = useRef<HTMLInputElement | null>(null);
 
   const updateShoeMutation = useUpdateShoeMutation();
@@ -134,8 +142,17 @@ export default function EditShoePage() {
       description: shoeData.description,
     });
 
-    setShoeExistingImageUrls(shoeData.imageUrls ?? []);
-    setShoeKeepImageUrls(shoeData.imageUrls ?? []);
+    const initialShoeImages = shoeData.imageUrls ?? [];
+
+    setShoeExistingImageUrls(initialShoeImages);
+    setShoeKeepImageUrls(initialShoeImages);
+    setShoeImageOrder(
+      initialShoeImages.map((url) => ({
+        id: `existing:${url}`,
+        type: 'existing',
+        value: url,
+      }))
+    );
 
     setVariants(
       shoeData.variants.map((v) => ({
@@ -147,6 +164,11 @@ export default function EditShoePage() {
         keepImageUrls: v.imageUrls ?? [],
         newImages: [],
         newPreviewUrls: [],
+        imageOrder: (v.imageUrls ?? []).map((url) => ({
+          id: `existing:${url}`,
+          type: 'existing',
+          value: url,
+        })),
       }))
     );
   }, [shoeData]);
@@ -219,6 +241,7 @@ export default function EditShoePage() {
         keepImageUrls: [],
         newImages: [],
         newPreviewUrls: [],
+        imageOrder: [],
       },
     ]);
   };
@@ -234,33 +257,35 @@ export default function EditShoePage() {
     if (files.length === 0) return;
 
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
+    const newItems: ImageItem[] = newPreviewUrls.map((preview) => ({
+      id: `new:${preview}`,
+      type: 'new',
+      value: preview,
+    }));
+
     setShoeNewImages((prev) => [...prev, ...files]);
     setShoeNewPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+    setShoeImageOrder((prev) => [...prev, ...newItems]);
 
     if (mainImageInputRef.current) mainImageInputRef.current.value = '';
   };
 
-  const removeNewShoeImage = (index: number) => {
-    URL.revokeObjectURL(shoeNewPreviewUrls[index]);
-    setShoeNewImages((prev) => prev.filter((_, i) => i !== index));
-    setShoeNewPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  const removeNewShoeImage = (previewUrl: string) => {
+    const targetIndex = shoeNewPreviewUrls.indexOf(previewUrl);
+    if (targetIndex < 0) return;
+
+    URL.revokeObjectURL(shoeNewPreviewUrls[targetIndex]);
+    setShoeNewImages((prev) => prev.filter((_, i) => i !== targetIndex));
+    setShoeNewPreviewUrls((prev) => prev.filter((_, i) => i !== targetIndex));
+    setShoeImageOrder((prev) =>
+      prev.filter((item) => item.id !== `new:${previewUrl}`)
+    );
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 6 },
-    })
-  );
+  useEffect(() => {
+    if (shoeImageOrder.length > 0) return;
 
-  const removeExistingShoeImage = (url: string) => {
-    setShoeExistingImageUrls((prev) => prev.filter((u) => u !== url));
-    setShoeKeepImageUrls((prev) => prev.filter((u) => u !== url));
-  };
-
-  const handleShoeImagesDragEnd = ({ active, over }: DragEndEvent) => {
-    if (!over || active.id === over.id) return;
-
-    const items = [
+    const fallback = [
       ...shoeExistingImageUrls.map((url) => ({
         id: `existing:${url}`,
         type: 'existing' as const,
@@ -273,35 +298,61 @@ export default function EditShoePage() {
       })),
     ];
 
-    const oldIndex = items.findIndex((item) => item.id === String(active.id));
-    const newIndex = items.findIndex((item) => item.id === String(over.id));
-    if (oldIndex < 0 || newIndex < 0) return;
+    if (fallback.length > 0) {
+      setShoeImageOrder(fallback);
+    }
+  }, [shoeExistingImageUrls, shoeNewPreviewUrls, shoeImageOrder.length]);
 
-    const reordered = arrayMove(items, oldIndex, newIndex);
-    const reorderedExisting = reordered
-      .filter((item) => item.type === 'existing')
-      .map((item) => item.value);
-    const reorderedNew = reordered
-      .filter((item) => item.type === 'new')
-      .map((item) => item.value);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 6 },
+    })
+  );
 
-    setShoeExistingImageUrls(reorderedExisting);
-    setShoeKeepImageUrls((prevKeep) =>
-      reorderedExisting.filter((url) => prevKeep.includes(url))
+  const removeExistingShoeImage = (url: string) => {
+    setShoeExistingImageUrls((prev) => prev.filter((u) => u !== url));
+    setShoeKeepImageUrls((prev) => prev.filter((u) => u !== url));
+    setShoeImageOrder((prev) =>
+      prev.filter((item) => item.id !== `existing:${url}`)
     );
+  };
 
-    const newImageByPreview = new Map(
-      shoeNewPreviewUrls.map((preview, index) => [
-        preview,
-        shoeNewImages[index],
-      ])
-    );
-    setShoeNewPreviewUrls(reorderedNew);
-    setShoeNewImages(
-      reorderedNew
-        .map((preview) => newImageByPreview.get(preview))
-        .filter((file): file is File => Boolean(file))
-    );
+  const handleShoeImagesDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+
+    setShoeImageOrder((prev) => {
+      const oldIndex = prev.findIndex((item) => item.id === String(active.id));
+      const newIndex = prev.findIndex((item) => item.id === String(over.id));
+      if (oldIndex < 0 || newIndex < 0) return prev;
+
+      const reordered = arrayMove(prev, oldIndex, newIndex);
+      const reorderedExisting = reordered
+        .filter((item) => item.type === 'existing')
+        .map((item) => item.value);
+      const reorderedNew = reordered
+        .filter((item) => item.type === 'new')
+        .map((item) => item.value);
+
+      setShoeExistingImageUrls(reorderedExisting);
+      setShoeKeepImageUrls((prevKeep) =>
+        reorderedExisting.filter((url) => prevKeep.includes(url))
+      );
+
+      const newImageByPreview = new Map(
+        shoeNewPreviewUrls.map((preview, index) => [
+          preview,
+          shoeNewImages[index],
+        ])
+      );
+      setShoeNewPreviewUrls(reorderedNew);
+      setShoeNewImages(
+        reorderedNew
+          .map((preview) => newImageByPreview.get(preview))
+          .filter((file): file is File => Boolean(file))
+      );
+
+      return reordered;
+    });
   };
 
   const handleVariantImageChange = (
@@ -312,6 +363,11 @@ export default function EditShoePage() {
     if (files.length === 0) return;
 
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
+    const newItems: ImageItem[] = newPreviewUrls.map((preview) => ({
+      id: `new:${preview}`,
+      type: 'new',
+      value: preview,
+    }));
 
     setVariants((prev) =>
       prev.map((v) =>
@@ -320,6 +376,7 @@ export default function EditShoePage() {
               ...v,
               newImages: [...v.newImages, ...files],
               newPreviewUrls: [...v.newPreviewUrls, ...newPreviewUrls],
+              imageOrder: [...v.imageOrder, ...newItems],
             }
           : v
       )
@@ -344,6 +401,9 @@ export default function EditShoePage() {
           ...v,
           newImages: v.newImages.filter((_, i) => i !== imageIndex),
           newPreviewUrls: v.newPreviewUrls.filter((_, i) => i !== imageIndex),
+          imageOrder: v.imageOrder.filter(
+            (item) => item.id !== `new:${previewUrl}`
+          ),
         };
       })
     );
@@ -357,11 +417,46 @@ export default function EditShoePage() {
               ...v,
               existingImageUrls: v.existingImageUrls.filter((u) => u !== url),
               keepImageUrls: v.keepImageUrls.filter((u) => u !== url),
+              imageOrder: v.imageOrder.filter(
+                (item) => item.id !== `existing:${url}`
+              ),
             }
           : v
       )
     );
   };
+
+  useEffect(() => {
+    setVariants((prev) => {
+      let updated = false;
+      const next = prev.map((variant) => {
+        if (variant.imageOrder.length > 0) return variant;
+
+        const fallback = [
+          ...variant.existingImageUrls.map((url) => ({
+            id: `existing:${url}`,
+            type: 'existing' as const,
+            value: url,
+          })),
+          ...variant.newPreviewUrls.map((url) => ({
+            id: `new:${url}`,
+            type: 'new' as const,
+            value: url,
+          })),
+        ];
+
+        if (fallback.length === 0) return variant;
+
+        updated = true;
+        return {
+          ...variant,
+          imageOrder: fallback,
+        };
+      });
+
+      return updated ? next : prev;
+    });
+  }, [variants.length]);
 
   const handleVariantImagesDragEnd =
     (variantId: string) =>
@@ -372,28 +467,15 @@ export default function EditShoePage() {
         prev.map((v) => {
           if (v.id !== variantId) return v;
 
-          const items = [
-            ...v.existingImageUrls.map((url) => ({
-              id: `existing:${url}`,
-              type: 'existing' as const,
-              value: url,
-            })),
-            ...v.newPreviewUrls.map((url) => ({
-              id: `new:${url}`,
-              type: 'new' as const,
-              value: url,
-            })),
-          ];
-
-          const oldIndex = items.findIndex(
+          const oldIndex = v.imageOrder.findIndex(
             (item) => item.id === String(active.id)
           );
-          const newIndex = items.findIndex(
+          const newIndex = v.imageOrder.findIndex(
             (item) => item.id === String(over.id)
           );
           if (oldIndex < 0 || newIndex < 0) return v;
 
-          const reordered = arrayMove(items, oldIndex, newIndex);
+          const reordered = arrayMove(v.imageOrder, oldIndex, newIndex);
           const reorderedExisting = reordered
             .filter((item) => item.type === 'existing')
             .map((item) => item.value);
@@ -418,6 +500,7 @@ export default function EditShoePage() {
             newImages: reorderedNew
               .map((preview) => newImageByPreview.get(preview))
               .filter((file): file is File => Boolean(file)),
+            imageOrder: reordered,
           };
         })
       );
@@ -746,58 +829,25 @@ export default function EditShoePage() {
                 onDragEnd={handleShoeImagesDragEnd}
               >
                 <SortableContext
-                  items={[
-                    ...shoeExistingImageUrls.map((url) => `existing:${url}`),
-                    ...shoeNewPreviewUrls.map((url) => `new:${url}`),
-                  ]}
+                  items={shoeImageOrder.map((item) => item.id)}
                   strategy={rectSortingStrategy}
                 >
                   <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
-                    {shoeExistingImageUrls.map((url, index) => {
+                    {shoeImageOrder.map((item, index) => {
                       const isPrimary = index === 0;
+                      const isExisting = item.type === 'existing';
+                      const imageSrc = item.value;
 
                       return (
-                        <SortableImageItem
-                          key={`existing:${url}`}
-                          id={`existing:${url}`}
-                        >
-                          <div className='group relative aspect-square overflow-hidden rounded-lg border border-primary bg-muted'>
+                        <SortableImageItem key={item.id} id={item.id}>
+                          <div
+                            className={`group relative aspect-square overflow-hidden rounded-lg border ${
+                              isExisting ? 'border-primary' : 'border-border'
+                            } bg-muted`}
+                          >
                             <img
-                              src={url}
-                              alt='Shoe existing'
-                              className='h-full w-full object-cover'
-                            />
-
-                            {isPrimary && (
-                              <span className='absolute left-1 top-1 rounded bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground'>
-                                Ảnh chính
-                              </span>
-                            )}
-
-                            <button
-                              type='button'
-                              onClick={() => removeExistingShoeImage(url)}
-                              className='absolute right-1 top-1 z-20 flex h-6 w-6 items-center justify-center rounded bg-destructive text-white'
-                            >
-                              <IconX size={14} />
-                            </button>
-                          </div>
-                        </SortableImageItem>
-                      );
-                    })}
-
-                    {shoeNewPreviewUrls.map((url) => {
-                      const mergedIndex =
-                        shoeExistingImageUrls.length +
-                        shoeNewPreviewUrls.indexOf(url);
-                      const isPrimary = mergedIndex === 0;
-
-                      return (
-                        <SortableImageItem key={`new:${url}`} id={`new:${url}`}>
-                          <div className='group relative aspect-square overflow-hidden rounded-lg border bg-muted'>
-                            <img
-                              src={url}
-                              alt='Shoe new'
+                              src={imageSrc}
+                              alt={isExisting ? 'Shoe existing' : 'Shoe new'}
                               className='h-full w-full object-cover'
                             />
 
@@ -810,9 +860,9 @@ export default function EditShoePage() {
                             <button
                               type='button'
                               onClick={() =>
-                                removeNewShoeImage(
-                                  shoeNewPreviewUrls.indexOf(url)
-                                )
+                                isExisting
+                                  ? removeExistingShoeImage(imageSrc)
+                                  : removeNewShoeImage(imageSrc)
                               }
                               className='absolute right-1 top-1 z-20 flex h-6 w-6 items-center justify-center rounded bg-destructive text-white'
                             >
@@ -956,68 +1006,29 @@ export default function EditShoePage() {
                       onDragEnd={handleVariantImagesDragEnd(variant.id)}
                     >
                       <SortableContext
-                        items={[
-                          ...variant.existingImageUrls.map(
-                            (url) => `existing:${url}`
-                          ),
-                          ...variant.newPreviewUrls.map((url) => `new:${url}`),
-                        ]}
+                        items={variant.imageOrder.map((item) => item.id)}
                         strategy={rectSortingStrategy}
                       >
                         <div className='grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'>
-                          {variant.existingImageUrls.map(
-                            (url, existingIndex) => {
-                              const isPrimary = existingIndex === 0;
-                              return (
-                                <SortableImageItem
-                                  key={`existing:${url}`}
-                                  id={`existing:${url}`}
-                                >
-                                  <div className='group relative aspect-square overflow-hidden rounded-md border border-primary bg-muted'>
-                                    <img
-                                      src={url}
-                                      alt={`Variant ${index} existing`}
-                                      className='h-full w-full object-cover'
-                                    />
+                          {variant.imageOrder.map((item, imageIndex) => {
+                            const isPrimary = imageIndex === 0;
+                            const isExisting = item.type === 'existing';
+                            const imageSrc = item.value;
 
-                                    {isPrimary && (
-                                      <span className='absolute left-0.5 top-0.5 rounded bg-primary px-1 py-0.5 text-[10px] font-semibold text-primary-foreground'>
-                                        Ảnh chính
-                                      </span>
-                                    )}
-
-                                    <button
-                                      type='button'
-                                      onClick={() =>
-                                        removeVariantExistingImage(
-                                          variant.id,
-                                          url
-                                        )
-                                      }
-                                      className='absolute right-0.5 top-0.5 z-20 flex h-5 w-5 items-center justify-center rounded bg-destructive text-white'
-                                    >
-                                      <IconX size={12} />
-                                    </button>
-                                  </div>
-                                </SortableImageItem>
-                              );
-                            }
-                          )}
-
-                          {variant.newPreviewUrls.map((url) => {
-                            const mergedIndex =
-                              variant.existingImageUrls.length +
-                              variant.newPreviewUrls.indexOf(url);
-                            const isPrimary = mergedIndex === 0;
                             return (
-                              <SortableImageItem
-                                key={`new:${url}`}
-                                id={`new:${url}`}
-                              >
-                                <div className='group relative aspect-square overflow-hidden rounded-md border bg-muted'>
+                              <SortableImageItem key={item.id} id={item.id}>
+                                <div
+                                  className={`group relative aspect-square overflow-hidden rounded-md border ${
+                                    isExisting
+                                      ? 'border-primary'
+                                      : 'border-border'
+                                  } bg-muted`}
+                                >
                                   <img
-                                    src={url}
-                                    alt={`Variant ${index} new`}
+                                    src={imageSrc}
+                                    alt={`Variant ${index} ${
+                                      isExisting ? 'existing' : 'new'
+                                    }`}
                                     className='h-full w-full object-cover'
                                   />
 
@@ -1030,10 +1041,15 @@ export default function EditShoePage() {
                                   <button
                                     type='button'
                                     onClick={() =>
-                                      removeVariantNewImageByUrl(
-                                        variant.id,
-                                        url
-                                      )
+                                      isExisting
+                                        ? removeVariantExistingImage(
+                                            variant.id,
+                                            imageSrc
+                                          )
+                                        : removeVariantNewImageByUrl(
+                                            variant.id,
+                                            imageSrc
+                                          )
                                     }
                                     className='absolute right-0.5 top-0.5 z-20 flex h-5 w-5 items-center justify-center rounded bg-destructive text-white'
                                   >

@@ -118,7 +118,7 @@ type FilterSidebarProps = {
 };
 
 const GENDER_OPTIONS = ['MEN', 'WOMEN', 'UNISEX'] as const;
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 20, 40];
 
 function parseListParam(value: string | null) {
@@ -688,7 +688,7 @@ export default function ProductsPage() {
             />
           )}
 
-          {shoesPage && shoesPage.totalPages > 1 ? (
+          {shoesPage ? (
             <div className='mt-8'>
               <PaginationControls
                 page={shoesPage.pageNumber ?? shoesPage.number}

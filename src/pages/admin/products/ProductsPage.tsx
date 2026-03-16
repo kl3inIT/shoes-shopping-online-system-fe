@@ -389,7 +389,7 @@ export default function AdminProductsPage() {
         )}
       </div>
 
-      {shoesPage && shoesPage.totalPages > 1 ? (
+      {shoesPage ? (
         <div className='px-4 lg:px-6'>
           <PaginationControls
             page={shoesPage.pageNumber ?? shoesPage.number}

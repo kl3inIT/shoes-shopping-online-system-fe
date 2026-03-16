@@ -80,13 +80,7 @@ export function ProductFilter({
   const { t } = useTranslation();
   const [localSearchValue, setLocalSearchValue] = useState<string>(searchValue);
   const [priceInput, setPriceInput] = useState({ min: '', max: '' });
-  const [openFilters, setOpenFilters] = useState<string[]>([
-    'brands',
-    'categories',
-    'sizes',
-    'genders',
-    'price',
-  ]);
+  const [openFilters, setOpenFilters] = useState<string[]>([]);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const [activeSlider, setActiveSlider] = useState<'min' | 'max' | null>(null);
 

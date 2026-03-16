@@ -62,7 +62,7 @@ export function PaginationControls({
   }
 
   return (
-    <div className='flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-muted/20 px-4 py-3'>
+    <div className='flex flex-col gap-3 rounded-xl border bg-muted/20 px-4 py-3 md:flex-row md:items-center md:justify-between'>
       <div className='flex flex-wrap items-center gap-3 text-sm text-muted-foreground'>
         <span>
           {t('common.pagination.total', '{{count}} records', {
@@ -89,18 +89,19 @@ export function PaginationControls({
         </div>
       </div>
 
-      <div className='flex flex-wrap items-center gap-3'>
+      <div className='flex flex-wrap items-center gap-3 md:ml-auto'>
         <span className='text-sm text-muted-foreground'>
           {t('common.pagination.pageOf', 'Page {{page}} of {{total}}', {
             page: page + 1,
             total: totalPages,
           })}
         </span>
-        <Pagination className='w-auto'>
+        <Pagination className='mx-0 w-auto'>
           <PaginationContent>
             <PaginationItem>
               <PaginationLink
                 href='#'
+                size='default'
                 aria-label={t(
                   'common.pagination.previousAria',
                   'Go to previous page'
@@ -148,6 +149,7 @@ export function PaginationControls({
             <PaginationItem>
               <PaginationLink
                 href='#'
+                size='default'
                 aria-label={t('common.pagination.nextAria', 'Go to next page')}
                 onClick={(event) => {
                   event.preventDefault();

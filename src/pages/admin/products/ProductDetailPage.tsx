@@ -46,6 +46,53 @@ export default function ProductDetailPage() {
     [shoe?.imageUrls]
   );
 
+  const variantGroups = useMemo(() => {
+    if (!shoe) {
+      return [];
+    }
+
+    const grouped = new Map<
+      string,
+      {
+        color: string;
+        sizes: string[];
+        quantity: number;
+        imageUrls: string[];
+      }
+    >();
+
+    shoe.variants.forEach((variant) => {
+      const key = variant.color;
+      const existing = grouped.get(key);
+      const resolvedImages = (variant.imageUrls ?? []).map(
+        (url) => resolveImageUrl(url) ?? url
+      );
+
+      if (existing) {
+        const sizeValue = String(variant.size);
+        if (!existing.sizes.includes(sizeValue)) {
+          existing.sizes.push(sizeValue);
+        }
+        existing.quantity += variant.quantity;
+        if (existing.imageUrls.length === 0 && resolvedImages.length > 0) {
+          existing.imageUrls = resolvedImages;
+        }
+      } else {
+        grouped.set(key, {
+          color: variant.color,
+          sizes: [String(variant.size)],
+          quantity: variant.quantity,
+          imageUrls: resolvedImages,
+        });
+      }
+    });
+
+    return Array.from(grouped.values()).map((group) => ({
+      ...group,
+      sizes: group.sizes.sort((a, b) => a.localeCompare(b)),
+    }));
+  }, [shoe]);
+
   if (isLoading) {
     return (
       <div className='flex flex-1 items-center justify-center'>
@@ -198,27 +245,35 @@ export default function ProductDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {shoe.variants.map((variant) => (
-                  <TableRow key={variant.id}>
-                    <TableCell>{variant.size}</TableCell>
-                    <TableCell>{variant.color}</TableCell>
+                {variantGroups.map((group) => (
+                  <TableRow key={group.color}>
+                    <TableCell>
+                      <div className='flex flex-wrap gap-2'>
+                        {group.sizes.map((size) => (
+                          <span
+                            key={size}
+                            className='rounded-full border px-2 py-0.5 text-xs font-medium'
+                          >
+                            {size}
+                          </span>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>{group.color}</TableCell>
                     <TableCell className='text-right'>
-                      {variant.quantity}
+                      {group.quantity}
                     </TableCell>
                     <TableCell>
                       <div className='flex flex-wrap gap-2'>
-                        {(variant.imageUrls ?? []).slice(0, 4).map((u) => {
-                          const src = resolveImageUrl(u) ?? u;
-                          return (
-                            <img
-                              key={src}
-                              src={src}
-                              alt={`${shoe.name}-variant`}
-                              className='h-10 w-10 rounded object-cover'
-                            />
-                          );
-                        })}
-                        {(variant.imageUrls?.length ?? 0) === 0 && (
+                        {group.imageUrls.slice(0, 4).map((src) => (
+                          <img
+                            key={src}
+                            src={src}
+                            alt={`${shoe.name}-variant`}
+                            className='h-10 w-10 rounded object-cover'
+                          />
+                        ))}
+                        {group.imageUrls.length === 0 && (
                           <span className='text-xs text-muted-foreground'>
                             No image
                           </span>

@@ -515,7 +515,16 @@
     "uploading": "Đang tải lên...",
     "error": "Lỗi",
     "success": "Thành công",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "pagination": {
+      "total": "{{count}} bản ghi",
+      "rowsPerPage": "Số dòng mỗi trang",
+      "pageOf": "Trang {{page}} / {{total}}",
+      "previous": "Trước",
+      "next": "Sau",
+      "previousAria": "Về trang trước",
+      "nextAria": "Sang trang tiếp"
+    }
   },
   "error": {
     "page": {
