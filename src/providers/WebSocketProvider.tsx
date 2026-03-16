@@ -19,14 +19,24 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     const stompClient = new Client({
       webSocketFactory: () => new SockJS(`${wsBaseUrl}/ws`),
       reconnectDelay: 5000,
+      debug: (str) => console.log('[STOMP]', str),
       onConnect: () => {
+        console.log('WS connected');
         setClient(stompClient);
       },
       onDisconnect: () => {
+        console.log('WS disconnected');
         setClient(null);
       },
-      onStompError: () => {
+      onStompError: (frame) => {
+        console.error('STOMP error', frame);
         setClient(null);
+      },
+      onWebSocketError: (event) => {
+        console.error('WebSocket error', event);
+      },
+      onWebSocketClose: (event) => {
+        console.error('WebSocket close', event);
       },
     });
 
